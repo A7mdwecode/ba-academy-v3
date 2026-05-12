@@ -1,0 +1,3252 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BA Academy V3 — Business Analytics Platform</title>
+
+<!-- Fonts -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+<!-- EmailJS -->
+<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+
+<!-- Chart.js for visualizations -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+
+<style>
+/* ============================================================
+   V3 DESIGN SYSTEM — TOKENS & VARIABLES
+   ============================================================ */
+:root {
+  /* Backgrounds */
+  --bg-base:     #08080f;
+  --bg-surface:  #0f0f1a;
+  --bg-elevated: #161625;
+  --bg-overlay:  #1e1e30;
+  --bg-hover:    rgba(255,255,255,0.04);
+
+  /* Brand */
+  --accent:        #5b6cf8;
+  --accent-light:  #6b7cf9;
+  --accent-dim:    rgba(91,108,248,0.12);
+  --accent-glow:   rgba(91,108,248,0.25);
+  --accent-border: rgba(91,108,248,0.35);
+
+  /* Semantic */
+  --success:      #22c55e;
+  --success-dim:  rgba(34,197,94,0.1);
+  --warning:      #f59e0b;
+  --warning-dim:  rgba(245,158,11,0.1);
+  --danger:       #ef4444;
+  --danger-dim:   rgba(239,68,68,0.1);
+  --info:         #06b6d4;
+  --info-dim:     rgba(6,182,212,0.1);
+
+  /* Text */
+  --text-primary:   #f0f0f8;
+  --text-secondary: #8b8ba8;
+  --text-tertiary:  #4a4a65;
+  --text-inverse:   #08080f;
+
+  /* Borders */
+  --border:       rgba(255,255,255,0.06);
+  --border-strong:rgba(255,255,255,0.12);
+  --border-focus: var(--accent);
+
+  /* Typography */
+  --font-display: 'Plus Jakarta Sans', sans-serif;
+  --font-body:    'Inter', sans-serif;
+  --font-mono:    'JetBrains Mono', monospace;
+
+  /* Spacing (4px base) */
+  --sp-1: 4px;  --sp-2: 8px;   --sp-3: 12px; --sp-4: 16px;
+  --sp-5: 20px; --sp-6: 24px;  --sp-8: 32px; --sp-10: 40px;
+  --sp-12: 48px;--sp-16: 64px; --sp-20: 80px;
+
+  /* Radii */
+  --r-sm: 6px; --r-md: 10px; --r-lg: 16px;
+  --r-xl: 20px; --r-full: 9999px;
+
+  /* Shadows */
+  --shadow-sm:  0 1px 3px rgba(0,0,0,.4), 0 1px 2px rgba(0,0,0,.3);
+  --shadow-md:  0 4px 16px rgba(0,0,0,.5), 0 2px 6px rgba(0,0,0,.3);
+  --shadow-lg:  0 8px 32px rgba(0,0,0,.6), 0 4px 12px rgba(0,0,0,.4);
+  --shadow-accent: 0 0 0 1px var(--accent-border), 0 4px 24px var(--accent-glow);
+
+  /* Transitions */
+  --t-fast:   120ms ease;
+  --t-base:   200ms ease;
+  --t-slow:   350ms ease;
+
+  /* Layout */
+  --sidebar-w:      240px;
+  --sidebar-w-mini: 68px;
+  --topbar-h:       60px;
+}
+
+[data-theme="light"] {
+  --bg-base:     #f4f5fa;
+  --bg-surface:  #ffffff;
+  --bg-elevated: #f0f1f8;
+  --bg-overlay:  #e8e9f4;
+  --bg-hover:    rgba(0,0,0,0.03);
+  --border:      rgba(0,0,0,0.07);
+  --border-strong:rgba(0,0,0,0.13);
+  --text-primary:   #0f0f1a;
+  --text-secondary: #5a5a78;
+  --text-tertiary:  #9090b0;
+  --shadow-sm:  0 1px 3px rgba(0,0,0,.08);
+  --shadow-md:  0 4px 16px rgba(0,0,0,.1);
+  --shadow-lg:  0 8px 32px rgba(0,0,0,.14);
+}
+
+/* ============================================================
+   RESET & BASE
+   ============================================================ */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html { font-size: 16px; -webkit-font-smoothing: antialiased; }
+
+body {
+  font-family: var(--font-body);
+  background: var(--bg-base);
+  color: var(--text-primary);
+  min-height: 100vh;
+  overflow-x: hidden;
+  transition: background var(--t-slow), color var(--t-slow);
+}
+
+h1,h2,h3,h4,h5,h6 { font-family: var(--font-display); }
+code, pre, .mono { font-family: var(--font-mono); }
+a { color: var(--accent); text-decoration: none; }
+a:hover { color: var(--accent-light); }
+img { max-width: 100%; display: block; }
+
+::-webkit-scrollbar { width: 5px; height: 5px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--bg-overlay); border-radius: var(--r-full); }
+::-webkit-scrollbar-thumb:hover { background: var(--border-strong); }
+
+/* Selection */
+::selection { background: var(--accent-dim); color: var(--text-primary); }
+
+/* ============================================================
+   AUTH SCREENS — Full page
+   ============================================================ */
+#authScreen {
+  position: fixed; inset: 0;
+  background: var(--bg-base);
+  display: flex; align-items: center; justify-content: center;
+  z-index: 9999;
+  padding: var(--sp-6);
+  overflow-y: auto;
+}
+
+/* Animated background grid */
+#authScreen::before {
+  content: '';
+  position: fixed; inset: 0;
+  background-image:
+    linear-gradient(rgba(91,108,248,0.04) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(91,108,248,0.04) 1px, transparent 1px);
+  background-size: 48px 48px;
+  pointer-events: none;
+}
+
+/* Radial glow */
+#authScreen::after {
+  content: '';
+  position: fixed;
+  top: -20%; left: 50%;
+  transform: translateX(-50%);
+  width: 600px; height: 600px;
+  background: radial-gradient(circle, rgba(91,108,248,0.12) 0%, transparent 70%);
+  pointer-events: none;
+}
+
+.auth-card {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-strong);
+  border-radius: var(--r-xl);
+  padding: var(--sp-10);
+  width: 100%;
+  max-width: 440px;
+  box-shadow: var(--shadow-lg);
+  position: relative;
+  z-index: 1;
+  animation: authCardIn 0.5s var(--t-slow) both;
+}
+
+@keyframes authCardIn {
+  from { opacity: 0; transform: translateY(20px) scale(0.98); }
+  to   { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+.auth-logo {
+  text-align: center;
+  margin-bottom: var(--sp-8);
+}
+
+.auth-logo-icon {
+  width: 56px; height: 56px;
+  background: linear-gradient(135deg, var(--accent), #8b5cf6);
+  border-radius: var(--r-lg);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1.6rem;
+  margin: 0 auto var(--sp-4);
+  box-shadow: 0 8px 24px rgba(91,108,248,0.35);
+}
+
+.auth-logo h1 {
+  font-size: 1.5rem;
+  font-weight: 800;
+  letter-spacing: -0.5px;
+  color: var(--text-primary);
+}
+
+.auth-logo p {
+  font-size: .85rem;
+  color: var(--text-secondary);
+  margin-top: var(--sp-1);
+}
+
+.auth-tabs {
+  display: flex;
+  background: var(--bg-elevated);
+  border-radius: var(--r-md);
+  padding: 3px;
+  margin-bottom: var(--sp-6);
+  gap: 2px;
+}
+
+.auth-tab {
+  flex: 1; padding: var(--sp-2) var(--sp-4);
+  text-align: center;
+  font-size: .85rem; font-weight: 600;
+  font-family: var(--font-display);
+  cursor: pointer;
+  border-radius: 8px;
+  color: var(--text-secondary);
+  transition: all var(--t-base);
+  border: none; background: transparent;
+}
+
+.auth-tab.active {
+  background: var(--bg-surface);
+  color: var(--text-primary);
+  box-shadow: var(--shadow-sm);
+}
+
+/* Form elements */
+.form-group { margin-bottom: var(--sp-4); }
+
+.form-label {
+  display: block;
+  font-size: .78rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+  margin-bottom: var(--sp-2);
+  letter-spacing: 0.3px;
+}
+
+.form-input {
+  width: 100%;
+  background: var(--bg-elevated);
+  border: 1px solid var(--border-strong);
+  border-radius: var(--r-md);
+  padding: var(--sp-3) var(--sp-4);
+  color: var(--text-primary);
+  font-size: .9rem;
+  font-family: var(--font-body);
+  transition: border-color var(--t-fast), box-shadow var(--t-fast), background var(--t-fast);
+  outline: none;
+}
+
+.form-input:focus {
+  border-color: var(--accent);
+  background: var(--bg-overlay);
+  box-shadow: 0 0 0 3px var(--accent-dim);
+}
+
+.form-input::placeholder { color: var(--text-tertiary); }
+.form-input:disabled { opacity: .5; cursor: not-allowed; }
+
+/* OTP Input */
+.otp-container {
+  display: flex;
+  gap: var(--sp-3);
+  justify-content: center;
+  margin: var(--sp-6) 0;
+}
+
+.otp-digit {
+  width: 52px; height: 60px;
+  background: var(--bg-elevated);
+  border: 1.5px solid var(--border-strong);
+  border-radius: var(--r-md);
+  text-align: center;
+  font-size: 1.6rem;
+  font-weight: 700;
+  font-family: var(--font-display);
+  color: var(--text-primary);
+  outline: none;
+  transition: all var(--t-fast);
+  caret-color: var(--accent);
+}
+
+.otp-digit:focus {
+  border-color: var(--accent);
+  background: var(--bg-overlay);
+  box-shadow: 0 0 0 3px var(--accent-dim);
+  transform: scale(1.04);
+}
+
+.otp-digit.filled {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+/* Buttons */
+.btn {
+  display: inline-flex; align-items: center; justify-content: center;
+  gap: var(--sp-2);
+  padding: var(--sp-3) var(--sp-5);
+  border-radius: var(--r-md);
+  font-size: .875rem;
+  font-weight: 600;
+  font-family: var(--font-display);
+  cursor: pointer;
+  border: none;
+  transition: all var(--t-base);
+  white-space: nowrap;
+  position: relative;
+  overflow: hidden;
+}
+
+.btn::after {
+  content: '';
+  position: absolute; inset: 0;
+  background: rgba(255,255,255,0);
+  transition: background var(--t-fast);
+}
+
+.btn:hover::after { background: rgba(255,255,255,0.06); }
+.btn:active { transform: scale(0.98); }
+.btn:disabled { opacity: .5; cursor: not-allowed; pointer-events: none; }
+
+.btn-primary {
+  background: var(--accent);
+  color: #fff;
+  box-shadow: 0 2px 8px rgba(91,108,248,0.4);
+}
+.btn-primary:hover { background: var(--accent-light); box-shadow: 0 4px 16px rgba(91,108,248,0.5); }
+
+.btn-secondary {
+  background: var(--bg-elevated);
+  color: var(--text-primary);
+  border: 1px solid var(--border-strong);
+}
+.btn-secondary:hover { border-color: var(--accent); color: var(--accent); }
+
+.btn-ghost {
+  background: transparent;
+  color: var(--text-secondary);
+}
+.btn-ghost:hover { background: var(--bg-hover); color: var(--text-primary); }
+
+.btn-danger {
+  background: var(--danger-dim);
+  color: var(--danger);
+  border: 1px solid rgba(239,68,68,0.2);
+}
+
+.btn-block { width: 100%; }
+
+.btn-lg { padding: var(--sp-4) var(--sp-6); font-size: .95rem; border-radius: var(--r-lg); }
+.btn-sm { padding: var(--sp-2) var(--sp-3); font-size: .78rem; border-radius: var(--r-sm); }
+.btn-icon { padding: var(--sp-2); border-radius: var(--r-md); aspect-ratio: 1; }
+
+.btn-spinner {
+  width: 16px; height: 16px;
+  border: 2px solid rgba(255,255,255,0.3);
+  border-top-color: #fff;
+  border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+}
+
+/* Auth helpers */
+.auth-divider {
+  display: flex; align-items: center; gap: var(--sp-3);
+  margin: var(--sp-5) 0;
+  color: var(--text-tertiary);
+  font-size: .78rem;
+}
+.auth-divider::before, .auth-divider::after {
+  content: ''; flex: 1;
+  height: 1px; background: var(--border);
+}
+
+.auth-link {
+  text-align: center;
+  font-size: .82rem;
+  color: var(--text-secondary);
+  margin-top: var(--sp-5);
+}
+
+.auth-link a { color: var(--accent); font-weight: 600; }
+.auth-link a:hover { color: var(--accent-light); }
+
+.auth-error {
+  background: var(--danger-dim);
+  border: 1px solid rgba(239,68,68,0.25);
+  border-radius: var(--r-md);
+  padding: var(--sp-3) var(--sp-4);
+  font-size: .82rem;
+  color: var(--danger);
+  margin-bottom: var(--sp-4);
+  display: flex; align-items: center; gap: var(--sp-2);
+}
+
+.auth-success {
+  background: var(--success-dim);
+  border: 1px solid rgba(34,197,94,0.25);
+  border-radius: var(--r-md);
+  padding: var(--sp-3) var(--sp-4);
+  font-size: .82rem;
+  color: var(--success);
+  margin-bottom: var(--sp-4);
+  display: flex; align-items: center; gap: var(--sp-2);
+}
+
+/* Verify screen special */
+.verify-email-display {
+  background: var(--bg-elevated);
+  border: 1px solid var(--border-strong);
+  border-radius: var(--r-md);
+  padding: var(--sp-3) var(--sp-4);
+  font-size: .88rem;
+  color: var(--text-primary);
+  font-weight: 500;
+  text-align: center;
+  margin-bottom: var(--sp-2);
+  word-break: break-all;
+}
+
+.resend-timer {
+  text-align: center;
+  font-size: .8rem;
+  color: var(--text-tertiary);
+  margin-top: var(--sp-3);
+}
+
+.resend-timer a {
+  color: var(--accent);
+  cursor: pointer;
+  font-weight: 600;
+}
+
+/* ============================================================
+   ONBOARDING
+   ============================================================ */
+#onboardingScreen {
+  position: fixed; inset: 0;
+  background: var(--bg-base);
+  z-index: 9998;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.onboard-topbar {
+  display: flex; align-items: center;
+  padding: var(--sp-5) var(--sp-8);
+  border-bottom: 1px solid var(--border);
+}
+
+.onboard-logo {
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: 1.1rem;
+  display: flex; align-items: center; gap: var(--sp-2);
+}
+
+.onboard-logo-dot {
+  width: 28px; height: 28px;
+  background: linear-gradient(135deg, var(--accent), #8b5cf6);
+  border-radius: 8px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: .9rem;
+}
+
+.onboard-steps {
+  display: flex; align-items: center; gap: var(--sp-2);
+  margin-left: auto;
+}
+
+.step-dot {
+  width: 8px; height: 8px;
+  border-radius: var(--r-full);
+  background: var(--border-strong);
+  transition: all var(--t-base);
+}
+.step-dot.active { background: var(--accent); width: 24px; }
+.step-dot.done { background: var(--success); }
+
+.onboard-content {
+  flex: 1;
+  display: flex; align-items: center; justify-content: center;
+  padding: var(--sp-8);
+  overflow-y: auto;
+}
+
+.onboard-panel {
+  width: 100%; max-width: 600px;
+  animation: pageSlideIn 0.4s var(--t-slow) both;
+}
+
+@keyframes pageSlideIn {
+  from { opacity: 0; transform: translateX(30px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+
+.onboard-step-label {
+  font-size: .75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  color: var(--accent);
+  margin-bottom: var(--sp-3);
+}
+
+.onboard-heading {
+  font-size: 2rem;
+  font-weight: 800;
+  letter-spacing: -0.5px;
+  color: var(--text-primary);
+  line-height: 1.2;
+  margin-bottom: var(--sp-2);
+}
+
+.onboard-sub {
+  font-size: 1rem;
+  color: var(--text-secondary);
+  line-height: 1.6;
+  margin-bottom: var(--sp-8);
+}
+
+/* Goal cards */
+.goal-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--sp-3);
+  margin-bottom: var(--sp-8);
+}
+
+.goal-card {
+  background: var(--bg-surface);
+  border: 1.5px solid var(--border-strong);
+  border-radius: var(--r-lg);
+  padding: var(--sp-5);
+  cursor: pointer;
+  transition: all var(--t-base);
+  position: relative;
+}
+
+.goal-card:hover {
+  border-color: var(--accent-border);
+  background: var(--bg-elevated);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+}
+
+.goal-card.selected {
+  border-color: var(--accent);
+  background: var(--accent-dim);
+  box-shadow: var(--shadow-accent);
+}
+
+.goal-card-icon { font-size: 1.8rem; margin-bottom: var(--sp-3); }
+.goal-card-title { font-family: var(--font-display); font-weight: 700; font-size: .9rem; margin-bottom: var(--sp-1); }
+.goal-card-desc { font-size: .78rem; color: var(--text-secondary); line-height: 1.5; }
+
+.goal-card .check-badge {
+  position: absolute; top: var(--sp-3); right: var(--sp-3);
+  width: 20px; height: 20px;
+  background: var(--accent);
+  border-radius: var(--r-full);
+  display: none;
+  align-items: center; justify-content: center;
+  font-size: .65rem;
+  color: #fff;
+}
+.goal-card.selected .check-badge { display: flex; }
+
+/* Assessment quiz */
+.quiz-card {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-strong);
+  border-radius: var(--r-lg);
+  padding: var(--sp-6);
+  margin-bottom: var(--sp-4);
+}
+
+.quiz-q {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 1rem;
+  margin-bottom: var(--sp-4);
+  line-height: 1.4;
+}
+
+.quiz-options { display: flex; flex-direction: column; gap: var(--sp-2); }
+
+.quiz-option {
+  background: var(--bg-elevated);
+  border: 1.5px solid var(--border);
+  border-radius: var(--r-md);
+  padding: var(--sp-3) var(--sp-4);
+  cursor: pointer;
+  font-size: .875rem;
+  transition: all var(--t-fast);
+  text-align: left;
+  color: var(--text-primary);
+}
+.quiz-option:hover { border-color: var(--accent-border); background: var(--accent-dim); }
+.quiz-option.selected { border-color: var(--accent); background: var(--accent-dim); color: var(--accent); font-weight: 600; }
+.quiz-option.correct { border-color: var(--success); background: var(--success-dim); color: var(--success); }
+.quiz-option.wrong { border-color: var(--danger); background: var(--danger-dim); color: var(--danger); }
+
+/* Skill radar */
+.radar-container {
+  display: flex; align-items: center; justify-content: center;
+  margin: var(--sp-4) 0;
+}
+
+/* Skill bars */
+.skill-bars { display: flex; flex-direction: column; gap: var(--sp-3); }
+.skill-bar-row { display: flex; align-items: center; gap: var(--sp-3); }
+.skill-bar-label { font-size: .78rem; font-weight: 600; width: 110px; color: var(--text-secondary); flex-shrink: 0; }
+.skill-bar-track { flex: 1; height: 8px; background: var(--bg-overlay); border-radius: var(--r-full); overflow: hidden; }
+.skill-bar-fill { height: 100%; border-radius: var(--r-full); transition: width 1s cubic-bezier(0.34, 1.56, 0.64, 1); }
+.skill-bar-score { font-size: .75rem; font-weight: 700; width: 32px; text-align: right; color: var(--text-secondary); }
+
+/* Path recommendation */
+.path-recommend-card {
+  background: linear-gradient(135deg, var(--accent-dim), rgba(139,92,246,0.08));
+  border: 1.5px solid var(--accent-border);
+  border-radius: var(--r-lg);
+  padding: var(--sp-6);
+  margin-bottom: var(--sp-6);
+}
+
+.path-recommend-card h3 {
+  font-size: 1.2rem; font-weight: 800;
+  margin-bottom: var(--sp-2);
+}
+
+.path-meta {
+  display: flex; gap: var(--sp-4);
+  margin-top: var(--sp-4);
+  flex-wrap: wrap;
+}
+
+.path-meta-item {
+  display: flex; align-items: center; gap: var(--sp-2);
+  font-size: .8rem;
+  color: var(--text-secondary);
+}
+
+/* Onboarding nav */
+.onboard-footer {
+  padding: var(--sp-5) var(--sp-8);
+  border-top: 1px solid var(--border);
+  display: flex; align-items: center; justify-content: space-between;
+}
+
+/* ============================================================
+   MAIN APP LAYOUT
+   ============================================================ */
+#app {
+  display: none;
+  min-height: 100vh;
+}
+
+/* SIDEBAR */
+#sidebar {
+  position: fixed;
+  left: 0; top: 0; bottom: 0;
+  width: var(--sidebar-w);
+  background: var(--bg-surface);
+  border-right: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  z-index: 200;
+  transition: width var(--t-slow), transform var(--t-slow);
+  overflow: hidden;
+}
+
+#sidebar.collapsed { width: var(--sidebar-w-mini); }
+
+.sidebar-header {
+  padding: var(--sp-5) var(--sp-4);
+  display: flex; align-items: center; gap: var(--sp-3);
+  border-bottom: 1px solid var(--border);
+  min-height: var(--topbar-h);
+  flex-shrink: 0;
+}
+
+.sidebar-logo-icon {
+  width: 36px; height: 36px;
+  background: linear-gradient(135deg, var(--accent), #8b5cf6);
+  border-radius: var(--r-md);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1.1rem;
+  flex-shrink: 0;
+  box-shadow: 0 4px 12px rgba(91,108,248,0.35);
+}
+
+.sidebar-logo-text {
+  overflow: hidden;
+  transition: opacity var(--t-base), width var(--t-slow);
+}
+.sidebar-logo-text h2 {
+  font-size: .95rem;
+  font-weight: 800;
+  letter-spacing: -0.3px;
+  white-space: nowrap;
+}
+.sidebar-logo-text span {
+  font-size: .65rem;
+  color: var(--text-tertiary);
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  font-weight: 600;
+}
+
+#sidebar.collapsed .sidebar-logo-text { opacity: 0; width: 0; }
+
+/* Nav */
+.sidebar-nav {
+  flex: 1;
+  padding: var(--sp-3) 0;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+.nav-section-label {
+  padding: var(--sp-4) var(--sp-4) var(--sp-2);
+  font-size: .62rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  color: var(--text-tertiary);
+  white-space: nowrap;
+  transition: opacity var(--t-base);
+}
+#sidebar.collapsed .nav-section-label { opacity: 0; }
+
+.nav-item {
+  display: flex; align-items: center;
+  gap: var(--sp-3);
+  padding: var(--sp-2) var(--sp-4);
+  margin: 1px var(--sp-2);
+  border-radius: var(--r-md);
+  cursor: pointer;
+  color: var(--text-secondary);
+  font-size: .855rem;
+  font-weight: 500;
+  font-family: var(--font-body);
+  transition: all var(--t-fast);
+  position: relative;
+  white-space: nowrap;
+  min-height: 38px;
+}
+
+.nav-item:hover {
+  background: var(--bg-hover);
+  color: var(--text-primary);
+}
+
+.nav-item.active {
+  background: var(--accent-dim);
+  color: var(--accent);
+  font-weight: 600;
+}
+
+.nav-item.active::before {
+  content: '';
+  position: absolute; left: calc(-1 * var(--sp-2));
+  top: 20%; bottom: 20%;
+  width: 3px;
+  background: var(--accent);
+  border-radius: 0 var(--r-full) var(--r-full) 0;
+}
+
+.nav-icon {
+  font-size: 1.05rem;
+  width: 20px;
+  text-align: center;
+  flex-shrink: 0;
+}
+
+.nav-label {
+  flex: 1;
+  transition: opacity var(--t-base);
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+#sidebar.collapsed .nav-label { opacity: 0; width: 0; overflow: hidden; }
+
+.nav-badge {
+  background: var(--accent);
+  color: #fff;
+  font-size: .6rem;
+  font-weight: 700;
+  padding: 2px 6px;
+  border-radius: var(--r-full);
+  font-family: var(--font-mono);
+  transition: opacity var(--t-base);
+}
+#sidebar.collapsed .nav-badge { opacity: 0; }
+
+/* Sidebar footer */
+.sidebar-footer {
+  padding: var(--sp-4);
+  border-top: 1px solid var(--border);
+  flex-shrink: 0;
+}
+
+.sidebar-user {
+  display: flex; align-items: center; gap: var(--sp-3);
+  padding: var(--sp-2) var(--sp-2);
+  border-radius: var(--r-md);
+  cursor: pointer;
+  transition: background var(--t-fast);
+  min-height: 44px;
+}
+.sidebar-user:hover { background: var(--bg-hover); }
+
+.user-avatar {
+  width: 36px; height: 36px;
+  border-radius: var(--r-full);
+  background: linear-gradient(135deg, var(--accent), #8b5cf6);
+  display: flex; align-items: center; justify-content: center;
+  font-weight: 800;
+  font-size: .9rem;
+  color: #fff;
+  flex-shrink: 0;
+  font-family: var(--font-display);
+  position: relative;
+}
+
+.user-online-dot {
+  position: absolute; bottom: 1px; right: 1px;
+  width: 9px; height: 9px;
+  background: var(--success);
+  border-radius: var(--r-full);
+  border: 2px solid var(--bg-surface);
+}
+
+.user-info { overflow: hidden; transition: opacity var(--t-base); }
+.user-name { font-size: .85rem; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.user-level { font-size: .7rem; color: var(--text-tertiary); }
+#sidebar.collapsed .user-info { opacity: 0; width: 0; }
+
+/* Streak pill in sidebar */
+.sidebar-streak {
+  display: flex; align-items: center; gap: var(--sp-2);
+  background: rgba(245,158,11,0.1);
+  border: 1px solid rgba(245,158,11,0.2);
+  border-radius: var(--r-sm);
+  padding: var(--sp-1) var(--sp-3);
+  font-size: .72rem;
+  font-weight: 700;
+  color: var(--warning);
+  margin-bottom: var(--sp-3);
+  transition: opacity var(--t-base);
+}
+#sidebar.collapsed .sidebar-streak { opacity: 0; }
+
+/* TOPBAR */
+#topbar {
+  position: fixed;
+  top: 0; right: 0;
+  left: var(--sidebar-w);
+  height: var(--topbar-h);
+  background: var(--bg-surface);
+  border-bottom: 1px solid var(--border);
+  display: flex; align-items: center;
+  padding: 0 var(--sp-6);
+  gap: var(--sp-4);
+  z-index: 100;
+  transition: left var(--t-slow);
+}
+
+#sidebar.collapsed ~ #main #topbar,
+#topbar.sidebar-mini { left: var(--sidebar-w-mini); }
+
+.topbar-page-title {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 1rem;
+  flex: 1;
+}
+
+.topbar-breadcrumb {
+  font-size: .78rem;
+  color: var(--text-tertiary);
+  font-weight: 400;
+}
+
+.topbar-actions {
+  display: flex; align-items: center; gap: var(--sp-2);
+}
+
+/* XP progress in topbar */
+.topbar-xp {
+  display: flex; align-items: center; gap: var(--sp-2);
+  padding: var(--sp-2) var(--sp-3);
+  background: var(--bg-elevated);
+  border: 1px solid var(--border);
+  border-radius: var(--r-md);
+  font-size: .78rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+}
+
+.topbar-xp-bar {
+  width: 60px; height: 4px;
+  background: var(--bg-overlay);
+  border-radius: var(--r-full);
+  overflow: hidden;
+}
+
+.topbar-xp-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--accent), #8b5cf6);
+  border-radius: var(--r-full);
+  transition: width var(--t-slow);
+}
+
+.icon-btn {
+  width: 36px; height: 36px;
+  border-radius: var(--r-md);
+  border: 1px solid var(--border);
+  background: var(--bg-elevated);
+  cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  color: var(--text-secondary);
+  font-size: 1rem;
+  transition: all var(--t-fast);
+}
+.icon-btn:hover {
+  border-color: var(--border-strong);
+  color: var(--text-primary);
+  background: var(--bg-overlay);
+}
+
+/* Hamburger for mobile */
+#hamburger { display: none; }
+
+/* Collapse toggle */
+#sidebarToggle {
+  margin-left: auto;
+}
+
+/* MAIN CONTENT */
+#main {
+  margin-left: var(--sidebar-w);
+  min-height: 100vh;
+  display: flex; flex-direction: column;
+  transition: margin-left var(--t-slow);
+}
+#main.sidebar-mini { margin-left: var(--sidebar-w-mini); }
+
+#content {
+  margin-top: var(--topbar-h);
+  padding: var(--sp-8);
+  flex: 1;
+  max-width: 1280px;
+  width: 100%;
+}
+
+/* ============================================================
+   SHARED COMPONENTS
+   ============================================================ */
+
+/* Cards */
+.card {
+  background: var(--bg-surface);
+  border: 1px solid var(--border);
+  border-radius: var(--r-lg);
+  padding: var(--sp-6);
+  transition: border-color var(--t-fast), box-shadow var(--t-fast);
+}
+
+.card:hover { border-color: var(--border-strong); }
+.card-sm { padding: var(--sp-4); border-radius: var(--r-md); }
+.card-interactive { cursor: pointer; }
+.card-interactive:hover { border-color: var(--accent-border); transform: translateY(-1px); box-shadow: var(--shadow-md); }
+
+.card-header {
+  display: flex; align-items: center; justify-content: space-between;
+  margin-bottom: var(--sp-5);
+}
+
+.card-title {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: .95rem;
+}
+
+.card-subtitle {
+  font-size: .78rem;
+  color: var(--text-secondary);
+  margin-top: var(--sp-1);
+}
+
+/* Badges */
+.badge {
+  display: inline-flex; align-items: center; gap: 4px;
+  padding: 3px 8px;
+  border-radius: var(--r-full);
+  font-size: .68rem;
+  font-weight: 700;
+  letter-spacing: 0.3px;
+}
+
+.badge-accent  { background: var(--accent-dim); color: var(--accent); border: 1px solid var(--accent-border); }
+.badge-success { background: var(--success-dim); color: var(--success); border: 1px solid rgba(34,197,94,0.25); }
+.badge-warning { background: var(--warning-dim); color: var(--warning); border: 1px solid rgba(245,158,11,0.25); }
+.badge-danger  { background: var(--danger-dim); color: var(--danger); border: 1px solid rgba(239,68,68,0.25); }
+.badge-info    { background: var(--info-dim); color: var(--info); border: 1px solid rgba(6,182,212,0.25); }
+.badge-neutral { background: var(--bg-elevated); color: var(--text-secondary); border: 1px solid var(--border-strong); }
+
+/* Progress */
+.progress-track {
+  height: 6px;
+  background: var(--bg-overlay);
+  border-radius: var(--r-full);
+  overflow: hidden;
+}
+.progress-fill {
+  height: 100%;
+  border-radius: var(--r-full);
+  background: linear-gradient(90deg, var(--accent), #8b5cf6);
+  transition: width 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+.progress-fill.success { background: var(--success); }
+.progress-fill.warning { background: var(--warning); }
+
+/* Stat cards */
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: var(--sp-4);
+  margin-bottom: var(--sp-6);
+}
+
+.stat-card {
+  background: var(--bg-surface);
+  border: 1px solid var(--border);
+  border-radius: var(--r-lg);
+  padding: var(--sp-5);
+  position: relative;
+  overflow: hidden;
+}
+
+.stat-card-icon {
+  width: 40px; height: 40px;
+  border-radius: var(--r-md);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1.2rem;
+  margin-bottom: var(--sp-3);
+}
+
+.stat-card-value {
+  font-family: var(--font-display);
+  font-size: 1.9rem;
+  font-weight: 800;
+  letter-spacing: -0.5px;
+  line-height: 1;
+}
+
+.stat-card-label {
+  font-size: .75rem;
+  color: var(--text-secondary);
+  margin-top: var(--sp-1);
+  font-weight: 500;
+}
+
+.stat-card-delta {
+  display: inline-flex; align-items: center; gap: 3px;
+  font-size: .72rem;
+  font-weight: 600;
+  margin-top: var(--sp-2);
+}
+.stat-card-delta.up { color: var(--success); }
+.stat-card-delta.down { color: var(--danger); }
+
+/* Tabs */
+.tabs {
+  display: flex; gap: 2px;
+  background: var(--bg-elevated);
+  padding: 3px;
+  border-radius: var(--r-md);
+  margin-bottom: var(--sp-5);
+  overflow-x: auto;
+}
+
+.tab {
+  padding: var(--sp-2) var(--sp-4);
+  border-radius: 8px;
+  font-size: .82rem;
+  font-weight: 600;
+  font-family: var(--font-display);
+  cursor: pointer;
+  color: var(--text-secondary);
+  white-space: nowrap;
+  transition: all var(--t-fast);
+  border: none; background: transparent;
+}
+
+.tab:hover { color: var(--text-primary); background: var(--bg-hover); }
+.tab.active { background: var(--bg-surface); color: var(--text-primary); box-shadow: var(--shadow-sm); }
+
+/* Toast */
+.toast-stack {
+  position: fixed; bottom: var(--sp-6); right: var(--sp-6);
+  z-index: 9999;
+  display: flex; flex-direction: column; gap: var(--sp-2);
+  pointer-events: none;
+}
+
+.toast {
+  background: var(--bg-elevated);
+  border: 1px solid var(--border-strong);
+  border-radius: var(--r-lg);
+  padding: var(--sp-4) var(--sp-5);
+  box-shadow: var(--shadow-lg);
+  font-size: .85rem;
+  display: flex; align-items: flex-start; gap: var(--sp-3);
+  min-width: 280px; max-width: 360px;
+  pointer-events: all;
+  animation: toastIn 0.35s var(--t-slow) both;
+}
+
+@keyframes toastIn {
+  from { opacity: 0; transform: translateX(100%) scale(0.9); }
+  to   { opacity: 1; transform: translateX(0) scale(1); }
+}
+
+@keyframes toastOut {
+  to { opacity: 0; transform: translateX(110%) scale(0.9); }
+}
+
+.toast.removing { animation: toastOut 0.3s var(--t-slow) forwards; }
+.toast-icon { font-size: 1.1rem; flex-shrink: 0; margin-top: 1px; }
+.toast-content { flex: 1; }
+.toast-title { font-weight: 700; margin-bottom: 2px; font-family: var(--font-display); }
+.toast-desc { font-size: .78rem; color: var(--text-secondary); }
+
+.toast.success { border-color: rgba(34,197,94,0.3); }
+.toast.error   { border-color: rgba(239,68,68,0.3); }
+.toast.info    { border-color: var(--accent-border); }
+.toast.warning { border-color: rgba(245,158,11,0.3); }
+
+/* Modal */
+.modal-overlay {
+  position: fixed; inset: 0;
+  background: rgba(0,0,0,0.7);
+  backdrop-filter: blur(6px);
+  z-index: 1000;
+  display: flex; align-items: center; justify-content: center;
+  padding: var(--sp-5);
+  animation: fadeIn 0.2s ease both;
+}
+
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+.modal {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-strong);
+  border-radius: var(--r-xl);
+  width: 100%;
+  max-width: 520px;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: var(--shadow-lg);
+  animation: modalIn 0.3s var(--t-slow) both;
+}
+
+@keyframes modalIn {
+  from { opacity: 0; transform: translateY(20px) scale(0.96); }
+  to   { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+.modal-header {
+  padding: var(--sp-6) var(--sp-6) var(--sp-5);
+  border-bottom: 1px solid var(--border);
+  display: flex; align-items: center; justify-content: space-between;
+}
+
+.modal-title { font-family: var(--font-display); font-weight: 700; font-size: 1.05rem; }
+.modal-body { padding: var(--sp-6); }
+.modal-footer {
+  padding: var(--sp-4) var(--sp-6);
+  border-top: 1px solid var(--border);
+  display: flex; gap: var(--sp-3); justify-content: flex-end;
+}
+
+/* Empty state */
+.empty-state {
+  text-align: center;
+  padding: var(--sp-16) var(--sp-8);
+  color: var(--text-tertiary);
+}
+.empty-state-icon { font-size: 3rem; margin-bottom: var(--sp-4); opacity: .5; }
+.empty-state-title { font-family: var(--font-display); font-size: 1rem; font-weight: 700; color: var(--text-secondary); margin-bottom: var(--sp-2); }
+.empty-state-desc { font-size: .85rem; line-height: 1.6; }
+
+/* Skeleton loader */
+.skeleton {
+  background: linear-gradient(90deg, var(--bg-elevated) 25%, var(--bg-overlay) 50%, var(--bg-elevated) 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+  border-radius: var(--r-md);
+}
+@keyframes shimmer { from { background-position: 200% 0; } to { background-position: -200% 0; } }
+
+/* ============================================================
+   DASHBOARD PAGE
+   ============================================================ */
+.dashboard-grid {
+  display: grid;
+  grid-template-columns: 1fr 340px;
+  gap: var(--sp-6);
+}
+
+@media(max-width: 1100px) {
+  .dashboard-grid { grid-template-columns: 1fr; }
+}
+
+/* Daily focus card */
+.daily-focus {
+  background: linear-gradient(135deg, var(--accent-dim), rgba(139,92,246,0.06));
+  border: 1.5px solid var(--accent-border);
+  border-radius: var(--r-lg);
+  padding: var(--sp-6);
+  margin-bottom: var(--sp-6);
+  position: relative;
+  overflow: hidden;
+}
+
+.daily-focus::after {
+  content: '📊';
+  position: absolute; right: var(--sp-6); top: 50%;
+  transform: translateY(-50%);
+  font-size: 4rem;
+  opacity: .08;
+  pointer-events: none;
+}
+
+.daily-focus-label {
+  font-size: .72rem; font-weight: 700;
+  text-transform: uppercase; letter-spacing: 1.5px;
+  color: var(--accent);
+  margin-bottom: var(--sp-2);
+}
+
+.daily-focus-title { font-size: 1.3rem; font-weight: 800; margin-bottom: var(--sp-3); }
+.daily-focus-desc { font-size: .875rem; color: var(--text-secondary); margin-bottom: var(--sp-5); line-height: 1.6; }
+
+/* Path progress */
+.path-progress-item {
+  display: flex; align-items: center; gap: var(--sp-4);
+  padding: var(--sp-4);
+  border-radius: var(--r-md);
+  transition: background var(--t-fast);
+  cursor: pointer;
+}
+.path-progress-item:hover { background: var(--bg-hover); }
+
+.path-icon {
+  width: 42px; height: 42px;
+  border-radius: var(--r-md);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1.2rem;
+  flex-shrink: 0;
+}
+
+.path-info { flex: 1; min-width: 0; }
+.path-name { font-weight: 600; font-size: .88rem; margin-bottom: var(--sp-2); }
+.path-pct { font-size: .72rem; color: var(--text-secondary); margin-top: var(--sp-1); }
+
+/* Achievement popup */
+.achievement-popup {
+  position: fixed;
+  bottom: var(--sp-8); left: 50%;
+  transform: translateX(-50%) translateY(100px);
+  background: var(--bg-elevated);
+  border: 1px solid var(--accent-border);
+  border-radius: var(--r-xl);
+  padding: var(--sp-4) var(--sp-6);
+  display: flex; align-items: center; gap: var(--sp-4);
+  box-shadow: var(--shadow-accent), var(--shadow-lg);
+  z-index: 500;
+  transition: transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+  pointer-events: none;
+  min-width: 300px;
+}
+.achievement-popup.show { transform: translateX(-50%) translateY(0); }
+
+.ach-popup-icon { font-size: 2rem; }
+.ach-popup-label { font-size: .65rem; font-weight: 700; text-transform: uppercase; letter-spacing: 1.5px; color: var(--warning); }
+.ach-popup-name { font-family: var(--font-display); font-size: 1rem; font-weight: 800; }
+.ach-popup-xp { font-size: .78rem; color: var(--text-secondary); }
+
+/* ============================================================
+   ANIMATIONS & TRANSITIONS
+   ============================================================ */
+.page-enter {
+  animation: pageEnter 0.3s var(--t-slow) both;
+}
+@keyframes pageEnter {
+  from { opacity: 0; transform: translateY(12px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: .5; }
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-6px); }
+}
+
+@keyframes popIn {
+  from { opacity: 0; transform: scale(0.8); }
+  to   { opacity: 1; transform: scale(1); }
+}
+
+.float { animation: float 3s ease-in-out infinite; }
+.pulse { animation: pulse 2s ease infinite; }
+
+/* ============================================================
+   RESPONSIVE
+   ============================================================ */
+@media(max-width: 768px) {
+  #sidebar {
+    transform: translateX(-100%);
+    width: var(--sidebar-w) !important;
+    box-shadow: var(--shadow-lg);
+  }
+  #sidebar.mobile-open { transform: translateX(0); }
+  #main { margin-left: 0 !important; }
+  #topbar { left: 0 !important; }
+  #hamburger { display: flex !important; }
+  #sidebarToggle { display: none; }
+  #content { padding: var(--sp-5); }
+  .stats-grid { grid-template-columns: repeat(2, 1fr); }
+  .goal-grid { grid-template-columns: 1fr; }
+  .onboard-heading { font-size: 1.5rem; }
+  .auth-card { padding: var(--sp-6); }
+}
+
+.mobile-overlay {
+  display: none;
+  position: fixed; inset: 0;
+  background: rgba(0,0,0,.6);
+  z-index: 199;
+  backdrop-filter: blur(2px);
+}
+.mobile-overlay.show { display: block; }
+
+/* ============================================================
+   UTILITY CLASSES
+   ============================================================ */
+.flex { display: flex; }
+.flex-col { display: flex; flex-direction: column; }
+.items-center { align-items: center; }
+.justify-between { justify-content: space-between; }
+.justify-center { justify-content: center; }
+.gap-1 { gap: var(--sp-1); } .gap-2 { gap: var(--sp-2); }
+.gap-3 { gap: var(--sp-3); } .gap-4 { gap: var(--sp-4); }
+.gap-6 { gap: var(--sp-6); }
+.w-full { width: 100%; }
+.text-sm { font-size: .85rem; }
+.text-xs { font-size: .75rem; }
+.text-secondary { color: var(--text-secondary); }
+.text-tertiary { color: var(--text-tertiary); }
+.text-accent { color: var(--accent); }
+.text-success { color: var(--success); }
+.text-danger { color: var(--danger); }
+.font-bold { font-weight: 700; }
+.font-display { font-family: var(--font-display); }
+.mt-1{margin-top:var(--sp-1)}.mt-2{margin-top:var(--sp-2)}
+.mt-3{margin-top:var(--sp-3)}.mt-4{margin-top:var(--sp-4)}
+.mt-6{margin-top:var(--sp-6)}.mb-4{margin-bottom:var(--sp-4)}
+.mb-6{margin-bottom:var(--sp-6)}.mb-2{margin-bottom:var(--sp-2)}
+.hidden { display: none !important; }
+.truncate { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: var(--sp-4); }
+.grid-3 { display: grid; grid-template-columns: repeat(3,1fr); gap: var(--sp-4); }
+@media(max-width:600px) { .grid-2,.grid-3 { grid-template-columns: 1fr; } }
+</style>
+</head>
+<body>
+
+<!-- ============================================================
+     AUTH SCREEN
+     ============================================================ -->
+<div id="authScreen">
+  <div class="auth-card" id="authCard">
+
+    <!-- Login Form -->
+    <div id="loginForm">
+      <div class="auth-logo">
+        <div class="auth-logo-icon">📊</div>
+        <h1>BA Academy</h1>
+        <p>Your analytics career starts here</p>
+      </div>
+
+      <div class="auth-tabs">
+        <button class="auth-tab active" onclick="switchAuthTab('login')">Sign In</button>
+        <button class="auth-tab" onclick="switchAuthTab('signup')">Create Account</button>
+      </div>
+
+      <div id="authError" class="auth-error hidden">
+        <span>⚠️</span><span id="authErrorMsg"></span>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Email Address</label>
+        <input class="form-input" id="loginEmail" type="email" placeholder="you@example.com" autocomplete="email">
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Password</label>
+        <input class="form-input" id="loginPassword" type="password" placeholder="Enter your password" autocomplete="current-password">
+      </div>
+
+      <button class="btn btn-primary btn-block btn-lg" onclick="handleLogin()" id="loginBtn">
+        Sign In
+      </button>
+
+      <div class="auth-divider">or</div>
+
+      <div class="auth-link">
+        Don't have an account? <a onclick="switchAuthTab('signup')">Create one free</a>
+      </div>
+    </div>
+
+    <!-- Signup Form -->
+    <div id="signupForm" class="hidden">
+      <div class="auth-logo">
+        <div class="auth-logo-icon">📊</div>
+        <h1>Join BA Academy</h1>
+        <p>Build your analytics career for free</p>
+      </div>
+
+      <div class="auth-tabs">
+        <button class="auth-tab" onclick="switchAuthTab('login')">Sign In</button>
+        <button class="auth-tab active" onclick="switchAuthTab('signup')">Create Account</button>
+      </div>
+
+      <div id="signupError" class="auth-error hidden">
+        <span>⚠️</span><span id="signupErrorMsg"></span>
+      </div>
+
+      <div class="grid-2">
+        <div class="form-group">
+          <label class="form-label">First Name</label>
+          <input class="form-input" id="signupFirstName" type="text" placeholder="Ahmad" autocomplete="given-name">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Last Name</label>
+          <input class="form-input" id="signupLastName" type="text" placeholder="Al-Mansouri" autocomplete="family-name">
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Email Address</label>
+        <input class="form-input" id="signupEmail" type="email" placeholder="you@example.com" autocomplete="email">
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Password</label>
+        <input class="form-input" id="signupPassword" type="password" placeholder="At least 8 characters" autocomplete="new-password">
+      </div>
+
+      <button class="btn btn-primary btn-block btn-lg" onclick="handleSignup()" id="signupBtn">
+        Create Account & Verify Email
+      </button>
+
+      <p style="text-align:center;font-size:.75rem;color:var(--text-tertiary);margin-top:var(--sp-4);line-height:1.5">
+        A 6-digit verification code will be sent to your email.<br>
+        Your progress auto-saves to this browser.
+      </p>
+    </div>
+
+    <!-- OTP Verification -->
+    <div id="verifyForm" class="hidden">
+      <div class="auth-logo">
+        <div class="auth-logo-icon">✉️</div>
+        <h1>Check your email</h1>
+        <p>We sent a 6-digit code to</p>
+      </div>
+
+      <div class="verify-email-display" id="verifyEmailDisplay">—</div>
+
+      <div id="verifyError" class="auth-error hidden">
+        <span>⚠️</span><span id="verifyErrorMsg"></span>
+      </div>
+
+      <div id="verifySuccess" class="auth-success hidden">
+        <span>✅</span><span id="verifySuccessMsg"></span>
+      </div>
+
+      <div class="otp-container" id="otpContainer">
+        <input class="otp-digit" maxlength="1" type="text" inputmode="numeric" pattern="[0-9]">
+        <input class="otp-digit" maxlength="1" type="text" inputmode="numeric" pattern="[0-9]">
+        <input class="otp-digit" maxlength="1" type="text" inputmode="numeric" pattern="[0-9]">
+        <input class="otp-digit" maxlength="1" type="text" inputmode="numeric" pattern="[0-9]">
+        <input class="otp-digit" maxlength="1" type="text" inputmode="numeric" pattern="[0-9]">
+        <input class="otp-digit" maxlength="1" type="text" inputmode="numeric" pattern="[0-9]">
+      </div>
+
+      <button class="btn btn-primary btn-block btn-lg" onclick="verifyOTP()" id="verifyBtn">
+        Verify & Continue
+      </button>
+
+      <div class="resend-timer" id="resendTimer">
+        Resend code in <strong id="resendCountdown">60</strong>s
+      </div>
+
+      <div class="resend-timer hidden" id="resendLink">
+        Didn't get it? <a onclick="resendOTP()">Resend code</a>
+        &nbsp;·&nbsp;
+        <a onclick="switchAuthTab('signup')" style="color:var(--text-secondary)">Go back</a>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ============================================================
+     ONBOARDING SCREEN
+     ============================================================ -->
+<div id="onboardingScreen" class="hidden">
+  <div class="onboard-topbar">
+    <div class="onboard-logo">
+      <div class="onboard-logo-dot">📊</div>
+      BA Academy
+    </div>
+    <div class="onboard-steps" id="onboardSteps">
+      <div class="step-dot active"></div>
+      <div class="step-dot"></div>
+      <div class="step-dot"></div>
+      <div class="step-dot"></div>
+    </div>
+  </div>
+
+  <div class="onboard-content">
+    <div class="onboard-panel" id="onboardPanel"></div>
+  </div>
+
+  <div class="onboard-footer">
+    <button class="btn btn-ghost" id="onboardBack" onclick="onboardPrev()" style="visibility:hidden">
+      ← Back
+    </button>
+    <button class="btn btn-primary btn-lg" id="onboardNext" onclick="onboardNext()">
+      Continue →
+    </button>
+  </div>
+</div>
+
+<!-- ============================================================
+     MAIN APP
+     ============================================================ -->
+<div id="app">
+  <div class="mobile-overlay" id="mobileOverlay" onclick="closeMobileSidebar()"></div>
+
+  <!-- SIDEBAR -->
+  <nav id="sidebar">
+    <div class="sidebar-header">
+      <div class="sidebar-logo-icon">📊</div>
+      <div class="sidebar-logo-text">
+        <h2>BA Academy</h2>
+        <span>V3 Platform</span>
+      </div>
+    </div>
+
+    <div class="sidebar-nav">
+      <div class="nav-section-label">Main</div>
+      <div class="nav-item active" onclick="navigate('dashboard')" data-page="dashboard">
+        <span class="nav-icon">⚡</span>
+        <span class="nav-label">Dashboard</span>
+      </div>
+      <div class="nav-item" onclick="navigate('paths')" data-page="paths">
+        <span class="nav-icon">🗺️</span>
+        <span class="nav-label">Learning Paths</span>
+      </div>
+
+      <div class="nav-section-label">Practice</div>
+      <div class="nav-item" onclick="navigate('sql')" data-page="sql">
+        <span class="nav-icon">💾</span>
+        <span class="nav-label">SQL Lab</span>
+        <span class="nav-badge">New</span>
+      </div>
+      <div class="nav-item" onclick="navigate('analytics')" data-page="analytics">
+        <span class="nav-icon">📊</span>
+        <span class="nav-label">Analytics Lab</span>
+      </div>
+      <div class="nav-item" onclick="navigate('flashcards')" data-page="flashcards">
+        <span class="nav-icon">🃏</span>
+        <span class="nav-label">Flashcards</span>
+      </div>
+      <div class="nav-item" onclick="navigate('quiz')" data-page="quiz">
+        <span class="nav-icon">❓</span>
+        <span class="nav-label">Quiz Bank</span>
+      </div>
+      <div class="nav-item" onclick="navigate('glossary')" data-page="glossary">
+        <span class="nav-icon">📖</span>
+        <span class="nav-label">Glossary</span>
+        <span class="nav-badge">110+</span>
+      </div>
+
+      <div class="nav-section-label">AI</div>
+      <div class="nav-item" onclick="navigate('mentor')" data-page="mentor">
+        <span class="nav-icon">🤖</span>
+        <span class="nav-label">AI Mentor</span>
+      </div>
+
+      <div class="nav-section-label">Career</div>
+      <div class="nav-item" onclick="navigate('resume')" data-page="resume">
+        <span class="nav-icon">📄</span>
+        <span class="nav-label">Resume Builder</span>
+      </div>
+      <div class="nav-item" onclick="navigate('portfolio')" data-page="portfolio">
+        <span class="nav-icon">🖼️</span>
+        <span class="nav-label">Portfolio</span>
+      </div>
+      <div class="nav-item" onclick="navigate('interview')" data-page="interview">
+        <span class="nav-icon">🎙️</span>
+        <span class="nav-label">Interview Prep</span>
+      </div>
+      <div class="nav-item" onclick="navigate('jobs')" data-page="jobs">
+        <span class="nav-icon">💼</span>
+        <span class="nav-label">Job Board</span>
+      </div>
+      <div class="nav-item" onclick="navigate('tracker')" data-page="tracker">
+        <span class="nav-icon">📋</span>
+        <span class="nav-label">App Tracker</span>
+      </div>
+
+      <div class="nav-section-label">Tools</div>
+      <div class="nav-item" onclick="navigate('notes')" data-page="notes">
+        <span class="nav-icon">📝</span>
+        <span class="nav-label">Notes</span>
+      </div>
+      <div class="nav-item" onclick="navigate('pomodoro')" data-page="pomodoro">
+        <span class="nav-icon">⏱️</span>
+        <span class="nav-label">Focus Timer</span>
+      </div>
+      <div class="nav-item" onclick="navigate('salary')" data-page="salary">
+        <span class="nav-icon">💰</span>
+        <span class="nav-label">Salary Calc</span>
+      </div>
+
+      <div class="nav-section-label">Me</div>
+      <div class="nav-item" onclick="navigate('progress')" data-page="progress">
+        <span class="nav-icon">📈</span>
+        <span class="nav-label">My Progress</span>
+      </div>
+      <div class="nav-item" onclick="navigate('achievements')" data-page="achievements">
+        <span class="nav-icon">🏆</span>
+        <span class="nav-label">Achievements</span>
+      </div>
+      <div class="nav-item" onclick="navigate('settings')" data-page="settings">
+        <span class="nav-icon">⚙️</span>
+        <span class="nav-label">Settings</span>
+      </div>
+    </div>
+
+    <div class="sidebar-footer">
+      <div class="sidebar-streak" id="sidebarStreak">
+        🔥 <span id="sidebarStreakCount">0</span> day streak
+      </div>
+      <div class="sidebar-user" onclick="navigate('settings')">
+        <div class="user-avatar" id="sidebarAvatar">
+          A
+          <div class="user-online-dot"></div>
+        </div>
+        <div class="user-info">
+          <div class="user-name" id="sidebarName">Ahmad</div>
+          <div class="user-level" id="sidebarLevel">Data Apprentice</div>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <!-- MAIN -->
+  <div id="main">
+    <div id="topbar">
+      <button class="icon-btn" id="hamburger" onclick="toggleMobileSidebar()">☰</button>
+      <button class="icon-btn" id="sidebarToggle" onclick="toggleSidebar()" title="Collapse sidebar">◀</button>
+      <div class="topbar-page-title" id="topbarTitle">Dashboard</div>
+      <div style="flex:1"></div>
+      <div class="topbar-actions">
+        <div class="topbar-xp" id="topbarXP">
+          <span>⚡</span>
+          <span id="topbarXPVal">0 XP</span>
+          <div class="topbar-xp-bar">
+            <div class="topbar-xp-fill" id="topbarXPFill" style="width:0%"></div>
+          </div>
+        </div>
+        <button class="icon-btn" onclick="toggleTheme()" id="themeBtn" title="Toggle theme">🌙</button>
+        <button class="icon-btn" onclick="navigate('settings')" title="Settings">⚙️</button>
+      </div>
+    </div>
+
+    <div id="content"></div>
+  </div>
+</div>
+
+<!-- Toast container -->
+<div class="toast-stack" id="toastStack"></div>
+
+<!-- Achievement popup -->
+<div class="achievement-popup" id="achPopup">
+  <div class="ach-popup-icon" id="achPopupIcon">🏆</div>
+  <div>
+    <div class="ach-popup-label">Achievement Unlocked</div>
+    <div class="ach-popup-name" id="achPopupName">First Steps</div>
+    <div class="ach-popup-xp" id="achPopupXP">+50 XP</div>
+  </div>
+</div>
+
+<!-- ============================================================
+     JAVASCRIPT — CORE ENGINE
+     ============================================================ -->
+<script>
+// ============================================================
+// CONFIG — EmailJS (user fills in their own keys)
+// ============================================================
+const EMAILJS_CONFIG = {
+  publicKey:  localStorage.getItem('ba_emailjs_key')  || 'nIB93RejnT-2rViDu',
+  serviceId:  localStorage.getItem('ba_emailjs_svc')  || 'service_np32i73',
+  templateId: localStorage.getItem('ba_emailjs_tpl')  || 'template_4h5dqmz',
+};
+
+// ============================================================
+// STATE
+// ============================================================
+const DB_KEY = 'ba_v3_';
+
+let state = {
+  // Auth
+  user: null,
+  pendingUser: null,   // holds signup data while verifying
+  pendingOTP: null,
+  otpExpiry: null,
+  resendTimer: null,
+
+  // App
+  currentPage: 'dashboard',
+  sidebarCollapsed: false,
+
+  // Progress
+  progress: {
+    xp: 0,
+    level: 1,
+    streak: 0,
+    lastActive: null,
+    achievements: [],
+    sqlSolved: [],
+    quizHistory: [],
+    flashcardsDone: 0,
+    pathProgress: {},
+    skills: { sql: 0, stats: 0, bi: 0, python: 0, career: 0 },
+    totalSessions: 0,
+    totalMinutes: 0,
+  },
+
+  // Onboarding
+  onboard: {
+    step: 0,
+    goal: null,
+    assessmentAnswers: [],
+    recommendedPath: null,
+    skillScores: {},
+  },
+
+  // Settings
+  settings: {
+    theme: 'dark',
+    apiKey: '',
+    emailjsKey: 'nIB93RejnT-2rViDu',
+    emailjsSvc: 'service_np32i73',
+    emailjsTpl: 'template_4h5dqmz',
+    dailyGoalMinutes: 30,
+    soundEnabled: true,
+  },
+
+  notes: [],
+  applications: [],
+};
+
+// ============================================================
+// STORAGE
+// ============================================================
+function saveState() {
+  if (!state.user) return;
+  const key = DB_KEY + state.user.email;
+  localStorage.setItem(key, JSON.stringify({
+    progress: state.progress,
+    settings: state.settings,
+    notes: state.notes,
+    applications: state.applications,
+  }));
+}
+
+function loadState() {
+  if (!state.user) return;
+  const key = DB_KEY + state.user.email;
+  const raw = localStorage.getItem(key);
+  if (raw) {
+    const d = JSON.parse(raw);
+    state.progress  = { ...state.progress,  ...d.progress  };
+    state.settings  = { ...state.settings,  ...d.settings  };
+    state.notes     = d.notes        || [];
+    state.applications = d.applications || [];
+  }
+  // Update streak
+  updateStreak();
+}
+
+function updateStreak() {
+  const today = new Date().toDateString();
+  const last  = state.progress.lastActive;
+  const yesterday = new Date(Date.now() - 864e5).toDateString();
+  if (last === today) return;
+  state.progress.streak = (last === yesterday)
+    ? state.progress.streak + 1
+    : 1;
+  state.progress.lastActive = today;
+  saveState();
+}
+
+// ============================================================
+// LEVEL SYSTEM
+// ============================================================
+const LEVELS = [
+  { min: 0,    max: 99,   title: 'Data Apprentice',  icon: '🌱' },
+  { min: 100,  max: 299,  title: 'Junior Analyst',   icon: '📊' },
+  { min: 300,  max: 599,  title: 'Business Analyst', icon: '📈' },
+  { min: 600,  max: 999,  title: 'Senior Analyst',   icon: '🎯' },
+  { min: 1000, max: 1499, title: 'BI Developer',     icon: '💻' },
+  { min: 1500, max: 2499, title: 'Analytics Lead',   icon: '🚀' },
+  { min: 2500, max: 3999, title: 'Data Strategist',  icon: '🧠' },
+  { min: 4000, max: Infinity, title: 'Chief Analytics Officer', icon: '👑' },
+];
+
+function getLevel(xp = state.progress.xp) {
+  return LEVELS.find(l => xp >= l.min && xp <= l.max) || LEVELS[0];
+}
+
+function getLevelProgress(xp = state.progress.xp) {
+  const lv = getLevel(xp);
+  const idx = LEVELS.indexOf(lv);
+  if (idx === LEVELS.length - 1) return 100;
+  const range = LEVELS[idx + 1].min - lv.min;
+  return Math.round(((xp - lv.min) / range) * 100);
+}
+
+function addXP(amount, reason = '') {
+  state.progress.xp += amount;
+  saveState();
+  updateTopbarXP();
+  updateSidebar();
+  checkAchievements();
+  if (reason) toast('info', `+${amount} XP`, reason);
+}
+
+// ============================================================
+// ACHIEVEMENTS
+// ============================================================
+const ACHIEVEMENTS = [
+  { id: 'first_login',    icon: '🌟', name: 'First Steps',      desc: 'Logged in for the first time',         xp: 25,  check: () => true },
+  { id: 'verified',       icon: '✅', name: 'Verified',          desc: 'Verified your email',                  xp: 50,  check: () => true },
+  { id: 'onboarded',      icon: '🎯', name: 'Ready to Learn',   desc: 'Completed onboarding',                 xp: 75,  check: () => true },
+  { id: 'sql_1',          icon: '💾', name: 'SQL Starter',      desc: 'Solved first SQL challenge',           xp: 30,  check: () => state.progress.sqlSolved.length >= 1 },
+  { id: 'sql_10',         icon: '⚡', name: 'Query Master',     desc: 'Solved 10 SQL challenges',             xp: 100, check: () => state.progress.sqlSolved.length >= 10 },
+  { id: 'sql_25',         icon: '🏆', name: 'SQL Champion',     desc: 'Solved 25 SQL challenges',             xp: 300, check: () => state.progress.sqlSolved.length >= 25 },
+  { id: 'streak_3',       icon: '🔥', name: 'On Fire',          desc: '3-day learning streak',                xp: 50,  check: () => state.progress.streak >= 3 },
+  { id: 'streak_7',       icon: '🌈', name: 'Week Warrior',     desc: '7-day learning streak',                xp: 150, check: () => state.progress.streak >= 7 },
+  { id: 'streak_30',      icon: '💎', name: 'Unstoppable',      desc: '30-day learning streak',               xp: 500, check: () => state.progress.streak >= 30 },
+  { id: 'xp_100',         icon: '🚀', name: 'Rising Star',      desc: 'Reached 100 XP',                       xp: 0,   check: () => state.progress.xp >= 100 },
+  { id: 'xp_500',         icon: '💫', name: 'Analytics Pro',    desc: 'Reached 500 XP',                       xp: 0,   check: () => state.progress.xp >= 500 },
+  { id: 'xp_1000',        icon: '👑', name: 'Data Leader',      desc: 'Reached 1000 XP',                      xp: 0,   check: () => state.progress.xp >= 1000 },
+  { id: 'quiz_ace',       icon: '🎯', name: 'Quiz Ace',         desc: 'Score 80%+ on a quiz',                 xp: 75,  check: () => state.progress.quizHistory.some(q => q.pct >= 80) },
+  { id: 'flashcard_50',   icon: '🃏', name: 'Card Shark',       desc: 'Reviewed 50 flashcards',               xp: 60,  check: () => state.progress.flashcardsDone >= 50 },
+];
+
+function checkAchievements() {
+  ACHIEVEMENTS.forEach(a => {
+    if (!state.progress.achievements.includes(a.id) && a.check()) {
+      state.progress.achievements.push(a.id);
+      if (a.xp > 0) state.progress.xp += a.xp;
+      saveState();
+      showAchievementPopup(a);
+    }
+  });
+}
+
+function showAchievementPopup(a) {
+  const el = document.getElementById('achPopup');
+  document.getElementById('achPopupIcon').textContent = a.icon;
+  document.getElementById('achPopupName').textContent = a.name;
+  document.getElementById('achPopupXP').textContent = a.xp > 0 ? `+${a.xp} XP` : 'Unlocked!';
+  el.classList.add('show');
+  setTimeout(() => el.classList.remove('show'), 4000);
+}
+
+// ============================================================
+// TOAST SYSTEM
+// ============================================================
+function toast(type, title, desc = '', duration = 4000) {
+  const icons = { success: '✅', error: '❌', info: '💡', warning: '⚠️' };
+  const el = document.createElement('div');
+  el.className = `toast ${type}`;
+  el.innerHTML = `
+    <div class="toast-icon">${icons[type] || 'ℹ️'}</div>
+    <div class="toast-content">
+      <div class="toast-title">${title}</div>
+      ${desc ? `<div class="toast-desc">${desc}</div>` : ''}
+    </div>
+  `;
+  document.getElementById('toastStack').appendChild(el);
+  setTimeout(() => {
+    el.classList.add('removing');
+    setTimeout(() => el.remove(), 350);
+  }, duration);
+}
+
+// ============================================================
+// AUTH — Tab switcher
+// ============================================================
+function switchAuthTab(tab) {
+  document.getElementById('loginForm').classList.toggle('hidden', tab !== 'login');
+  document.getElementById('signupForm').classList.toggle('hidden', tab !== 'signup');
+  document.getElementById('verifyForm').classList.add('hidden');
+  clearAuthErrors();
+}
+
+function clearAuthErrors() {
+  ['authError','signupError','verifyError'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.classList.add('hidden');
+  });
+  ['verifySuccess'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.classList.add('hidden');
+  });
+}
+
+function showError(elId, msgElId, msg) {
+  document.getElementById(elId).classList.remove('hidden');
+  document.getElementById(msgElId).textContent = msg;
+}
+
+// ============================================================
+// AUTH — Login (returning users)
+// ============================================================
+function handleLogin() {
+  const email = document.getElementById('loginEmail').value.trim();
+  const pass  = document.getElementById('loginPassword').value;
+
+  clearAuthErrors();
+
+  if (!email) { showError('authError','authErrorMsg','Please enter your email address.'); return; }
+  if (!pass)  { showError('authError','authErrorMsg','Please enter your password.'); return; }
+  if (!isValidEmail(email)) { showError('authError','authErrorMsg','Please enter a valid email address.'); return; }
+
+  // Check if user exists in local storage
+  const userKey = 'ba_v3_user_' + email;
+  const storedUser = localStorage.getItem(userKey);
+
+  if (!storedUser) {
+    showError('authError','authErrorMsg','No account found with this email. Please sign up.');
+    return;
+  }
+
+  const userData = JSON.parse(storedUser);
+  // Simple hash comparison (in production use bcrypt on server)
+  if (simpleHash(pass) !== userData.passHash) {
+    showError('authError','authErrorMsg','Incorrect password. Please try again.');
+    return;
+  }
+
+  // Login success
+  setButtonLoading('loginBtn', true);
+  setTimeout(() => {
+    state.user = userData;
+    loadState();
+    launchApp();
+    setButtonLoading('loginBtn', false);
+  }, 400);
+}
+
+// ============================================================
+// AUTH — Signup
+// ============================================================
+function handleSignup() {
+  const firstName = document.getElementById('signupFirstName').value.trim();
+  const lastName  = document.getElementById('signupLastName').value.trim();
+  const email     = document.getElementById('signupEmail').value.trim();
+  const pass      = document.getElementById('signupPassword').value;
+
+  clearAuthErrors();
+
+  if (!firstName) { showError('signupError','signupErrorMsg','Please enter your first name.'); return; }
+  if (!email)     { showError('signupError','signupErrorMsg','Please enter your email address.'); return; }
+  if (!isValidEmail(email)) { showError('signupError','signupErrorMsg','Please enter a valid email address.'); return; }
+  if (pass.length < 8)     { showError('signupError','signupErrorMsg','Password must be at least 8 characters.'); return; }
+
+  // Check if email already registered
+  if (localStorage.getItem('ba_v3_user_' + email)) {
+    showError('signupError','signupErrorMsg','An account with this email already exists. Sign in instead.');
+    return;
+  }
+
+  // Store pending user data
+  state.pendingUser = {
+    firstName, lastName,
+    name: `${firstName} ${lastName}`,
+    email,
+    passHash: simpleHash(pass),
+    createdAt: new Date().toISOString(),
+    verified: false,
+  };
+
+  setButtonLoading('signupBtn', true);
+
+  // Generate and send OTP
+  sendOTP(email, firstName)
+    .then(() => {
+      setButtonLoading('signupBtn', false);
+      showVerifyScreen(email);
+    })
+    .catch(err => {
+      setButtonLoading('signupBtn', false);
+      showError('signupError','signupErrorMsg',
+        'Could not send verification email. Please check your EmailJS settings or try again.');
+      console.error('EmailJS error:', err);
+    });
+}
+
+// ============================================================
+// OTP — Generation & Sending
+// ============================================================
+function generateOTP() {
+  return String(Math.floor(100000 + Math.random() * 900000));
+}
+
+async function sendOTP(email, name) {
+  const otp = generateOTP();
+  state.pendingOTP  = otp;
+  state.otpExpiry   = Date.now() + 10 * 60 * 1000; // 10 min expiry
+
+  // Init EmailJS with user's public key
+  const pubKey = state.settings.emailjsKey || EMAILJS_CONFIG.publicKey;
+  const svcId  = state.settings.emailjsSvc || EMAILJS_CONFIG.serviceId;
+  const tplId  = state.settings.emailjsTpl || EMAILJS_CONFIG.templateId;
+
+  emailjs.init({ publicKey: pubKey });
+
+  return emailjs.send(svcId, tplId, {
+    to_email: email,
+    to_name: name,
+    otp: otp,
+    expiry: '10 minutes',
+    platform: 'BA Academy V3',
+  });
+}
+
+function showVerifyScreen(email) {
+  document.getElementById('loginForm').classList.add('hidden');
+  document.getElementById('signupForm').classList.add('hidden');
+  document.getElementById('verifyForm').classList.remove('hidden');
+  document.getElementById('verifyEmailDisplay').textContent = email;
+
+  // Set up OTP inputs
+  setupOTPInputs();
+  startResendTimer();
+  // Focus first digit
+  document.querySelectorAll('.otp-digit')[0].focus();
+}
+
+function setupOTPInputs() {
+  const digits = document.querySelectorAll('.otp-digit');
+  digits.forEach((input, i) => {
+    input.value = '';
+    input.classList.remove('filled');
+
+    input.addEventListener('input', e => {
+      // Allow only numbers
+      input.value = input.value.replace(/[^0-9]/g, '');
+      if (input.value) {
+        input.classList.add('filled');
+        if (i < digits.length - 1) digits[i + 1].focus();
+        // Auto-submit if all filled
+        if ([...digits].every(d => d.value)) verifyOTP();
+      } else {
+        input.classList.remove('filled');
+      }
+    });
+
+    input.addEventListener('keydown', e => {
+      if (e.key === 'Backspace' && !input.value && i > 0) {
+        digits[i - 1].focus();
+        digits[i - 1].value = '';
+        digits[i - 1].classList.remove('filled');
+      }
+      if (e.key === 'ArrowLeft' && i > 0) digits[i - 1].focus();
+      if (e.key === 'ArrowRight' && i < digits.length - 1) digits[i + 1].focus();
+    });
+
+    input.addEventListener('paste', e => {
+      e.preventDefault();
+      const pasted = (e.clipboardData || window.clipboardData)
+        .getData('text').replace(/\D/g, '').slice(0, 6);
+      pasted.split('').forEach((ch, idx) => {
+        if (digits[idx]) {
+          digits[idx].value = ch;
+          digits[idx].classList.add('filled');
+        }
+      });
+      if (pasted.length === 6) verifyOTP();
+      else if (digits[pasted.length]) digits[pasted.length].focus();
+    });
+  });
+}
+
+function startResendTimer(seconds = 60) {
+  let remaining = seconds;
+  const cdEl   = document.getElementById('resendCountdown');
+  const timerEl = document.getElementById('resendTimer');
+  const linkEl  = document.getElementById('resendLink');
+
+  timerEl.classList.remove('hidden');
+  linkEl.classList.add('hidden');
+  cdEl.textContent = remaining;
+
+  clearInterval(state.resendTimer);
+  state.resendTimer = setInterval(() => {
+    remaining--;
+    cdEl.textContent = remaining;
+    if (remaining <= 0) {
+      clearInterval(state.resendTimer);
+      timerEl.classList.add('hidden');
+      linkEl.classList.remove('hidden');
+    }
+  }, 1000);
+}
+
+async function resendOTP() {
+  if (!state.pendingUser) return;
+  document.getElementById('resendLink').classList.add('hidden');
+  try {
+    await sendOTP(state.pendingUser.email, state.pendingUser.firstName);
+    startResendTimer();
+    // Clear digits
+    document.querySelectorAll('.otp-digit').forEach(d => {
+      d.value = ''; d.classList.remove('filled');
+    });
+    document.querySelectorAll('.otp-digit')[0].focus();
+    clearAuthErrors();
+    toast('success', 'Code resent!', `Check ${state.pendingUser.email}`);
+  } catch(e) {
+    toast('error', 'Failed to resend', 'Please try again.');
+  }
+}
+
+function verifyOTP() {
+  const digits = document.querySelectorAll('.otp-digit');
+  const entered = [...digits].map(d => d.value).join('');
+
+  clearAuthErrors();
+
+  if (entered.length < 6) {
+    showError('verifyError','verifyErrorMsg','Please enter all 6 digits.');
+    return;
+  }
+
+  if (Date.now() > state.otpExpiry) {
+    showError('verifyError','verifyErrorMsg','This code has expired. Please request a new one.');
+    return;
+  }
+
+  setButtonLoading('verifyBtn', true);
+
+  setTimeout(() => {
+    if (entered === state.pendingOTP) {
+      // ✅ Verified!
+      const user = { ...state.pendingUser, verified: true };
+      localStorage.setItem('ba_v3_user_' + user.email, JSON.stringify(user));
+
+      state.user = user;
+      state.pendingUser = null;
+      state.pendingOTP  = null;
+
+      loadState();
+
+      document.getElementById('verifySuccess').classList.remove('hidden');
+      document.getElementById('verifySuccessMsg').textContent =
+        'Email verified! Starting your onboarding...';
+
+      setButtonLoading('verifyBtn', false);
+
+      setTimeout(() => startOnboarding(), 1200);
+    } else {
+      setButtonLoading('verifyBtn', false);
+      showError('verifyError','verifyErrorMsg','Incorrect code. Please check and try again.');
+      // Shake the inputs
+      const container = document.getElementById('otpContainer');
+      container.style.animation = 'none';
+      container.style.transform = 'translateX(-8px)';
+      setTimeout(() => {
+        container.style.transform = '';
+        container.style.transition = 'transform 0.4s cubic-bezier(0.36, 0.07, 0.19, 0.97)';
+      }, 10);
+      setTimeout(() => container.style.transition = '', 400);
+      digits.forEach(d => { d.value = ''; d.classList.remove('filled'); });
+      digits[0].focus();
+    }
+  }, 600);
+}
+
+// ============================================================
+// ONBOARDING FLOW
+// ============================================================
+const ONBOARD_STEPS = [
+  {
+    id: 'goal',
+    render: () => `
+      <div class="onboard-step-label">Step 1 of 4</div>
+      <h2 class="onboard-heading">What's your main goal?</h2>
+      <p class="onboard-sub">We'll personalize your learning path based on where you want to go.</p>
+      <div class="goal-grid">
+        ${[
+          { id: 'job', icon: '💼', title: 'Land a BA Job', desc: 'Prepare for entry-level analyst roles with resume, interview prep & portfolio' },
+          { id: 'upskill', icon: '📈', title: 'Upskill Fast', desc: 'Deepen your SQL, stats, and BI skills to advance in your current role' },
+          { id: 'academic', icon: '🎓', title: 'Academic Success', desc: 'Ace your Business Analytics coursework and university projects' },
+          { id: 'explore', icon: '🔭', title: 'Just Exploring', desc: 'Curious about BA? Start with the basics and see where it takes you' },
+        ].map(g => `
+          <div class="goal-card ${state.onboard.goal === g.id ? 'selected' : ''}"
+               onclick="selectGoal('${g.id}')">
+            <div class="check-badge">✓</div>
+            <div class="goal-card-icon">${g.icon}</div>
+            <div class="goal-card-title">${g.title}</div>
+            <div class="goal-card-desc">${g.desc}</div>
+          </div>
+        `).join('')}
+      </div>
+    `
+  },
+  {
+    id: 'assessment',
+    render: () => `
+      <div class="onboard-step-label">Step 2 of 4 — Quick Skill Check</div>
+      <h2 class="onboard-heading">Where are you right now?</h2>
+      <p class="onboard-sub">Answer 4 quick questions so we can calibrate your starting level. No wrong answers!</p>
+      <div id="assessmentContainer">
+        ${renderAssessmentQuestion(state.onboard.currentQ || 0)}
+      </div>
+    `
+  },
+  {
+    id: 'results',
+    render: () => {
+      const scores = computeSkillScores();
+      return `
+        <div class="onboard-step-label">Step 3 of 4 — Your Skill Profile</div>
+        <h2 class="onboard-heading">Here's where you stand</h2>
+        <p class="onboard-sub">Based on your answers, we've mapped your current skill levels across key BA areas.</p>
+        <div class="card mb-6">
+          <div class="skill-bars">
+            ${Object.entries(scores).map(([skill, score]) => `
+              <div class="skill-bar-row">
+                <div class="skill-bar-label">${skill}</div>
+                <div class="skill-bar-track">
+                  <div class="skill-bar-fill"
+                       style="width:${score}%;background:${getSkillColor(score)}"
+                       data-target="${score}"></div>
+                </div>
+                <div class="skill-bar-score" style="color:${getSkillColor(score)}">${score}%</div>
+              </div>
+            `).join('')}
+          </div>
+        </div>
+        <div class="path-recommend-card">
+          <div style="font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:var(--accent);margin-bottom:var(--sp-2)">
+            ✨ Recommended for you
+          </div>
+          <h3>${getRecommendedPath().name}</h3>
+          <p style="font-size:.875rem;color:var(--text-secondary);margin-top:var(--sp-2);line-height:1.6">${getRecommendedPath().desc}</p>
+          <div class="path-meta">
+            <div class="path-meta-item">⏱️ ${getRecommendedPath().duration}</div>
+            <div class="path-meta-item">📚 ${getRecommendedPath().lessons} lessons</div>
+            <div class="path-meta-item">⚡ ${getRecommendedPath().xp} XP to earn</div>
+          </div>
+        </div>
+      `;
+    }
+  },
+  {
+    id: 'quickwin',
+    render: () => `
+      <div class="onboard-step-label">Step 4 of 4 — First Win</div>
+      <h2 class="onboard-heading">Let's get your first points 🎉</h2>
+      <p class="onboard-sub">Complete one quick challenge to earn your first XP and unlock your dashboard.</p>
+      <div class="card mb-6">
+        <div style="font-size:.78rem;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--accent);margin-bottom:var(--sp-3)">Quick Challenge</div>
+        <div class="quiz-q">Which SQL clause filters rows AFTER grouping?</div>
+        <div class="quiz-options" id="quickwinOptions">
+          ${['WHERE','HAVING','ORDER BY','GROUP BY'].map((opt,i) => `
+            <button class="quiz-option" onclick="quickWinAnswer(${i}, 1)">${opt}</button>
+          `).join('')}
+        </div>
+        <div id="quickwinFeedback" class="mt-4 hidden"></div>
+      </div>
+      <div id="quickwinXP" class="hidden" style="text-align:center">
+        <div style="font-size:3rem;animation:float 2s ease-in-out infinite">⚡</div>
+        <div style="font-family:var(--font-display);font-size:1.5rem;font-weight:800;color:var(--accent);margin:var(--sp-2) 0">+50 XP Earned!</div>
+        <p style="color:var(--text-secondary);font-size:.875rem">You're already on your way. Let's build from here.</p>
+      </div>
+    `
+  },
+];
+
+// Assessment questions
+const ASSESSMENT_QUESTIONS = [
+  {
+    q: 'How comfortable are you with SQL?',
+    topic: 'sql',
+    opts: [
+      { text: "I've never written SQL", score: 10 },
+      { text: 'I know basic SELECT and WHERE', score: 35 },
+      { text: 'I can write JOINs and aggregations', score: 65 },
+      { text: 'I use window functions and CTEs regularly', score: 90 },
+    ]
+  },
+  {
+    q: 'How would you describe your statistics knowledge?',
+    topic: 'stats',
+    opts: [
+      { text: "Statistics wasn't really my thing", score: 10 },
+      { text: 'I know mean, median, and basic charts', score: 35 },
+      { text: 'I understand distributions and hypothesis testing', score: 65 },
+      { text: 'I regularly use statistical methods in my work', score: 90 },
+    ]
+  },
+  {
+    q: 'Have you used any BI tools (Power BI, Tableau, Looker)?',
+    topic: 'bi',
+    opts: [
+      { text: "I haven't used any BI tools", score: 10 },
+      { text: 'I've seen dashboards but not built them', score: 30 },
+      { text: 'I've built basic dashboards', score: 60 },
+      { text: 'I build complex dashboards regularly', score: 90 },
+    ]
+  },
+  {
+    q: 'Where are you in your career journey?',
+    topic: 'career',
+    opts: [
+      { text: 'Student — just starting out', score: 15 },
+      { text: 'Recent grad looking for my first role', score: 35 },
+      { text: '1–2 years in analytics/data', score: 60 },
+      { text: '3+ years — looking to advance', score: 85 },
+    ]
+  },
+];
+
+function renderAssessmentQuestion(qIdx) {
+  if (qIdx >= ASSESSMENT_QUESTIONS.length) {
+    return `<div class="auth-success"><span>✅</span><span>All questions answered! Click Continue.</span></div>`;
+  }
+  const q = ASSESSMENT_QUESTIONS[qIdx];
+  const answered = state.onboard.assessmentAnswers[qIdx];
+  return `
+    <div class="quiz-card">
+      <div style="font-size:.75rem;color:var(--text-tertiary);margin-bottom:var(--sp-2)">Question ${qIdx+1} of ${ASSESSMENT_QUESTIONS.length}</div>
+      <div class="quiz-q">${q.q}</div>
+      <div class="quiz-options">
+        ${q.opts.map((opt, i) => `
+          <button class="quiz-option ${answered === i ? 'selected' : ''}"
+                  onclick="assessmentAnswer(${qIdx}, ${i})">
+            ${opt.text}
+          </button>
+        `).join('')}
+      </div>
+    </div>
+    <div class="progress-track mt-4">
+      <div class="progress-fill" style="width:${((qIdx) / ASSESSMENT_QUESTIONS.length) * 100}%"></div>
+    </div>
+  `;
+}
+
+function selectGoal(goalId) {
+  state.onboard.goal = goalId;
+  document.querySelectorAll('.goal-card').forEach(el => el.classList.remove('selected'));
+  document.querySelectorAll('.goal-card').forEach(el => {
+    if (el.querySelector('.goal-card-title').textContent.toLowerCase().includes(
+      { job: 'land', upskill: 'upskill', academic: 'academic', explore: 'explore' }[goalId]
+    )) el.classList.add('selected');
+  });
+  // Show check badges
+  document.querySelectorAll('.goal-card').forEach(el => {
+    el.querySelector('.check-badge').style.display =
+      el.classList.contains('selected') ? 'flex' : 'none';
+  });
+}
+
+function assessmentAnswer(qIdx, optIdx) {
+  state.onboard.assessmentAnswers[qIdx] = optIdx;
+  state.onboard.currentQ = qIdx + 1;
+  // Re-render the question area
+  document.getElementById('assessmentContainer').innerHTML =
+    renderAssessmentQuestion(state.onboard.currentQ);
+}
+
+function computeSkillScores() {
+  const scores = { SQL: 0, Statistics: 0, 'BI Tools': 0, Career: 0, Python: 20 };
+  ASSESSMENT_QUESTIONS.forEach((q, i) => {
+    const ansIdx = state.onboard.assessmentAnswers[i];
+    if (ansIdx === undefined) return;
+    const score = q.opts[ansIdx].score;
+    if (q.topic === 'sql')    scores.SQL        = score;
+    if (q.topic === 'stats')  scores.Statistics = score;
+    if (q.topic === 'bi')     scores['BI Tools']= score;
+    if (q.topic === 'career') scores.Career     = score;
+  });
+  state.onboard.skillScores = scores;
+  // Save to progress
+  state.progress.skills = {
+    sql:    scores.SQL,
+    stats:  scores.Statistics,
+    bi:     scores['BI Tools'],
+    career: scores.Career,
+    python: 20,
+  };
+  return scores;
+}
+
+function getSkillColor(score) {
+  if (score >= 70) return 'var(--success)';
+  if (score >= 40) return 'var(--warning)';
+  return 'var(--danger)';
+}
+
+function getRecommendedPath() {
+  const scores = state.onboard.skillScores;
+  const goal   = state.onboard.goal;
+  const paths  = {
+    sql_fundamentals: {
+      name: 'SQL Fundamentals → Advanced',
+      desc: 'Master SQL from basic queries to window functions, CTEs, and performance optimization. The most in-demand BA skill.',
+      duration: '4–6 weeks', lessons: 32, xp: 850,
+    },
+    ba_foundations: {
+      name: 'BA Foundations',
+      desc: 'Build a solid grounding in business analytics: KPIs, dashboards, statistics, and data storytelling.',
+      duration: '3–4 weeks', lessons: 24, xp: 650,
+    },
+    interview_ready: {
+      name: 'Interview Ready Track',
+      desc: 'Fast-track career preparation: resume, portfolio, behavioral prep, and 100+ technical interview questions.',
+      duration: '2–3 weeks', lessons: 18, xp: 500,
+    },
+    bi_essentials: {
+      name: 'BI & Dashboard Essentials',
+      desc: 'Learn to design and build insightful dashboards. Covers visualization principles, KPI selection, and storytelling.',
+      duration: '3–5 weeks', lessons: 28, xp: 720,
+    },
+  };
+
+  if (goal === 'job') return paths.interview_ready;
+  const avgScore = Object.values(scores).reduce((a,b)=>a+b,0) / Object.values(scores).length;
+  if (avgScore < 35)  return paths.ba_foundations;
+  if ((scores.SQL || 0) < 40) return paths.sql_fundamentals;
+  return paths.bi_essentials;
+}
+
+function quickWinAnswer(optIdx, correctIdx) {
+  const opts = document.querySelectorAll('#quickwinOptions .quiz-option');
+  opts.forEach((o, i) => {
+    o.disabled = true;
+    if (i === correctIdx) o.classList.add('correct');
+    else if (i === optIdx && optIdx !== correctIdx) o.classList.add('wrong');
+  });
+
+  const feedback = document.getElementById('quickwinFeedback');
+  feedback.classList.remove('hidden');
+
+  if (optIdx === correctIdx) {
+    feedback.innerHTML = `<div class="auth-success"><span>✅</span><span>Correct! HAVING filters AFTER GROUP BY. WHERE filters BEFORE grouping.</span></div>`;
+    addXP(50, 'First challenge completed!');
+    document.getElementById('quickwinXP').classList.remove('hidden');
+    state.onboard.quickWinDone = true;
+  } else {
+    feedback.innerHTML = `<div class="auth-error"><span>❌</span><span>Not quite — the answer is HAVING. WHERE filters rows before grouping; HAVING filters the grouped results.</span></div>`;
+    document.getElementById('quickwinXP').classList.remove('hidden');
+    document.getElementById('quickwinXP').querySelector('[style*="⚡"]').textContent = '💡';
+    document.getElementById('quickwinXP').querySelector('[style*="1.5rem"]').textContent = 'Good try!';
+  }
+}
+
+// Onboarding navigation
+let onboardStep = 0;
+
+function startOnboarding() {
+  document.getElementById('authScreen').classList.add('hidden');
+  document.getElementById('onboardingScreen').classList.remove('hidden');
+  onboardStep = 0;
+  state.onboard.currentQ = 0;
+  renderOnboardStep();
+}
+
+function renderOnboardStep() {
+  const step = ONBOARD_STEPS[onboardStep];
+  const panel = document.getElementById('onboardPanel');
+  panel.style.animation = 'none';
+  panel.offsetHeight; // reflow
+  panel.style.animation = '';
+  panel.className = 'onboard-panel';
+  panel.innerHTML = step.render();
+
+  // Update dots
+  const dots = document.querySelectorAll('.step-dot');
+  dots.forEach((d, i) => {
+    d.className = 'step-dot';
+    if (i < onboardStep) d.classList.add('done');
+    else if (i === onboardStep) d.classList.add('active');
+  });
+
+  // Back button
+  document.getElementById('onboardBack').style.visibility =
+    onboardStep > 0 ? 'visible' : 'hidden';
+
+  // Next button text
+  const nextBtn = document.getElementById('onboardNext');
+  if (onboardStep === ONBOARD_STEPS.length - 1) {
+    nextBtn.textContent = "Launch Dashboard 🚀";
+    nextBtn.className = 'btn btn-primary btn-lg';
+  } else {
+    nextBtn.textContent = 'Continue →';
+  }
+}
+
+function onboardNext() {
+  // Validate current step
+  if (onboardStep === 0 && !state.onboard.goal) {
+    toast('warning', 'Please select a goal', 'Choose one of the options above.');
+    return;
+  }
+  if (onboardStep === 1 && state.onboard.assessmentAnswers.length < ASSESSMENT_QUESTIONS.length) {
+    toast('warning', 'Almost there!', 'Please answer all 4 questions.');
+    return;
+  }
+  if (onboardStep === ONBOARD_STEPS.length - 1) {
+    // Done — save onboarding state and launch app
+    state.progress.skills = {
+      sql: state.onboard.skillScores.SQL || 20,
+      stats: state.onboard.skillScores.Statistics || 20,
+      bi: state.onboard.skillScores['BI Tools'] || 20,
+      career: state.onboard.skillScores.Career || 20,
+      python: 20,
+    };
+    saveState();
+    unlockAchievement('onboarded');
+    launchApp();
+    return;
+  }
+  onboardStep++;
+  renderOnboardStep();
+}
+
+function onboardPrev() {
+  if (onboardStep > 0) { onboardStep--; renderOnboardStep(); }
+}
+
+function unlockAchievement(id) {
+  if (!state.progress.achievements.includes(id)) {
+    const a = ACHIEVEMENTS.find(a => a.id === id);
+    if (a) {
+      state.progress.achievements.push(id);
+      if (a.xp > 0) state.progress.xp += a.xp;
+      saveState();
+      showAchievementPopup(a);
+    }
+  }
+}
+
+// ============================================================
+// LAUNCH APP
+// ============================================================
+function launchApp() {
+  document.getElementById('authScreen').classList.add('hidden');
+  document.getElementById('onboardingScreen').classList.add('hidden');
+  document.getElementById('app').style.display = 'flex';
+
+  // Apply saved theme
+  document.documentElement.setAttribute('data-theme', state.settings.theme);
+  document.getElementById('themeBtn').textContent =
+    state.settings.theme === 'dark' ? '🌙' : '☀️';
+
+  updateSidebar();
+  updateTopbarXP();
+  checkAchievements();
+
+  // Check if new user (needs onboarding) or returning user
+  const hasOnboarded = state.progress.achievements.includes('onboarded');
+  if (!hasOnboarded && state.progress.xp === 0) {
+    // New user who skipped verification somehow — give first_login achievement
+    unlockAchievement('first_login');
+    if (state.user.verified) unlockAchievement('verified');
+  }
+
+  navigate('dashboard');
+}
+
+// ============================================================
+// SIDEBAR & TOPBAR UPDATE
+// ============================================================
+function updateSidebar() {
+  if (!state.user) return;
+  const lv = getLevel();
+  document.getElementById('sidebarAvatar').textContent =
+    (state.user.name || 'A')[0].toUpperCase();
+  document.getElementById('sidebarName').textContent =
+    state.user.firstName || state.user.name || 'Analyst';
+  document.getElementById('sidebarLevel').textContent = `${lv.icon} ${lv.title}`;
+  document.getElementById('sidebarStreakCount').textContent = state.progress.streak;
+}
+
+function updateTopbarXP() {
+  const xp  = state.progress.xp;
+  const pct = getLevelProgress(xp);
+  document.getElementById('topbarXPVal').textContent = `${xp} XP`;
+  document.getElementById('topbarXPFill').style.width = pct + '%';
+}
+
+// ============================================================
+// NAVIGATION
+// ============================================================
+const PAGE_TITLES = {
+  dashboard: 'Dashboard',       paths: 'Learning Paths',
+  sql: 'SQL Lab',               analytics: 'Analytics Lab',
+  flashcards: 'Flashcards',     quiz: 'Quiz Bank',
+  glossary: 'Glossary',         mentor: 'AI Mentor',
+  resume: 'Resume Builder',     portfolio: 'Portfolio',
+  interview: 'Interview Prep',  jobs: 'Job Board',
+  tracker: 'Application Tracker',notes: 'Notes',
+  pomodoro: 'Focus Timer',      salary: 'Salary Calculator',
+  progress: 'My Progress',      achievements: 'Achievements',
+  settings: 'Settings',
+};
+
+function navigate(page) {
+  state.currentPage = page;
+  const title = PAGE_TITLES[page] || page;
+  document.getElementById('topbarTitle').textContent = title;
+
+  // Update nav active state
+  document.querySelectorAll('.nav-item').forEach(el => {
+    el.classList.toggle('active', el.dataset.page === page);
+  });
+
+  // Render page
+  const content = document.getElementById('content');
+  content.innerHTML = '';
+  const renders = {
+    dashboard, paths, sql, analytics, flashcards, quiz,
+    glossary, mentor, resume, portfolio, interview, jobs,
+    tracker, notes, pomodoro, salary, progress, achievements, settings
+  };
+  if (renders[page]) renders[page]();
+  else content.innerHTML = `<div class="empty-state"><div class="empty-icon">🚧</div><div class="empty-title">Coming Soon</div><p class="empty-desc">${title} is being built for the next release.</p></div>`;
+
+  closeMobileSidebar();
+}
+
+// ============================================================
+// SIDEBAR CONTROLS
+// ============================================================
+function toggleSidebar() {
+  state.sidebarCollapsed = !state.sidebarCollapsed;
+  const sidebar = document.getElementById('sidebar');
+  const main    = document.getElementById('main');
+  const topbar  = document.getElementById('topbar');
+  sidebar.classList.toggle('collapsed', state.sidebarCollapsed);
+  main.classList.toggle('sidebar-mini', state.sidebarCollapsed);
+  topbar.classList.toggle('sidebar-mini', state.sidebarCollapsed);
+  document.getElementById('sidebarToggle').textContent =
+    state.sidebarCollapsed ? '▶' : '◀';
+}
+
+function toggleMobileSidebar() {
+  document.getElementById('sidebar').classList.toggle('mobile-open');
+  document.getElementById('mobileOverlay').classList.toggle('show');
+}
+
+function closeMobileSidebar() {
+  document.getElementById('sidebar').classList.remove('mobile-open');
+  document.getElementById('mobileOverlay').classList.remove('show');
+}
+
+// ============================================================
+// THEME
+// ============================================================
+function toggleTheme() {
+  state.settings.theme = state.settings.theme === 'dark' ? 'light' : 'dark';
+  document.documentElement.setAttribute('data-theme', state.settings.theme);
+  document.getElementById('themeBtn').textContent =
+    state.settings.theme === 'dark' ? '🌙' : '☀️';
+  saveState();
+}
+
+// ============================================================
+// PAGE RENDERS — Dashboard (Phase 1 placeholder structure)
+// ============================================================
+function dashboard() {
+  const lv  = getLevel();
+  const pct = getLevelProgress();
+  const c   = document.getElementById('content');
+  c.innerHTML = `
+  <div class="page-enter">
+    <!-- Daily Focus -->
+    <div class="daily-focus mb-6">
+      <div class="daily-focus-label">📅 Today's Focus</div>
+      <div class="daily-focus-title">Good ${getTimeGreeting()}, ${state.user?.firstName || 'Analyst'}! 👋</div>
+      <div class="daily-focus-desc">
+        You're on a <strong style="color:var(--warning)">${state.progress.streak}-day streak</strong>.
+        ${state.progress.streak > 0 ? 'Keep it going!' : 'Start your streak today!'}
+        Your next milestone is <strong>${lv.title === 'Data Apprentice' ? 'Junior Analyst at 100 XP' : 'keep climbing!'}</strong>
+      </div>
+      <div style="display:flex;gap:var(--sp-3);flex-wrap:wrap">
+        <button class="btn btn-primary" onclick="navigate('sql')">💾 SQL Lab</button>
+        <button class="btn btn-secondary" onclick="navigate('mentor')">🤖 AI Mentor</button>
+        <button class="btn btn-secondary" onclick="navigate('flashcards')">🃏 Flashcards</button>
+      </div>
+    </div>
+
+    <!-- Stats Row -->
+    <div class="stats-grid mb-6">
+      <div class="stat-card">
+        <div class="stat-card-icon" style="background:var(--accent-dim)">⚡</div>
+        <div class="stat-card-value">${state.progress.xp.toLocaleString()}</div>
+        <div class="stat-card-label">Total XP</div>
+        <div class="stat-card-delta up">↑ Level ${lv.level}</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-card-icon" style="background:rgba(245,158,11,.1)">🔥</div>
+        <div class="stat-card-value">${state.progress.streak}</div>
+        <div class="stat-card-label">Day Streak</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-card-icon" style="background:rgba(34,197,94,.1)">💾</div>
+        <div class="stat-card-value">${state.progress.sqlSolved.length}<span style="font-size:1rem;color:var(--text-secondary)">/50</span></div>
+        <div class="stat-card-label">SQL Solved</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-card-icon" style="background:rgba(139,92,246,.1)">🏆</div>
+        <div class="stat-card-value">${state.progress.achievements.length}</div>
+        <div class="stat-card-label">Achievements</div>
+      </div>
+    </div>
+
+    <!-- Main grid -->
+    <div class="dashboard-grid">
+      <div>
+        <!-- Level Progress -->
+        <div class="card mb-6">
+          <div class="card-header">
+            <div>
+              <div class="card-title">${lv.icon} ${lv.title}</div>
+              <div class="card-subtitle">Level ${lv.level} · ${state.progress.xp} XP</div>
+            </div>
+            <span class="badge badge-accent">${pct}% to next</span>
+          </div>
+          <div class="progress-track">
+            <div class="progress-fill" style="width:${pct}%"></div>
+          </div>
+          <div style="display:flex;justify-content:space-between;margin-top:var(--sp-2);font-size:.72rem;color:var(--text-tertiary)">
+            <span>${lv.title}</span>
+            <span>${LEVELS[Math.min(lv.level, LEVELS.length-1)].title}</span>
+          </div>
+        </div>
+
+        <!-- Skill Snapshot -->
+        <div class="card mb-6">
+          <div class="card-header">
+            <div class="card-title">📊 Skill Snapshot</div>
+            <button class="btn btn-ghost btn-sm" onclick="navigate('progress')">View full →</button>
+          </div>
+          <div class="skill-bars">
+            ${Object.entries({
+              SQL:         state.progress.skills.sql    || 20,
+              Statistics:  state.progress.skills.stats  || 20,
+              'BI Tools':  state.progress.skills.bi     || 20,
+              Career:      state.progress.skills.career || 20,
+              Python:      state.progress.skills.python || 20,
+            }).map(([skill, score]) => `
+              <div class="skill-bar-row">
+                <div class="skill-bar-label text-sm">${skill}</div>
+                <div class="skill-bar-track">
+                  <div class="skill-bar-fill" style="width:${score}%;background:${getSkillColor(score)}"></div>
+                </div>
+                <div class="skill-bar-score" style="color:${getSkillColor(score)}">${score}%</div>
+              </div>
+            `).join('')}
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <!-- Recent Achievements -->
+        <div class="card mb-4">
+          <div class="card-header">
+            <div class="card-title">🏆 Recent Badges</div>
+            <button class="btn btn-ghost btn-sm" onclick="navigate('achievements')">All →</button>
+          </div>
+          ${state.progress.achievements.length === 0
+            ? `<div class="empty-state" style="padding:var(--sp-8)">
+                <div class="empty-state-icon">🎯</div>
+                <div class="empty-state-title">No badges yet</div>
+                <div class="empty-state-desc">Complete challenges to earn your first badge.</div>
+              </div>`
+            : `<div style="display:flex;flex-wrap:wrap;gap:var(--sp-2)">
+                ${ACHIEVEMENTS
+                  .filter(a => state.progress.achievements.includes(a.id))
+                  .slice(-6)
+                  .map(a => `
+                    <div style="text-align:center;padding:var(--sp-3);border-radius:var(--r-md);background:var(--bg-elevated);min-width:70px" title="${a.name}">
+                      <div style="font-size:1.6rem">${a.icon}</div>
+                      <div style="font-size:.62rem;color:var(--text-secondary);margin-top:4px;font-weight:600">${a.name}</div>
+                    </div>
+                  `).join('')}
+              </div>`
+          }
+        </div>
+
+        <!-- Quick actions -->
+        <div class="card">
+          <div class="card-title mb-4">⚡ Quick Actions</div>
+          <div style="display:flex;flex-direction:column;gap:var(--sp-2)">
+            ${[
+              { icon:'💾', label:'Practice SQL',   page:'sql' },
+              { icon:'🤖', label:'Ask AI Mentor',  page:'mentor' },
+              { icon:'🃏', label:'Flashcards',     page:'flashcards' },
+              { icon:'📄', label:'Resume Builder', page:'resume' },
+              { icon:'💼', label:'Browse Jobs',    page:'jobs' },
+            ].map(a => `
+              <button class="btn btn-secondary w-full" onclick="navigate('${a.page}')"
+                      style="justify-content:flex-start;gap:var(--sp-3)">
+                <span>${a.icon}</span> ${a.label}
+              </button>
+            `).join('')}
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>`;
+}
+
+// ============================================================
+// PLACEHOLDER PAGE RENDERS (to be replaced in Phase 2+)
+// ============================================================
+function comingSoon(title, icon, desc) {
+  document.getElementById('content').innerHTML = `
+  <div class="page-enter empty-state" style="padding:var(--sp-20)">
+    <div class="empty-state-icon" style="font-size:4rem">${icon}</div>
+    <div class="empty-state-title" style="font-size:1.3rem">${title}</div>
+    <div class="empty-state-desc">${desc}</div>
+    <button class="btn btn-primary mt-6" onclick="navigate('dashboard')">Back to Dashboard</button>
+  </div>`;
+}
+
+function paths()       { comingSoon('Learning Paths', '🗺️', 'Structured learning paths are coming in Phase 2. SQL, BA Foundations, BI, Stats, and Interview Ready tracks.'); }
+function sql()         { comingSoon('SQL Lab', '💾', 'Real in-browser SQL execution powered by SQLite WASM. 50+ challenges across 6 datasets — coming in Phase 2.'); }
+function analytics()   { comingSoon('Analytics Lab', '📊', 'KPI simulators, A/B test calculators, and real business case studies — coming in Phase 2.'); }
+function flashcards()  { comingSoon('Flashcards', '🃏', 'Spaced repetition flashcards with the SM-2 algorithm — coming in Phase 2.'); }
+function quiz()        { comingSoon('Quiz Bank', '❓', 'Adaptive quizzes across SQL, Statistics, BI, and Career topics — coming in Phase 2.'); }
+function glossary()    { comingSoon('Glossary', '📖', '110+ BA/SQL/Stats terms with search and category filters — coming in Phase 2.'); }
+function mentor()      { comingSoon('AI Mentor', '🤖', 'Context-aware AI mentor with 5 modes: BA Tutor, SQL Coach, Interview Coach, Resume Reviewer, Study Planner.'); }
+function resume()      { comingSoon('Resume Builder', '📄', 'ATS-optimized BA resume builder with templates and AI review.'); }
+function portfolio()   { comingSoon('Portfolio', '🖼️', 'Generate a beautiful analytics portfolio page with your projects.'); }
+function interview()   { comingSoon('Interview Prep', '🎙️', 'Behavioral + technical BA interview preparation system with AI feedback.'); }
+function jobs()        { comingSoon('Job Board', '💼', 'Curated BA/BI job listings across UAE and global markets.'); }
+function tracker()     { comingSoon('Application Tracker', '📋', 'Track your job applications with status, notes, and follow-up reminders.'); }
+function notes()       { comingSoon('Notes', '📝', 'Rich notes with tags, AI summarization, and quick capture.'); }
+function pomodoro()    { comingSoon('Focus Timer', '⏱️', 'Pomodoro timer with session tracking and XP rewards.'); }
+function salary()      { comingSoon('Salary Calculator', '💰', 'BA/BI salary ranges across 6+ countries with skill multipliers.'); }
+
+function progress() {
+  const skills = state.progress.skills || {};
+  document.getElementById('content').innerHTML = `
+  <div class="page-enter">
+    <div class="grid-2 mb-6">
+      <div class="card">
+        <div class="card-title mb-4">📈 Skill Levels</div>
+        <div class="skill-bars">
+          ${Object.entries({
+            SQL:       skills.sql    || 20,
+            Stats:     skills.stats  || 20,
+            'BI Tools':skills.bi     || 20,
+            Career:    skills.career || 20,
+            Python:    skills.python || 20,
+          }).map(([skill, score]) => `
+            <div class="skill-bar-row">
+              <div class="skill-bar-label text-sm">${skill}</div>
+              <div class="skill-bar-track">
+                <div class="skill-bar-fill" style="width:${score}%;background:${getSkillColor(score)}"></div>
+              </div>
+              <div class="skill-bar-score" style="color:${getSkillColor(score)}">${score}%</div>
+            </div>
+          `).join('')}
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-title mb-4">🎯 Summary</div>
+        <div style="display:flex;flex-direction:column;gap:var(--sp-4)">
+          ${[
+            ['Total XP',        `${state.progress.xp} XP`],
+            ['Current Level',   getLevel().title],
+            ['SQL Solved',      `${state.progress.sqlSolved.length} challenges`],
+            ['Day Streak',      `${state.progress.streak} days`],
+            ['Achievements',    `${state.progress.achievements.length} / ${ACHIEVEMENTS.length}`],
+            ['Flashcards Done', `${state.progress.flashcardsDone}`],
+          ].map(([k,v]) => `
+            <div style="display:flex;justify-content:space-between;align-items:center;padding:var(--sp-3) 0;border-bottom:1px solid var(--border)">
+              <span class="text-secondary text-sm">${k}</span>
+              <span class="font-bold text-sm">${v}</span>
+            </div>
+          `).join('')}
+        </div>
+      </div>
+    </div>
+  </div>`;
+}
+
+function achievements() {
+  document.getElementById('content').innerHTML = `
+  <div class="page-enter">
+    <div class="card mb-4">
+      <div class="flex items-center justify-between mb-4">
+        <div class="card-title">🏆 All Achievements</div>
+        <span class="badge badge-accent">${state.progress.achievements.length} / ${ACHIEVEMENTS.length} unlocked</span>
+      </div>
+      <div class="progress-track mb-6">
+        <div class="progress-fill" style="width:${Math.round(state.progress.achievements.length/ACHIEVEMENTS.length*100)}%"></div>
+      </div>
+      <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:var(--sp-3)">
+        ${ACHIEVEMENTS.map(a => {
+          const unlocked = state.progress.achievements.includes(a.id);
+          return `
+            <div style="
+              background:var(--bg-elevated);
+              border:1.5px solid ${unlocked ? 'rgba(245,158,11,.3)' : 'var(--border)'};
+              border-radius:var(--r-lg);
+              padding:var(--sp-5);
+              text-align:center;
+              opacity:${unlocked ? 1 : 0.45};
+              transition:all var(--t-base);
+            ">
+              <div style="font-size:2rem;margin-bottom:var(--sp-2)">${a.icon}</div>
+              <div style="font-family:var(--font-display);font-weight:700;font-size:.85rem;margin-bottom:4px">${a.name}</div>
+              <div style="font-size:.72rem;color:var(--text-secondary);line-height:1.4;margin-bottom:var(--sp-2)">${a.desc}</div>
+              ${a.xp ? `<span class="badge badge-${unlocked?'warning':'neutral'}">+${a.xp} XP</span>` : ''}
+              ${unlocked ? `<div style="font-size:.68rem;color:var(--success);margin-top:var(--sp-2);font-weight:700">✅ Unlocked</div>` : ''}
+            </div>
+          `;
+        }).join('')}
+      </div>
+    </div>
+  </div>`;
+}
+
+function settings() {
+  document.getElementById('content').innerHTML = `
+  <div class="page-enter">
+    <div style="max-width:640px">
+      <!-- Profile -->
+      <div class="card mb-6">
+        <div class="card-header"><div class="card-title">👤 Profile</div></div>
+        <div class="grid-2">
+          <div class="form-group">
+            <label class="form-label">First Name</label>
+            <input class="form-input" id="setFirstName" value="${state.user?.firstName || ''}" placeholder="First name">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Last Name</label>
+            <input class="form-input" id="setLastName" value="${state.user?.lastName || ''}" placeholder="Last name">
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Email</label>
+          <input class="form-input" value="${state.user?.email || ''}" disabled>
+        </div>
+        <button class="btn btn-primary btn-sm" onclick="saveProfile()">Save Profile</button>
+      </div>
+
+      <!-- AI Settings -->
+      <div class="card mb-6">
+        <div class="card-header"><div class="card-title">🤖 AI Settings</div></div>
+        <p class="text-secondary text-sm mb-4">
+          Enter your Anthropic API key to enable the AI Mentor. Your key is stored locally only.
+          Get one at <a href="https://console.anthropic.com" target="_blank">console.anthropic.com</a>
+        </p>
+        <div class="form-group">
+          <label class="form-label">Anthropic API Key</label>
+          <input class="form-input" id="setApiKey" type="password" placeholder="sk-ant-..."
+                 value="${state.settings.apiKey}">
+        </div>
+        <button class="btn btn-primary btn-sm" onclick="saveApiKey()">Save Key</button>
+      </div>
+
+      <!-- EmailJS Settings -->
+      <div class="card mb-6">
+        <div class="card-header"><div class="card-title">✉️ Email Verification Setup</div></div>
+        <p class="text-secondary text-sm mb-4">
+          Configure EmailJS to enable real email OTP verification for new signups.
+          <a href="https://www.emailjs.com" target="_blank">Create a free account at emailjs.com</a>
+          then add a Gmail service and this template:
+          <br><br>
+          <code style="background:var(--bg-elevated);padding:var(--sp-2) var(--sp-3);border-radius:var(--r-sm);font-size:.78rem;display:block;margin-top:var(--sp-2)">Subject: Your BA Academy verification code<br>Body: Hi {{to_name}}, your code is: {{otp}} (expires in {{expiry}})</code>
+        </p>
+        <div class="form-group">
+          <label class="form-label">Public Key</label>
+          <input class="form-input" id="setEJKey" placeholder="Your EmailJS public key" value="${state.settings.emailjsKey}">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Service ID</label>
+          <input class="form-input" id="setEJSvc" placeholder="e.g. service_abc123" value="${state.settings.emailjsSvc}">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Template ID</label>
+          <input class="form-input" id="setEJTpl" placeholder="e.g. template_xyz456" value="${state.settings.emailjsTpl}">
+        </div>
+        <button class="btn btn-primary btn-sm" onclick="saveEmailJS()">Save EmailJS Config</button>
+      </div>
+
+      <!-- Preferences -->
+      <div class="card mb-6">
+        <div class="card-header"><div class="card-title">⚙️ Preferences</div></div>
+        <div class="form-group">
+          <label class="form-label">Daily Goal (minutes)</label>
+          <input class="form-input" id="setDailyGoal" type="number" min="10" max="240"
+                 value="${state.settings.dailyGoalMinutes}">
+        </div>
+        <div class="flex items-center justify-between mb-4">
+          <span class="text-sm">Theme</span>
+          <button class="btn btn-secondary btn-sm" onclick="toggleTheme()">
+            ${state.settings.theme === 'dark' ? '🌙 Dark' : '☀️ Light'} Mode
+          </button>
+        </div>
+        <button class="btn btn-primary btn-sm" onclick="savePreferences()">Save Preferences</button>
+      </div>
+
+      <!-- Danger zone -->
+      <div class="card" style="border-color:rgba(239,68,68,.2)">
+        <div class="card-header"><div class="card-title" style="color:var(--danger)">⚠️ Danger Zone</div></div>
+        <p class="text-secondary text-sm mb-4">This will permanently reset all your progress, achievements, and notes.</p>
+        <button class="btn btn-danger btn-sm" onclick="resetAccount()">Reset All Progress</button>
+        &nbsp;
+        <button class="btn btn-ghost btn-sm" onclick="handleLogout()">Sign Out</button>
+      </div>
+    </div>
+  </div>`;
+}
+
+// Settings save handlers
+function saveProfile() {
+  const fn = document.getElementById('setFirstName').value.trim();
+  const ln = document.getElementById('setLastName').value.trim();
+  if (fn) {
+    state.user.firstName = fn;
+    state.user.lastName  = ln;
+    state.user.name      = `${fn} ${ln}`.trim();
+    localStorage.setItem('ba_v3_user_' + state.user.email, JSON.stringify(state.user));
+    updateSidebar();
+    toast('success', 'Profile saved!');
+  }
+}
+
+function saveApiKey() {
+  state.settings.apiKey = document.getElementById('setApiKey').value.trim();
+  saveState();
+  toast('success', 'API key saved', 'AI Mentor is now enabled.');
+}
+
+function saveEmailJS() {
+  state.settings.emailjsKey = document.getElementById('setEJKey').value.trim();
+  state.settings.emailjsSvc = document.getElementById('setEJSvc').value.trim();
+  state.settings.emailjsTpl = document.getElementById('setEJTpl').value.trim();
+  // Also persist to localStorage for auth flow
+  localStorage.setItem('ba_emailjs_key', state.settings.emailjsKey);
+  localStorage.setItem('ba_emailjs_svc', state.settings.emailjsSvc);
+  localStorage.setItem('ba_emailjs_tpl', state.settings.emailjsTpl);
+  saveState();
+  toast('success', 'EmailJS configured!', 'Email verification is now enabled for new signups.');
+}
+
+function savePreferences() {
+  state.settings.dailyGoalMinutes = parseInt(document.getElementById('setDailyGoal').value) || 30;
+  saveState();
+  toast('success', 'Preferences saved!');
+}
+
+function resetAccount() {
+  if (!confirm('Are you sure? This cannot be undone.')) return;
+  const email = state.user.email;
+  localStorage.removeItem('ba_v3_' + email);
+  state.progress = { xp:0, level:1, streak:0, lastActive:null, achievements:[], sqlSolved:[],
+    quizHistory:[], flashcardsDone:0, pathProgress:{}, skills:{sql:0,stats:0,bi:0,python:0,career:0},
+    totalSessions:0, totalMinutes:0 };
+  saveState();
+  toast('warning', 'Progress reset', 'All data has been cleared.');
+  navigate('dashboard');
+}
+
+function handleLogout() {
+  if (!confirm('Sign out of BA Academy?')) return;
+  state.user = null;
+  document.getElementById('app').style.display = 'none';
+  document.getElementById('authScreen').classList.remove('hidden');
+  switchAuthTab('login');
+}
+
+// ============================================================
+// UTILITIES
+// ============================================================
+function isValidEmail(email) {
+  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+}
+
+function simpleHash(str) {
+  // Simple deterministic hash for demo. In production use server-side bcrypt.
+  let h = 0;
+  for (let i = 0; i < str.length; i++) {
+    h = ((h << 5) - h) + str.charCodeAt(i);
+    h |= 0;
+  }
+  return String(h);
+}
+
+function setButtonLoading(btnId, loading) {
+  const btn = document.getElementById(btnId);
+  if (!btn) return;
+  btn.disabled = loading;
+  if (loading) {
+    btn._text = btn.innerHTML;
+    btn.innerHTML = '<div class="btn-spinner"></div> Please wait...';
+  } else {
+    btn.innerHTML = btn._text || btn.innerHTML;
+  }
+}
+
+function getTimeGreeting() {
+  const h = new Date().getHours();
+  if (h < 12) return 'morning';
+  if (h < 17) return 'afternoon';
+  return 'evening';
+}
+
+// ============================================================
+// KEYBOARD SHORTCUTS
+// ============================================================
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') closeMobileSidebar();
+  if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
+    e.preventDefault();
+    navigate('mentor'); // Cmd+K → AI Mentor
+  }
+});
+
+// ============================================================
+// INIT — Check for existing session
+// ============================================================
+window.addEventListener('load', () => {
+  // Check EmailJS config from localStorage
+  const ejKey = localStorage.getItem('ba_emailjs_key');
+  const ejSvc = localStorage.getItem('ba_emailjs_svc');
+  const ejTpl = localStorage.getItem('ba_emailjs_tpl');
+  if (ejKey) state.settings.emailjsKey = ejKey;
+  if (ejSvc) state.settings.emailjsSvc = ejSvc;
+  if (ejTpl) state.settings.emailjsTpl = ejTpl;
+
+  // Try to restore session from last logged-in user
+  const lastEmail = localStorage.getItem('ba_v3_last_email');
+  if (lastEmail) {
+    const stored = localStorage.getItem('ba_v3_user_' + lastEmail);
+    if (stored) {
+      state.user = JSON.parse(stored);
+      loadState();
+
+      // Check if onboarded
+      const hasOnboarded = state.progress.achievements.includes('onboarded');
+
+      document.getElementById('authScreen').classList.add('hidden');
+
+      if (!hasOnboarded && !state.progress.achievements.includes('first_login')) {
+        // Brand new user who somehow got here — start onboarding
+        unlockAchievement('first_login');
+        startOnboarding();
+      } else {
+        launchApp();
+      }
+      return;
+    }
+  }
+
+  // No session — show auth screen
+  document.getElementById('authScreen').classList.remove('hidden');
+});
+
+// Save last email on successful auth
+function persistSession() {
+  if (state.user?.email) {
+    localStorage.setItem('ba_v3_last_email', state.user.email);
+  }
+}
+
+// Patch launchApp to persist session
+const _origLaunchApp = launchApp;
+window.launchApp = function() {
+  persistSession();
+  _origLaunchApp();
+};
+
+// Enter key on login form
+document.addEventListener('DOMContentLoaded', () => {
+  document.getElementById('loginPassword')?.addEventListener('keydown', e => {
+    if (e.key === 'Enter') handleLogin();
+  });
+  document.getElementById('loginEmail')?.addEventListener('keydown', e => {
+    if (e.key === 'Enter') document.getElementById('loginPassword')?.focus();
+  });
+});
+</script>
+</body>
+</html>
