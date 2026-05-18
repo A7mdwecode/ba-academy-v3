@@ -1426,6 +1426,7 @@ img { max-width: 100%; display: block; }
   firebase.initializeApp(firebaseConfig);
   window.fbAuth = firebase.auth();
   window.googleProvider = new firebase.auth.GoogleAuthProvider();
+  window.googleProvider.setCustomParameters({ prompt: 'select_account' });
 </script>
 </head>
 <body>
@@ -1524,8 +1525,9 @@ img { max-width: 100%; display: block; }
 
         <button class="auth-submit" onclick="handleLogin()" id="loginBtn" type="button">Sign In</button>
 
-        <div class="auth-footer-link">
-          New here? <a onclick="switchAuthTab('signup')">Create a free account</a>
+        <div class="auth-footer-link" style="display:flex;justify-content:space-between;align-items:center;margin-top:16px">
+          <a onclick="handleForgotPassword()" style="color:var(--text-tertiary);cursor:pointer;font-size:.75rem">Forgot password?</a>
+          <a onclick="switchAuthTab('signup')" style="color:var(--accent);cursor:pointer;font-size:.75rem;font-weight:600">Create free account</a>
         </div>
       </div>
 
@@ -2228,8 +2230,26 @@ function fbErrMsg(code) {
     'auth/operation-not-allowed':'This sign-in method is not enabled in Firebase.',
   };
   return m[code] || ('Error: ' + (code || 'unknown'));
+
 }
 
+function handleForgotPassword() {
+  var email = (document.getElementById('loginEmail') || {}).value || '';
+  if (!email.trim()) {
+    showAuthErr('authError','authErrorMsg','Enter your email above, then click "Forgot password".');
+    return;
+  }
+  window.fbAuth.sendPasswordResetEmail(email.trim())
+    .then(function() {
+      showAuthErr('authError','authErrorMsg','Password reset email sent! Check your inbox.');
+      document.getElementById('authError').style.background = 'rgba(34,197,94,0.07)';
+      document.getElementById('authError').style.borderColor = 'rgba(34,197,94,0.18)';
+      document.getElementById('authError').style.color = '#4ade80';
+    })
+    .catch(function(err) {
+      showAuthErr('authError','authErrorMsg', fbErrMsg(err.code));
+    });
+}
 
 // ============================================================
 // ONBOARDING FLOW
@@ -4354,18 +4374,7 @@ function saveApiKey() {
   toast('success', 'API key saved', 'AI Mentor is now enabled.');
 }
 
-function saveEmailJS() {
-  state.settings.emailjsKey = document.getElementById('setEJKey').value.trim();
-  state.settings.emailjsSvc = document.getElementById('setEJSvc').value.trim();
-  state.settings.emailjsTpl = document.getElementById('setEJTpl').value.trim();
-  // Also persist to localStorage for auth flow
-  localStorage.setItem('ba_emailjs_key', state.settings.emailjsKey);
-  localStorage.setItem('ba_emailjs_svc', state.settings.emailjsSvc);
-  localStorage.setItem('ba_emailjs_tpl', state.settings.emailjsTpl);
-  saveState();
-  toast('success', 'EmailJS configured!', 'Email verification is now enabled for new signups.');
-}
-
+// saveEmailJS removed
 function savePreferences() {
   state.settings.dailyGoalMinutes = parseInt(document.getElementById('setDailyGoal').value) || 30;
   saveState();
@@ -4384,13 +4393,7 @@ function resetAccount() {
   navigate('dashboard');
 }
 
-function handleLogout() {
-  if (!confirm('Sign out of BA Academy?')) return;
-  state.user = null;
-  document.getElementById('app').style.display = 'none';
-  document.getElementById('authScreen').classList.remove('hidden');
-  switchAuthTab('login');
-}
+// handleLogout is defined in Firebase auth section above
 
 // ============================================================
 // UTILITIES
