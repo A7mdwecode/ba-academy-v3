@@ -1415,9 +1415,13 @@ img { max-width: 100%; display: block; }
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
 <script>
+  var authDomain = window.location.hostname === 'localhost'
+    ? 'ba-academy-v3.firebaseapp.com'
+    : window.location.hostname;
+
   const firebaseConfig = {
     apiKey: "AIzaSyAX-KCq-4NsYNCw5CeJ5DwvP9kB3kJlNao",
-    authDomain: "ba-academy-v3.firebaseapp.com",
+    authDomain: authDomain,
     projectId: "ba-academy-v3",
     storageBucket: "ba-academy-v3.firebasestorage.app",
     messagingSenderId: "120356974475",
@@ -2102,7 +2106,7 @@ function handleLogin() {
   window.fbAuth.signInWithEmailAndPassword(email.trim(), pass)
     .then(function(cred) {
       setAuthBtn('loginBtn', false, 'Sign In');
-      if (!cred.user.emailVerified) { showVerifyPendingScreen(cred.user.email); return; }
+      // Allow all users in (email verification is optional, not blocking)
       onFirebaseSignIn(cred.user);
     })
     .catch(function(err) {
@@ -2128,10 +2132,12 @@ function handleSignup() {
       localStorage.setItem('ba_pending_firstName', fn);
       localStorage.setItem('ba_pending_lastName',  ln);
       return u.updateProfile({ displayName: (fn + ' ' + ln).trim() })
-        .then(function() { return u.sendEmailVerification(); })
         .then(function() {
+          // Send verification email but don't block access
+          u.sendEmailVerification().catch(function(e) { console.warn('Verify email:', e); });
           setAuthBtn('signupBtn', false, 'Create Account');
-          showVerifyPendingScreen(email);
+          // Sign in immediately - no blocking verification screen
+          onFirebaseSignIn(u);
         });
     })
     .catch(function(err) {
@@ -2143,15 +2149,12 @@ function handleSignup() {
 // GOOGLE ─────────────────────────────────────────────────────
 function handleGoogleSignIn() {
   clearAuthErrors();
-  window.fbAuth.signInWithPopup(window.googleProvider)
-    .then(function(cred) { onFirebaseSignIn(cred.user); })
+  // signInWithRedirect always works - no popup blocking issues
+  window.fbAuth.signInWithRedirect(window.googleProvider)
     .catch(function(err) {
-      if (err.code === 'auth/popup-closed-by-user' || err.code === 'auth/cancelled-popup-request') return;
-      if (err.code === 'auth/popup-blocked') {
-        window.fbAuth.signInWithRedirect(window.googleProvider); return;
-      }
-      showAuthErr('authError','authErrorMsg', fbErrMsg(err.code));
-      showAuthErr('signupError','signupErrorMsg', fbErrMsg(err.code));
+      console.error('Google redirect error:', err);
+      showAuthErr('authError','authErrorMsg', 'Google sign-in failed: ' + fbErrMsg(err.code));
+      showAuthErr('signupError','signupErrorMsg', 'Google sign-in failed: ' + fbErrMsg(err.code));
     });
 }
 
@@ -2196,7 +2199,7 @@ function onFirebaseSignIn(fbUser) {
   }
   if (!fn) fn = fbUser.email ? fbUser.email.split('@')[0] : 'Analyst';
   state.user = { uid:fbUser.uid, email:fbUser.email, firstName:fn, lastName:ln,
-    name:(fn+' '+ln).trim(), photoURL:fbUser.photoURL||null, verified:fbUser.emailVerified };
+    name:(fn+' '+ln).trim(), photoURL:fbUser.photoURL||null, verified:true };
   localStorage.setItem('ba_v3_last_uid', fbUser.uid);
   loadState();
   var ae = document.getElementById('authScreen'); if (ae) ae.classList.add('hidden');
@@ -4564,19 +4567,20 @@ window.addEventListener('load', function() {
   if (window.fbAuth) {
     window.fbAuth.getRedirectResult()
       .then(function(result) {
-        if (result && result.user) onFirebaseSignIn(result.user);
+        if (result && result.user) {
+          console.log('Redirect result: user signed in via Google');
+          onFirebaseSignIn(result.user);
+        }
       })
       .catch(function(err) {
-        if (err && err.code !== 'auth/no-auth-event') console.warn('Redirect:', err.code);
+        console.warn('Redirect result error:', err && err.code);
       });
 
     window.fbAuth.onAuthStateChanged(function(fbUser) {
       var ae = document.getElementById('authScreen');
-      if (fbUser && fbUser.emailVerified) {
+      if (fbUser) {
+        // Allow all signed-in users in (verified or not)
         onFirebaseSignIn(fbUser);
-      } else if (fbUser && !fbUser.emailVerified) {
-        if (ae) ae.classList.remove('hidden');
-        showVerifyPendingScreen(fbUser.email);
       } else {
         if (ae) ae.classList.remove('hidden');
       }
