@@ -1450,8 +1450,8 @@ img { max-width: 100%; display: block; }
         <span class="auth-wordmark-label">BA Academy</span>
       </div>
 
-      <h2 class="auth-headline">
-        Turn data into<br>a career you<br><em>actually want.</em>
+      <h2 class="auth-headline" id="authHeadlineText" style="transition:opacity 0.38s ease,transform 0.38s ease;opacity:0">
+        Turn data into a career you actually want.
       </h2>
       <p class="auth-subtext">SQL, BI, statistics, and interview prep built specifically for analysts in the MENA region.</p>
     </div>
@@ -2034,7 +2034,7 @@ function toast(type, title, desc = '', duration = 4000) {
 }
 
 // ============================================================
-// FIREBASE AUTH — Full replacement (Tab switcher, Login, Signup, Google, Verify)
+// AUTH — Firebase (bulletproof)
 // ============================================================
 
 function switchAuthTab(tab) {
@@ -2045,208 +2045,191 @@ function switchAuthTab(tab) {
 }
 
 function clearAuthErrors() {
-  ['authError','signupError','verifyPendingError'].forEach(id => {
-    const el = document.getElementById(id);
+  ['authError','signupError','verifyPendingError'].forEach(function(id) {
+    var el = document.getElementById(id);
     if (el) el.classList.add('hidden');
   });
 }
 
 function checkPasswordStrength(val) {
-  const fill  = document.getElementById('passStrengthFill');
-  const label = document.getElementById('passStrengthLabel');
+  var fill  = document.getElementById('passStrengthFill');
+  var label = document.getElementById('passStrengthLabel');
   if (!fill || !label) return;
-  let score = 0;
+  var score = 0;
   if (val.length >= 8)  score++;
   if (val.length >= 12) score++;
   if (/[A-Z]/.test(val)) score++;
   if (/[0-9]/.test(val)) score++;
   if (/[^A-Za-z0-9]/.test(val)) score++;
-  const levels = [
-    { w: '0%',   color: 'transparent', text: '' },
-    { w: '25%',  color: '#ef4444',     text: 'Weak' },
-    { w: '50%',  color: '#f97316',     text: 'Fair' },
-    { w: '75%',  color: '#eab308',     text: 'Good' },
-    { w: '90%',  color: '#22c55e',     text: 'Strong' },
-    { w: '100%', color: '#4ade80',     text: 'Very strong' },
+  var levels = [
+    { w:'0%',   color:'transparent', text:'' },
+    { w:'25%',  color:'#ef4444',     text:'Weak' },
+    { w:'50%',  color:'#f97316',     text:'Fair' },
+    { w:'75%',  color:'#eab308',     text:'Good' },
+    { w:'90%',  color:'#22c55e',     text:'Strong' },
+    { w:'100%', color:'#4ade80',     text:'Very strong' },
   ];
-  const lvl = levels[Math.min(score, 5)];
+  var lvl = levels[Math.min(score, 5)];
   fill.style.width = val.length === 0 ? '0%' : lvl.w;
   fill.style.background = lvl.color;
   label.textContent = val.length === 0 ? '' : lvl.text;
   label.style.color = lvl.color;
 }
 
-function showError(elId, msgElId, msg) {
-  document.getElementById(elId).classList.remove('hidden');
-  document.getElementById(msgElId).textContent = msg;
+function showAuthErr(errId, msgId, msg) {
+  var e = document.getElementById(errId); if (e) e.classList.remove('hidden');
+  var m = document.getElementById(msgId); if (m) m.textContent = msg;
 }
 
-// ── LOGIN ──────────────────────────────────────────────────────────────────
+function setAuthBtn(id, loading, label) {
+  var btn = document.getElementById(id); if (!btn) return;
+  btn.disabled = loading;
+  if (loading) { btn._t = btn.textContent; btn.textContent = 'Please wait…'; }
+  else if (label) { btn.textContent = label; }
+  else if (btn._t) { btn.textContent = btn._t; }
+}
+
+// LOGIN ──────────────────────────────────────────────────────
 function handleLogin() {
-  const email = document.getElementById('loginEmail').value.trim();
-  const pass  = document.getElementById('loginPassword').value;
   clearAuthErrors();
-
-  if (!email) { showError('authError','authErrorMsg','Please enter your email.'); return; }
-  if (!pass)  { showError('authError','authErrorMsg','Please enter your password.'); return; }
-
-  setButtonLoading('loginBtn', true);
-
-  fbAuth.signInWithEmailAndPassword(email, pass)
-    .then(cred => {
-      if (!cred.user.emailVerified) {
-        setButtonLoading('loginBtn', false);
-        showVerifyPendingScreen(cred.user.email);
-        return;
-      }
+  var email = (document.getElementById('loginEmail') || {}).value || '';
+  var pass  = (document.getElementById('loginPassword') || {}).value || '';
+  if (!email.trim()) { showAuthErr('authError','authErrorMsg','Please enter your email address.'); return; }
+  if (!pass)         { showAuthErr('authError','authErrorMsg','Please enter your password.'); return; }
+  setAuthBtn('loginBtn', true);
+  window.fbAuth.signInWithEmailAndPassword(email.trim(), pass)
+    .then(function(cred) {
+      setAuthBtn('loginBtn', false, 'Sign In');
+      if (!cred.user.emailVerified) { showVerifyPendingScreen(cred.user.email); return; }
       onFirebaseSignIn(cred.user);
     })
-    .catch(err => {
-      setButtonLoading('loginBtn', false);
-      const msg = firebaseErrorMsg(err.code);
-      showError('authError','authErrorMsg', msg);
+    .catch(function(err) {
+      setAuthBtn('loginBtn', false, 'Sign In');
+      showAuthErr('authError','authErrorMsg', fbErrMsg(err.code));
     });
 }
 
-// ── SIGNUP ─────────────────────────────────────────────────────────────────
+// SIGNUP ─────────────────────────────────────────────────────
 function handleSignup() {
-  const firstName = document.getElementById('signupFirstName').value.trim();
-  const lastName  = document.getElementById('signupLastName').value.trim();
-  const email     = document.getElementById('signupEmail').value.trim();
-  const pass      = document.getElementById('signupPassword').value;
   clearAuthErrors();
-
-  if (!firstName) { showError('signupError','signupErrorMsg','Please enter your first name.'); return; }
-  if (!email)     { showError('signupError','signupErrorMsg','Please enter your email.'); return; }
-  if (pass.length < 8) { showError('signupError','signupErrorMsg','Password must be at least 8 characters.'); return; }
-
-  setButtonLoading('signupBtn', true);
-
-  fbAuth.createUserWithEmailAndPassword(email, pass)
-    .then(cred => {
-      // Save display name
-      return cred.user.updateProfile({ displayName: `${firstName} ${lastName}`.trim() })
-        .then(() => cred.user.sendEmailVerification())
-        .then(() => {
-          setButtonLoading('signupBtn', false);
-          // Store name for after verification
-          localStorage.setItem('ba_pending_firstName', firstName);
-          localStorage.setItem('ba_pending_lastName',  lastName);
+  var fn    = ((document.getElementById('signupFirstName') || {}).value || '').trim();
+  var ln    = ((document.getElementById('signupLastName')  || {}).value || '').trim();
+  var email = ((document.getElementById('signupEmail')     || {}).value || '').trim();
+  var pass  = (document.getElementById('signupPassword')   || {}).value || '';
+  if (!fn)            { showAuthErr('signupError','signupErrorMsg','Please enter your first name.'); return; }
+  if (!email)         { showAuthErr('signupError','signupErrorMsg','Please enter your email address.'); return; }
+  if (pass.length < 8){ showAuthErr('signupError','signupErrorMsg','Password must be at least 8 characters.'); return; }
+  setAuthBtn('signupBtn', true);
+  window.fbAuth.createUserWithEmailAndPassword(email, pass)
+    .then(function(cred) {
+      var u = cred.user;
+      localStorage.setItem('ba_pending_firstName', fn);
+      localStorage.setItem('ba_pending_lastName',  ln);
+      return u.updateProfile({ displayName: (fn + ' ' + ln).trim() })
+        .then(function() { return u.sendEmailVerification(); })
+        .then(function() {
+          setAuthBtn('signupBtn', false, 'Create Account');
           showVerifyPendingScreen(email);
         });
     })
-    .catch(err => {
-      setButtonLoading('signupBtn', false);
-      showError('signupError','signupErrorMsg', firebaseErrorMsg(err.code));
+    .catch(function(err) {
+      setAuthBtn('signupBtn', false, 'Create Account');
+      showAuthErr('signupError','signupErrorMsg', fbErrMsg(err.code));
     });
 }
 
-// ── GOOGLE SIGN IN ─────────────────────────────────────────────────────────
+// GOOGLE ─────────────────────────────────────────────────────
 function handleGoogleSignIn() {
-  // Use redirect (works on GitHub Pages where popups are blocked)
-  fbAuth.signInWithRedirect(googleProvider).catch(err => {
-    // Fallback to popup if redirect fails
-    fbAuth.signInWithPopup(googleProvider)
-      .then(cred => onFirebaseSignIn(cred.user))
-      .catch(e => {
-        if (e.code === 'auth/popup-closed-by-user') return;
-        showError('authError', 'authErrorMsg', firebaseErrorMsg(e.code));
-        showError('signupError', 'signupErrorMsg', firebaseErrorMsg(e.code));
-      });
-  });
+  clearAuthErrors();
+  window.fbAuth.signInWithPopup(window.googleProvider)
+    .then(function(cred) { onFirebaseSignIn(cred.user); })
+    .catch(function(err) {
+      if (err.code === 'auth/popup-closed-by-user' || err.code === 'auth/cancelled-popup-request') return;
+      if (err.code === 'auth/popup-blocked') {
+        window.fbAuth.signInWithRedirect(window.googleProvider); return;
+      }
+      showAuthErr('authError','authErrorMsg', fbErrMsg(err.code));
+      showAuthErr('signupError','signupErrorMsg', fbErrMsg(err.code));
+    });
 }
 
-// ── EMAIL VERIFY PENDING SCREEN ────────────────────────────────────────────
+// VERIFY ─────────────────────────────────────────────────────
 function showVerifyPendingScreen(email) {
   document.getElementById('loginForm').classList.add('hidden');
   document.getElementById('signupForm').classList.add('hidden');
   document.getElementById('verifyPendingForm').classList.remove('hidden');
-  document.getElementById('verifyPendingEmail').textContent = email;
+  var el = document.getElementById('verifyPendingEmail'); if (el) el.textContent = email;
 }
 
 function checkEmailVerified() {
-  setButtonLoading('checkVerifiedBtn', true);
-  fbAuth.currentUser.reload()
-    .then(() => {
-      if (fbAuth.currentUser.emailVerified) {
-        onFirebaseSignIn(fbAuth.currentUser);
-      } else {
-        setButtonLoading('checkVerifiedBtn', false);
-        showError('verifyPendingError','verifyPendingErrorMsg','Email not verified yet. Check your inbox and click the link.');
-      }
-    })
-    .catch(() => {
-      setButtonLoading('checkVerifiedBtn', false);
-      showError('verifyPendingError','verifyPendingErrorMsg','Could not check verification status. Try again.');
-    });
+  if (!window.fbAuth.currentUser) return;
+  setAuthBtn('checkVerifiedBtn', true);
+  window.fbAuth.currentUser.reload().then(function() {
+    setAuthBtn('checkVerifiedBtn', false, 'I have verified my email');
+    var u = window.fbAuth.currentUser;
+    if (u && u.emailVerified) { onFirebaseSignIn(u); }
+    else { showAuthErr('verifyPendingError','verifyPendingErrorMsg','Not verified yet. Click the link in your email first.'); }
+  }).catch(function() {
+    setAuthBtn('checkVerifiedBtn', false, 'I have verified my email');
+    showAuthErr('verifyPendingError','verifyPendingErrorMsg','Check failed. Try refreshing the page.');
+  });
 }
 
 function resendVerificationEmail() {
-  if (!fbAuth.currentUser) return;
-  fbAuth.currentUser.sendEmailVerification()
-    .then(() => toast('success','Verification email sent!','Check your inbox.'))
-    .catch(() => toast('error','Could not resend','Try again in a minute.'));
+  var u = window.fbAuth.currentUser; if (!u) return;
+  u.sendEmailVerification()
+    .then(function() { toast('success','Email sent!','Check your inbox.'); })
+    .catch(function() { toast('error','Could not resend','Try again in a minute.'); });
 }
 
-// ── ON SUCCESSFUL SIGN IN (any method) ────────────────────────────────────
+// ON SIGN IN ─────────────────────────────────────────────────
 function onFirebaseSignIn(fbUser) {
-  // Build state.user from Firebase user object
-  const firstName = localStorage.getItem('ba_pending_firstName') || fbUser.displayName?.split(' ')[0] || fbUser.email.split('@')[0];
-  const lastName  = localStorage.getItem('ba_pending_lastName')  || fbUser.displayName?.split(' ').slice(1).join(' ') || '';
+  var fn = localStorage.getItem('ba_pending_firstName') || '';
+  var ln = localStorage.getItem('ba_pending_lastName')  || '';
   localStorage.removeItem('ba_pending_firstName');
   localStorage.removeItem('ba_pending_lastName');
-
-  state.user = {
-    uid:       fbUser.uid,
-    email:     fbUser.email,
-    firstName: firstName,
-    lastName:  lastName,
-    name:      `${firstName} ${lastName}`.trim(),
-    photoURL:  fbUser.photoURL || null,
-    verified:  fbUser.emailVerified,
-  };
-
-  // Persist uid for storage key
+  if (!fn && fbUser.displayName) {
+    var parts = fbUser.displayName.split(' ');
+    fn = parts[0] || ''; ln = parts.slice(1).join(' ') || '';
+  }
+  if (!fn) fn = fbUser.email ? fbUser.email.split('@')[0] : 'Analyst';
+  state.user = { uid:fbUser.uid, email:fbUser.email, firstName:fn, lastName:ln,
+    name:(fn+' '+ln).trim(), photoURL:fbUser.photoURL||null, verified:fbUser.emailVerified };
   localStorage.setItem('ba_v3_last_uid', fbUser.uid);
   loadState();
-
-  document.getElementById('authScreen').classList.add('hidden');
-
-  const hasOnboarded = state.progress.achievements.includes('onboarded');
-  if (!hasOnboarded) {
-    unlockAchievement('first_login');
-    startOnboarding();
-  } else {
-    launchApp();
-  }
+  var ae = document.getElementById('authScreen'); if (ae) ae.classList.add('hidden');
+  if (!state.progress.achievements.includes('onboarded')) {
+    unlockAchievement('first_login'); startOnboarding();
+  } else { launchApp(); }
 }
 
-// ── LOGOUT ─────────────────────────────────────────────────────────────────
+// LOGOUT ─────────────────────────────────────────────────────
 function handleLogout() {
   if (!confirm('Sign out of BA Academy?')) return;
-  fbAuth.signOut().then(() => {
+  window.fbAuth.signOut().then(function() {
     state.user = null;
-    document.getElementById('app').style.display = 'none';
-    document.getElementById('authScreen').classList.remove('hidden');
+    var app = document.getElementById('app'); if (app) app.style.display = 'none';
+    var ae  = document.getElementById('authScreen'); if (ae) ae.classList.remove('hidden');
     switchAuthTab('login');
   });
 }
 
-// ── FIREBASE ERROR MESSAGES ────────────────────────────────────────────────
-function firebaseErrorMsg(code) {
-  const msgs = {
-    'auth/user-not-found':       'No account found with this email. Please sign up.',
-    'auth/wrong-password':       'Incorrect password. Please try again.',
-    'auth/email-already-in-use': 'An account with this email already exists. Sign in instead.',
-    'auth/invalid-email':        'Please enter a valid email address.',
-    'auth/weak-password':        'Password must be at least 8 characters.',
-    'auth/too-many-requests':    'Too many attempts. Please wait a moment and try again.',
-    'auth/network-request-failed': 'Network error. Check your connection.',
-    'auth/invalid-credential':   'Incorrect email or password. Please try again.',
-    'auth/popup-blocked':        'Popup was blocked. Please allow popups for this site.',
+// ERROR MESSAGES ─────────────────────────────────────────────
+function fbErrMsg(code) {
+  var m = {
+    'auth/user-not-found':'No account found with this email.',
+    'auth/wrong-password':'Incorrect password. Try again.',
+    'auth/invalid-credential':'Incorrect email or password.',
+    'auth/email-already-in-use':'An account with this email already exists. Sign in instead.',
+    'auth/invalid-email':'Please enter a valid email address.',
+    'auth/weak-password':'Password must be at least 6 characters.',
+    'auth/too-many-requests':'Too many attempts. Please wait a moment.',
+    'auth/network-request-failed':'Network error — check your connection.',
+    'auth/operation-not-allowed':'This sign-in method is not enabled in Firebase.',
   };
-  return msgs[code] || 'Something went wrong. Please try again.';
+  return m[code] || ('Error: ' + (code || 'unknown'));
 }
+
 
 // ============================================================
 // ONBOARDING FLOW
@@ -4451,194 +4434,155 @@ document.addEventListener('keydown', e => {
 // ============================================================
 // INIT — Check for existing session
 // ============================================================
-window.addEventListener('load', () => {
-  // ── ANIMATED AUTH CANVAS ─────────────────────────────────────
-  (function initAuthCanvas() {
-    const canvas = document.getElementById('authCanvas');
-    if (!canvas) return;
-    const ctx = canvas.getContext('2d');
+window.addEventListener('load', function() {
 
+  // ── Auth canvas ────────────────────────────────────────────
+  (function() {
+    var canvas = document.getElementById('authCanvas');
+    if (!canvas) return;
+    var ctx = canvas.getContext('2d');
+    var W = 0, H = 0, raf = null;
     function resize() {
-      canvas.width  = canvas.offsetWidth  * window.devicePixelRatio;
-      canvas.height = canvas.offsetHeight * window.devicePixelRatio;
-      ctx.scale(window.devicePixelRatio, window.devicePixelRatio);
+      W = canvas.offsetWidth; H = canvas.offsetHeight;
+      var dpr = window.devicePixelRatio || 1;
+      canvas.width = W * dpr; canvas.height = H * dpr;
+      ctx.scale(dpr, dpr);
     }
     resize();
     window.addEventListener('resize', resize);
 
-    // Analytics-themed symbols
-    const SYMBOLS = ['▲', '◆', '●', '─', '│', '╱', '≈', 'Σ', 'μ', 'σ', '%'];
-    const CHART_GLYPHS = ['bar', 'line', 'dot'];
-
-    // Floating particles
-    const particles = [];
-    const W = () => canvas.offsetWidth;
-    const H = () => canvas.offsetHeight;
-
-    function randomParticle() {
-      const type = Math.random() < 0.4 ? 'glyph' : 'dot';
-      return {
-        type,
-        x: Math.random() * W(),
-        y: Math.random() * H(),
-        vx: (Math.random() - 0.5) * 0.25,
-        vy: -0.2 - Math.random() * 0.35,
-        size: type === 'glyph' ? 10 + Math.random() * 8 : 1.5 + Math.random() * 2.5,
-        alpha: 0.04 + Math.random() * 0.14,
-        symbol: SYMBOLS[Math.floor(Math.random() * SYMBOLS.length)],
-        color: Math.random() < 0.6
-          ? `rgba(91,108,248,`
-          : Math.random() < 0.5
-            ? `rgba(139,92,246,`
-            : `rgba(99,179,237,`,
-        pulse: Math.random() * Math.PI * 2,
-        pulseSpeed: 0.01 + Math.random() * 0.015,
-      };
+    var SYMS = ['Σ','μ','σ','∂','≈','△','◆','●','%','R²','ø'];
+    var particles = [];
+    function mkP() {
+      return { x:Math.random()*(W||500), y:(H||900)+10,
+        vx:(Math.random()-0.5)*0.3, vy:-(0.22+Math.random()*0.38),
+        sym:SYMS[Math.floor(Math.random()*SYMS.length)],
+        sz:9+Math.random()*8, al:0.05+Math.random()*0.11,
+        pulse:Math.random()*6.28, ps:0.008+Math.random()*0.012,
+        col:Math.random()<0.55?'91,108,248':Math.random()<0.5?'139,92,246':'99,179,237' };
     }
+    for (var i=0;i<38;i++){var p=mkP();p.y=Math.random()*(H||900);particles.push(p);}
 
-    // Bar chart segments
-    const bars = Array.from({length: 8}, (_, i) => ({
-      x: 0.06 + i * 0.115,
-      h: 0.08 + Math.random() * 0.22,
-      targetH: 0.08 + Math.random() * 0.22,
-      w: 0.055,
-      alpha: 0.06 + Math.random() * 0.06,
-      speed: 0.003 + Math.random() * 0.004,
-    }));
-
-    // Line chart path points
-    const linePoints = Array.from({length: 9}, (_, i) => ({
-      x: i / 8,
-      y: 0.35 + Math.random() * 0.35,
-      vy: (Math.random() - 0.5) * 0.003,
-    }));
-
-    for (let i = 0; i < 45; i++) particles.push(randomParticle());
-
-    let frame = 0;
+    var bars=[];
+    for(var b=0;b<8;b++) bars.push({x:0.04+b*0.12,h:0.05+Math.random()*0.22,th:0.05+Math.random()*0.22,w:0.065,sp:0.003+Math.random()*0.004});
+    var lpts=[];
+    for(var l=0;l<8;l++) lpts.push({x:l/7,y:0.28+Math.random()*0.44,vy:(Math.random()-0.5)*0.002});
 
     function draw() {
-      const w = W(), h = H();
-      ctx.clearRect(0, 0, w, h);
-
-      // ─ Animated bar chart (background) ─
-      bars.forEach(b => {
-        // Animate toward target
-        b.h += (b.targetH - b.h) * b.speed;
-        if (Math.abs(b.h - b.targetH) < 0.001) {
-          b.targetH = 0.06 + Math.random() * 0.28;
-        }
-        const bx = b.x * w;
-        const bh = b.h * h;
-        const bw = b.w * w;
-        const by = h * 0.88 - bh;
-        const grad = ctx.createLinearGradient(0, by, 0, by + bh);
-        grad.addColorStop(0, `rgba(91,108,248,${b.alpha * 1.4})`);
-        grad.addColorStop(1, `rgba(91,108,248,0.01)`);
-        ctx.fillStyle = grad;
-        ctx.beginPath();
-        ctx.roundRect(bx, by, bw, bh, 3);
+      var w=W||500,h=H||900;
+      ctx.clearRect(0,0,w,h);
+      // grid
+      ctx.strokeStyle='rgba(91,108,248,0.04)'; ctx.lineWidth=1;
+      for(var gx=0;gx<w;gx+=w/7){ctx.beginPath();ctx.moveTo(gx,0);ctx.lineTo(gx,h);ctx.stroke();}
+      for(var gy=0;gy<h;gy+=h/6){ctx.beginPath();ctx.moveTo(0,gy);ctx.lineTo(w,gy);ctx.stroke();}
+      // bars
+      bars.forEach(function(bar){
+        bar.h+=(bar.th-bar.h)*bar.sp;
+        if(Math.abs(bar.h-bar.th)<0.002) bar.th=0.04+Math.random()*0.3;
+        var bx=bar.x*w,bh=bar.h*h,bw=bar.w*w,by=h*0.9-bh;
+        var g=ctx.createLinearGradient(0,by,0,by+bh);
+        g.addColorStop(0,'rgba(91,108,248,'+(bar.h*0.55)+')');
+        g.addColorStop(1,'rgba(91,108,248,0.01)');
+        ctx.fillStyle=g; ctx.beginPath();
+        if(ctx.roundRect) ctx.roundRect(bx,by,bw,bh,2); else ctx.rect(bx,by,bw,bh);
         ctx.fill();
       });
-
-      // ─ Animated line chart ─
-      linePoints.forEach(pt => {
-        pt.y += pt.vy;
-        if (pt.y < 0.25 || pt.y > 0.75) pt.vy *= -1;
-      });
-
+      // line
+      lpts.forEach(function(pt){pt.y+=pt.vy;if(pt.y<0.18||pt.y>0.82)pt.vy*=-1;});
       ctx.beginPath();
-      linePoints.forEach((pt, i) => {
-        const px = pt.x * w;
-        const py = pt.y * h;
-        if (i === 0) ctx.moveTo(px, py);
-        else {
-          const prev = linePoints[i - 1];
-          const cpx = (prev.x + pt.x) / 2 * w;
-          ctx.bezierCurveTo(cpx, prev.y * h, cpx, py, px, py);
-        }
+      lpts.forEach(function(pt,i){
+        var px=pt.x*w,py=pt.y*h;
+        if(i===0){ctx.moveTo(px,py);return;}
+        var pp=lpts[i-1],cpx=(pp.x+pt.x)/2*w;
+        ctx.bezierCurveTo(cpx,pp.y*h,cpx,py,px,py);
       });
-      ctx.strokeStyle = 'rgba(99,102,241,0.15)';
-      ctx.lineWidth = 1.5;
-      ctx.stroke();
-
-      // Dots on line
-      linePoints.forEach(pt => {
-        ctx.beginPath();
-        ctx.arc(pt.x * w, pt.y * h, 2.5, 0, Math.PI * 2);
-        ctx.fillStyle = 'rgba(129,140,248,0.25)';
-        ctx.fill();
+      ctx.strokeStyle='rgba(129,140,248,0.2)';ctx.lineWidth=1.5;ctx.stroke();
+      lpts.forEach(function(pt){
+        ctx.beginPath();ctx.arc(pt.x*w,pt.y*h,2,0,6.28);
+        ctx.fillStyle='rgba(129,140,248,0.32)';ctx.fill();
       });
-
-      // ─ Floating particles ─
-      particles.forEach((p, idx) => {
-        p.x += p.vx;
-        p.y += p.vy;
-        p.pulse += p.pulseSpeed;
-        const pulsedAlpha = p.alpha * (0.7 + 0.3 * Math.sin(p.pulse));
-
-        if (p.y < -30 || p.x < -30 || p.x > w + 30) {
-          particles[idx] = { ...randomParticle(), y: h + 10 };
-          return;
-        }
-
-        if (p.type === 'glyph') {
-          ctx.font = `${p.size}px "JetBrains Mono", monospace`;
-          ctx.fillStyle = p.color + pulsedAlpha + ')';
-          ctx.fillText(p.symbol, p.x, p.y);
-        } else {
-          ctx.beginPath();
-          ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
-          ctx.fillStyle = p.color + pulsedAlpha + ')';
-          ctx.fill();
-        }
+      // particles
+      particles.forEach(function(p,idx){
+        p.x+=p.vx;p.y+=p.vy;p.pulse+=p.ps;
+        if(p.y<-30){particles[idx]=mkP();return;}
+        var a=p.al*(0.6+0.4*Math.sin(p.pulse));
+        ctx.font=p.sz+'px monospace';
+        ctx.fillStyle='rgba('+p.col+','+a+')';
+        ctx.fillText(p.sym,p.x,p.y);
       });
-
-      // ─ Grid lines (subtle) ─
-      ctx.strokeStyle = 'rgba(91,108,248,0.04)';
-      ctx.lineWidth = 1;
-      for (let gx = 0; gx < w; gx += w / 8) {
-        ctx.beginPath(); ctx.moveTo(gx, 0); ctx.lineTo(gx, h); ctx.stroke();
-      }
-      for (let gy = 0; gy < h; gy += h / 6) {
-        ctx.beginPath(); ctx.moveTo(0, gy); ctx.lineTo(w, gy); ctx.stroke();
-      }
-
-      frame++;
-      requestAnimationFrame(draw);
+      raf=requestAnimationFrame(draw);
     }
 
-    // Only run when auth screen is visible
-    const observer = new MutationObserver(() => {
-      const visible = !document.getElementById('authScreen')?.classList.contains('hidden');
-      if (visible) requestAnimationFrame(draw);
-    });
-    observer.observe(document.getElementById('authScreen') || document.body, { attributes: true });
-    requestAnimationFrame(draw);
+    var authEl=document.getElementById('authScreen');
+    if(window.MutationObserver && authEl){
+      new MutationObserver(function(){
+        if(authEl.classList.contains('hidden')){if(raf){cancelAnimationFrame(raf);raf=null;}}
+        else if(!raf){raf=requestAnimationFrame(draw);}
+      }).observe(authEl,{attributes:true,attributeFilter:['class']});
+    }
+    raf=requestAnimationFrame(draw);
   })();
 
-  // ── FIREBASE AUTH STATE OBSERVER ─────────────────────────────
-  // Handle Google redirect result first
-  fbAuth.getRedirectResult().then(result => {
-    if (result && result.user) {
-      onFirebaseSignIn(result.user);
-    }
-  }).catch(err => {
-    if (err.code && err.code !== 'auth/no-auth-event') {
-      console.error('Redirect error:', err);
-    }
-  });
+  // ── Rotating headline ──────────────────────────────────────
+  (function() {
+    var el = document.getElementById('authHeadlineText');
+    if (!el) return;
+    var phrases = [
+      'Turn data into a career you actually want.',
+      'SQL skills that get you hired.',
+      'From analyst to decision maker.',
+      'Data fluency for the MENA generation.',
+      'Build. Practice. Land the job.',
+    ];
+    var idx = 0;
+    el.style.transition = 'opacity 0.38s ease, transform 0.38s ease';
+    el.style.opacity = '1';
+    el.style.transform = 'translateX(0)';
+    el.textContent = phrases[0];
+    setInterval(function() {
+      el.style.opacity = '0';
+      el.style.transform = 'translateX(-20px)';
+      setTimeout(function() {
+        idx = (idx + 1) % phrases.length;
+        el.textContent = phrases[idx];
+        el.style.transform = 'translateX(20px)';
+        el.style.opacity = '0';
+        requestAnimationFrame(function() {
+          requestAnimationFrame(function() {
+            el.style.transform = 'translateX(0)';
+            el.style.opacity = '1';
+          });
+        });
+      }, 400);
+    }, 3600);
+  })();
 
-  fbAuth.onAuthStateChanged(fbUser => {
-    if (fbUser && fbUser.emailVerified) {
-      onFirebaseSignIn(fbUser);
-    } else if (fbUser && !fbUser.emailVerified) {
-      document.getElementById('authScreen').classList.remove('hidden');
-      showVerifyPendingScreen(fbUser.email);
-    } else {
-      document.getElementById('authScreen').classList.remove('hidden');
-    }
-  });
+  // ── Firebase auth ──────────────────────────────────────────
+  if (window.fbAuth) {
+    window.fbAuth.getRedirectResult()
+      .then(function(result) {
+        if (result && result.user) onFirebaseSignIn(result.user);
+      })
+      .catch(function(err) {
+        if (err && err.code !== 'auth/no-auth-event') console.warn('Redirect:', err.code);
+      });
+
+    window.fbAuth.onAuthStateChanged(function(fbUser) {
+      var ae = document.getElementById('authScreen');
+      if (fbUser && fbUser.emailVerified) {
+        onFirebaseSignIn(fbUser);
+      } else if (fbUser && !fbUser.emailVerified) {
+        if (ae) ae.classList.remove('hidden');
+        showVerifyPendingScreen(fbUser.email);
+      } else {
+        if (ae) ae.classList.remove('hidden');
+      }
+    });
+  } else {
+    var ae = document.getElementById('authScreen');
+    if (ae) ae.classList.remove('hidden');
+    console.error('Firebase SDK not loaded.');
+  }
 });
 
 // Session persistence handled by Firebase Auth onAuthStateChanged
