@@ -9,8 +9,6 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 
-<!-- EmailJS -->
-<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
 
 <!-- Chart.js for visualizations -->
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
@@ -1401,6 +1399,23 @@ img { max-width: 100%; display: block; }
 .grid-3 { display: grid; grid-template-columns: repeat(3,1fr); gap: var(--sp-4); }
 @media(max-width:600px) { .grid-2,.grid-3 { grid-template-columns: 1fr; } }
 </style>
+
+<!-- Firebase -->
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
+<script>
+  const firebaseConfig = {
+    apiKey: "AIzaSyAX-KCq-4NsYNCw5CeJ5DwvP9kB3kJlNao",
+    authDomain: "ba-academy-v3.firebaseapp.com",
+    projectId: "ba-academy-v3",
+    storageBucket: "ba-academy-v3.firebasestorage.app",
+    messagingSenderId: "120356974475",
+    appId: "1:120356974475:web:1e6fb01fe7c90c2524898e"
+  };
+  firebase.initializeApp(firebaseConfig);
+  const fbAuth = firebase.auth();
+  const googleProvider = new firebase.auth.GoogleAuthProvider();
+</script>
 </head>
 <body>
 
@@ -1431,17 +1446,19 @@ img { max-width: 100%; display: block; }
         <label class="form-label">Email Address</label>
         <input class="form-input" id="loginEmail" type="email" placeholder="you@example.com" autocomplete="email">
       </div>
-
       <div class="form-group">
         <label class="form-label">Password</label>
         <input class="form-input" id="loginPassword" type="password" placeholder="Enter your password" autocomplete="current-password">
       </div>
 
-      <button class="btn btn-primary btn-block btn-lg" onclick="handleLogin()" id="loginBtn">
-        Sign In
-      </button>
+      <button class="btn btn-primary btn-block btn-lg" onclick="handleLogin()" id="loginBtn">Sign In</button>
 
+      <!-- Google Sign In -->
       <div class="auth-divider">or</div>
+      <button class="btn btn-secondary btn-block btn-lg" onclick="handleGoogleSignIn()" id="googleBtn" style="gap:var(--sp-3)">
+        <svg width="18" height="18" viewBox="0 0 18 18"><path fill="#4285F4" d="M16.51 8H8.98v3h4.3c-.18 1-.74 1.48-1.6 2.04v2.01h2.6a7.8 7.8 0 002.38-5.88c0-.57-.05-.66-.15-1.18z"/><path fill="#34A853" d="M8.98 17c2.16 0 3.97-.72 5.3-1.94l-2.6-2a4.8 4.8 0 01-7.18-2.54H1.83v2.07A8 8 0 008.98 17z"/><path fill="#FBBC05" d="M4.5 10.52a4.8 4.8 0 010-3.04V5.41H1.83a8 8 0 000 7.18l2.67-2.07z"/><path fill="#EA4335" d="M8.98 4.18c1.17 0 2.23.4 3.06 1.2l2.3-2.3A8 8 0 001.83 5.4L4.5 7.49a4.77 4.77 0 014.48-3.31z"/></svg>
+        Continue with Google
+      </button>
 
       <div class="auth-link">
         Don't have an account? <a onclick="switchAuthTab('signup')">Create one free</a>
@@ -1475,12 +1492,10 @@ img { max-width: 100%; display: block; }
           <input class="form-input" id="signupLastName" type="text" placeholder="Al-Mansouri" autocomplete="family-name">
         </div>
       </div>
-
       <div class="form-group">
         <label class="form-label">Email Address</label>
         <input class="form-input" id="signupEmail" type="email" placeholder="you@example.com" autocomplete="email">
       </div>
-
       <div class="form-group">
         <label class="form-label">Password</label>
         <input class="form-input" id="signupPassword" type="password" placeholder="At least 8 characters" autocomplete="new-password">
@@ -1490,51 +1505,37 @@ img { max-width: 100%; display: block; }
         Create Account & Verify Email
       </button>
 
+      <!-- Google Sign Up -->
+      <div class="auth-divider">or</div>
+      <button class="btn btn-secondary btn-block btn-lg" onclick="handleGoogleSignIn()" style="gap:var(--sp-3)">
+        <svg width="18" height="18" viewBox="0 0 18 18"><path fill="#4285F4" d="M16.51 8H8.98v3h4.3c-.18 1-.74 1.48-1.6 2.04v2.01h2.6a7.8 7.8 0 002.38-5.88c0-.57-.05-.66-.15-1.18z"/><path fill="#34A853" d="M8.98 17c2.16 0 3.97-.72 5.3-1.94l-2.6-2a4.8 4.8 0 01-7.18-2.54H1.83v2.07A8 8 0 008.98 17z"/><path fill="#FBBC05" d="M4.5 10.52a4.8 4.8 0 010-3.04V5.41H1.83a8 8 0 000 7.18l2.67-2.07z"/><path fill="#EA4335" d="M8.98 4.18c1.17 0 2.23.4 3.06 1.2l2.3-2.3A8 8 0 001.83 5.4L4.5 7.49a4.77 4.77 0 014.48-3.31z"/></svg>
+        Sign up with Google
+      </button>
+
       <p style="text-align:center;font-size:.75rem;color:var(--text-tertiary);margin-top:var(--sp-4);line-height:1.5">
-        A 6-digit verification code will be sent to your email.<br>
-        Your progress auto-saves to this browser.
+        A verification email will be sent to confirm your address.
       </p>
     </div>
 
-    <!-- OTP Verification -->
-    <div id="verifyForm" class="hidden">
+    <!-- Email Verification Pending -->
+    <div id="verifyPendingForm" class="hidden">
       <div class="auth-logo">
         <div class="auth-logo-icon">✉️</div>
-        <h1>Check your email</h1>
-        <p>We sent a 6-digit code to</p>
+        <h1>Verify your email</h1>
+        <p>Check your inbox to continue</p>
       </div>
-
-      <div class="verify-email-display" id="verifyEmailDisplay">—</div>
-
-      <div id="verifyError" class="auth-error hidden">
-        <span>⚠️</span><span id="verifyErrorMsg"></span>
+      <div id="verifyPendingEmail" class="verify-email-display">—</div>
+      <div id="verifyPendingError" class="auth-error hidden"><span>⚠️</span><span id="verifyPendingErrorMsg"></span></div>
+      <div style="background:var(--bg-elevated);border-radius:var(--r-lg);padding:var(--sp-5);margin-bottom:var(--sp-5);font-size:.875rem;color:var(--text-secondary);line-height:1.6;text-align:center">
+        We sent a verification link to your email.<br>Click it, then come back and press the button below.
       </div>
-
-      <div id="verifySuccess" class="auth-success hidden">
-        <span>✅</span><span id="verifySuccessMsg"></span>
-      </div>
-
-      <div class="otp-container" id="otpContainer">
-        <input class="otp-digit" maxlength="1" type="text" inputmode="numeric" pattern="[0-9]">
-        <input class="otp-digit" maxlength="1" type="text" inputmode="numeric" pattern="[0-9]">
-        <input class="otp-digit" maxlength="1" type="text" inputmode="numeric" pattern="[0-9]">
-        <input class="otp-digit" maxlength="1" type="text" inputmode="numeric" pattern="[0-9]">
-        <input class="otp-digit" maxlength="1" type="text" inputmode="numeric" pattern="[0-9]">
-        <input class="otp-digit" maxlength="1" type="text" inputmode="numeric" pattern="[0-9]">
-      </div>
-
-      <button class="btn btn-primary btn-block btn-lg" onclick="verifyOTP()" id="verifyBtn">
-        Verify & Continue
+      <button class="btn btn-primary btn-block btn-lg" onclick="checkEmailVerified()" id="checkVerifiedBtn">
+        I've verified my email ✓
       </button>
-
-      <div class="resend-timer" id="resendTimer">
-        Resend code in <strong id="resendCountdown">60</strong>s
-      </div>
-
-      <div class="resend-timer hidden" id="resendLink">
-        Didn't get it? <a onclick="resendOTP()">Resend code</a>
+      <div style="text-align:center;margin-top:var(--sp-4)">
+        <a onclick="resendVerificationEmail()" style="font-size:.82rem;cursor:pointer">Resend email</a>
         &nbsp;·&nbsp;
-        <a onclick="switchAuthTab('signup')" style="color:var(--text-secondary)">Go back</a>
+        <a onclick="handleLogout()" style="font-size:.82rem;color:var(--text-secondary);cursor:pointer">Sign out</a>
       </div>
     </div>
 
@@ -1584,7 +1585,7 @@ img { max-width: 100%; display: block; }
       <div class="sidebar-logo-icon">📊</div>
       <div class="sidebar-logo-text">
         <h2>BA Academy</h2>
-        <span>V3 Platform</span>
+        <span>V3 · Firebase</span>
       </div>
     </div>
 
@@ -1802,6 +1803,8 @@ let state = {
 
   notes: [],
   applications: [],
+  resumeData: null,
+  portfolioData: null,
 };
 
 // ============================================================
@@ -1809,18 +1812,20 @@ let state = {
 // ============================================================
 function saveState() {
   if (!state.user) return;
-  const key = DB_KEY + state.user.email;
+  const key = DB_KEY + (state.user.uid || state.user.email);
   localStorage.setItem(key, JSON.stringify({
     progress: state.progress,
     settings: state.settings,
     notes: state.notes,
     applications: state.applications,
+    resumeData: state.resumeData,
+    portfolioData: state.portfolioData,
   }));
 }
 
 function loadState() {
   if (!state.user) return;
-  const key = DB_KEY + state.user.email;
+  const key = DB_KEY + (state.user.uid || state.user.email);
   const raw = localStorage.getItem(key);
   if (raw) {
     const d = JSON.parse(raw);
@@ -1828,6 +1833,9 @@ function loadState() {
     state.settings  = { ...state.settings,  ...d.settings  };
     state.notes     = d.notes        || [];
     state.applications = d.applications || [];
+    state.resumeData   = d.resumeData   || null;
+    state.portfolioData = d.portfolioData || null;
+    if (d.progress?.flashcardData) state.progress.flashcardData = d.progress.flashcardData;
   }
   // Update streak
   updateStreak();
@@ -1942,21 +1950,18 @@ function toast(type, title, desc = '', duration = 4000) {
 }
 
 // ============================================================
-// AUTH — Tab switcher
+// FIREBASE AUTH — Full replacement (Tab switcher, Login, Signup, Google, Verify)
 // ============================================================
+
 function switchAuthTab(tab) {
   document.getElementById('loginForm').classList.toggle('hidden', tab !== 'login');
   document.getElementById('signupForm').classList.toggle('hidden', tab !== 'signup');
-  document.getElementById('verifyForm').classList.add('hidden');
+  document.getElementById('verifyPendingForm').classList.add('hidden');
   clearAuthErrors();
 }
 
 function clearAuthErrors() {
-  ['authError','signupError','verifyError'].forEach(id => {
-    const el = document.getElementById(id);
-    if (el) el.classList.add('hidden');
-  });
-  ['verifySuccess'].forEach(id => {
+  ['authError','signupError','verifyPendingError'].forEach(id => {
     const el = document.getElementById(id);
     if (el) el.classList.add('hidden');
   });
@@ -1967,272 +1972,166 @@ function showError(elId, msgElId, msg) {
   document.getElementById(msgElId).textContent = msg;
 }
 
-// ============================================================
-// AUTH — Login (returning users)
-// ============================================================
+// ── LOGIN ──────────────────────────────────────────────────────────────────
 function handleLogin() {
   const email = document.getElementById('loginEmail').value.trim();
   const pass  = document.getElementById('loginPassword').value;
-
   clearAuthErrors();
 
-  if (!email) { showError('authError','authErrorMsg','Please enter your email address.'); return; }
+  if (!email) { showError('authError','authErrorMsg','Please enter your email.'); return; }
   if (!pass)  { showError('authError','authErrorMsg','Please enter your password.'); return; }
-  if (!isValidEmail(email)) { showError('authError','authErrorMsg','Please enter a valid email address.'); return; }
 
-  // Check if user exists in local storage
-  const userKey = 'ba_v3_user_' + email;
-  const storedUser = localStorage.getItem(userKey);
-
-  if (!storedUser) {
-    showError('authError','authErrorMsg','No account found with this email. Please sign up.');
-    return;
-  }
-
-  const userData = JSON.parse(storedUser);
-  // Simple hash comparison (in production use bcrypt on server)
-  if (simpleHash(pass) !== userData.passHash) {
-    showError('authError','authErrorMsg','Incorrect password. Please try again.');
-    return;
-  }
-
-  // Login success
   setButtonLoading('loginBtn', true);
-  setTimeout(() => {
-    state.user = userData;
-    loadState();
-    launchApp();
-    setButtonLoading('loginBtn', false);
-  }, 400);
+
+  fbAuth.signInWithEmailAndPassword(email, pass)
+    .then(cred => {
+      if (!cred.user.emailVerified) {
+        setButtonLoading('loginBtn', false);
+        showVerifyPendingScreen(cred.user.email);
+        return;
+      }
+      onFirebaseSignIn(cred.user);
+    })
+    .catch(err => {
+      setButtonLoading('loginBtn', false);
+      const msg = firebaseErrorMsg(err.code);
+      showError('authError','authErrorMsg', msg);
+    });
 }
 
-// ============================================================
-// AUTH — Signup
-// ============================================================
+// ── SIGNUP ─────────────────────────────────────────────────────────────────
 function handleSignup() {
   const firstName = document.getElementById('signupFirstName').value.trim();
   const lastName  = document.getElementById('signupLastName').value.trim();
   const email     = document.getElementById('signupEmail').value.trim();
   const pass      = document.getElementById('signupPassword').value;
-
   clearAuthErrors();
 
   if (!firstName) { showError('signupError','signupErrorMsg','Please enter your first name.'); return; }
-  if (!email)     { showError('signupError','signupErrorMsg','Please enter your email address.'); return; }
-  if (!isValidEmail(email)) { showError('signupError','signupErrorMsg','Please enter a valid email address.'); return; }
-  if (pass.length < 8)     { showError('signupError','signupErrorMsg','Password must be at least 8 characters.'); return; }
-
-  // Check if email already registered
-  if (localStorage.getItem('ba_v3_user_' + email)) {
-    showError('signupError','signupErrorMsg','An account with this email already exists. Sign in instead.');
-    return;
-  }
-
-  // Store pending user data
-  state.pendingUser = {
-    firstName, lastName,
-    name: `${firstName} ${lastName}`,
-    email,
-    passHash: simpleHash(pass),
-    createdAt: new Date().toISOString(),
-    verified: false,
-  };
+  if (!email)     { showError('signupError','signupErrorMsg','Please enter your email.'); return; }
+  if (pass.length < 8) { showError('signupError','signupErrorMsg','Password must be at least 8 characters.'); return; }
 
   setButtonLoading('signupBtn', true);
 
-  // Generate and send OTP
-  sendOTP(email, firstName)
-    .then(() => {
-      setButtonLoading('signupBtn', false);
-      showVerifyScreen(email);
+  fbAuth.createUserWithEmailAndPassword(email, pass)
+    .then(cred => {
+      // Save display name
+      return cred.user.updateProfile({ displayName: `${firstName} ${lastName}`.trim() })
+        .then(() => cred.user.sendEmailVerification())
+        .then(() => {
+          setButtonLoading('signupBtn', false);
+          // Store name for after verification
+          localStorage.setItem('ba_pending_firstName', firstName);
+          localStorage.setItem('ba_pending_lastName',  lastName);
+          showVerifyPendingScreen(email);
+        });
     })
     .catch(err => {
       setButtonLoading('signupBtn', false);
-      showError('signupError','signupErrorMsg',
-        'Could not send verification email. Please check your EmailJS settings or try again.');
-      console.error('EmailJS error:', err);
+      showError('signupError','signupErrorMsg', firebaseErrorMsg(err.code));
     });
 }
 
-// ============================================================
-// OTP — Generation & Sending
-// ============================================================
-function generateOTP() {
-  return String(Math.floor(100000 + Math.random() * 900000));
+// ── GOOGLE SIGN IN ─────────────────────────────────────────────────────────
+function handleGoogleSignIn() {
+  fbAuth.signInWithPopup(googleProvider)
+    .then(cred => { onFirebaseSignIn(cred.user); })
+    .catch(err => {
+      if (err.code === 'auth/popup-closed-by-user') return;
+      showError('authError','authErrorMsg', firebaseErrorMsg(err.code));
+    });
 }
 
-async function sendOTP(email, name) {
-  const otp = generateOTP();
-  state.pendingOTP  = otp;
-  state.otpExpiry   = Date.now() + 10 * 60 * 1000; // 10 min expiry
-
-  // Init EmailJS with user's public key
-  const pubKey = state.settings.emailjsKey || EMAILJS_CONFIG.publicKey;
-  const svcId  = state.settings.emailjsSvc || EMAILJS_CONFIG.serviceId;
-  const tplId  = state.settings.emailjsTpl || EMAILJS_CONFIG.templateId;
-
-  emailjs.init({ publicKey: pubKey });
-
-  return emailjs.send(svcId, tplId, {
-    to_email: email,
-    to_name: name,
-    otp: otp,
-    expiry: '10 minutes',
-    platform: 'BA Academy V3',
-  });
-}
-
-function showVerifyScreen(email) {
+// ── EMAIL VERIFY PENDING SCREEN ────────────────────────────────────────────
+function showVerifyPendingScreen(email) {
   document.getElementById('loginForm').classList.add('hidden');
   document.getElementById('signupForm').classList.add('hidden');
-  document.getElementById('verifyForm').classList.remove('hidden');
-  document.getElementById('verifyEmailDisplay').textContent = email;
-
-  // Set up OTP inputs
-  setupOTPInputs();
-  startResendTimer();
-  // Focus first digit
-  document.querySelectorAll('.otp-digit')[0].focus();
+  document.getElementById('verifyPendingForm').classList.remove('hidden');
+  document.getElementById('verifyPendingEmail').textContent = email;
 }
 
-function setupOTPInputs() {
-  const digits = document.querySelectorAll('.otp-digit');
-  digits.forEach((input, i) => {
-    input.value = '';
-    input.classList.remove('filled');
-
-    input.addEventListener('input', e => {
-      // Allow only numbers
-      input.value = input.value.replace(/[^0-9]/g, '');
-      if (input.value) {
-        input.classList.add('filled');
-        if (i < digits.length - 1) digits[i + 1].focus();
-        // Auto-submit if all filled
-        if ([...digits].every(d => d.value)) verifyOTP();
+function checkEmailVerified() {
+  setButtonLoading('checkVerifiedBtn', true);
+  fbAuth.currentUser.reload()
+    .then(() => {
+      if (fbAuth.currentUser.emailVerified) {
+        onFirebaseSignIn(fbAuth.currentUser);
       } else {
-        input.classList.remove('filled');
+        setButtonLoading('checkVerifiedBtn', false);
+        showError('verifyPendingError','verifyPendingErrorMsg','Email not verified yet. Check your inbox and click the link.');
       }
+    })
+    .catch(() => {
+      setButtonLoading('checkVerifiedBtn', false);
+      showError('verifyPendingError','verifyPendingErrorMsg','Could not check verification status. Try again.');
     });
+}
 
-    input.addEventListener('keydown', e => {
-      if (e.key === 'Backspace' && !input.value && i > 0) {
-        digits[i - 1].focus();
-        digits[i - 1].value = '';
-        digits[i - 1].classList.remove('filled');
-      }
-      if (e.key === 'ArrowLeft' && i > 0) digits[i - 1].focus();
-      if (e.key === 'ArrowRight' && i < digits.length - 1) digits[i + 1].focus();
-    });
+function resendVerificationEmail() {
+  if (!fbAuth.currentUser) return;
+  fbAuth.currentUser.sendEmailVerification()
+    .then(() => toast('success','Verification email sent!','Check your inbox.'))
+    .catch(() => toast('error','Could not resend','Try again in a minute.'));
+}
 
-    input.addEventListener('paste', e => {
-      e.preventDefault();
-      const pasted = (e.clipboardData || window.clipboardData)
-        .getData('text').replace(/\D/g, '').slice(0, 6);
-      pasted.split('').forEach((ch, idx) => {
-        if (digits[idx]) {
-          digits[idx].value = ch;
-          digits[idx].classList.add('filled');
-        }
-      });
-      if (pasted.length === 6) verifyOTP();
-      else if (digits[pasted.length]) digits[pasted.length].focus();
-    });
+// ── ON SUCCESSFUL SIGN IN (any method) ────────────────────────────────────
+function onFirebaseSignIn(fbUser) {
+  // Build state.user from Firebase user object
+  const firstName = localStorage.getItem('ba_pending_firstName') || fbUser.displayName?.split(' ')[0] || fbUser.email.split('@')[0];
+  const lastName  = localStorage.getItem('ba_pending_lastName')  || fbUser.displayName?.split(' ').slice(1).join(' ') || '';
+  localStorage.removeItem('ba_pending_firstName');
+  localStorage.removeItem('ba_pending_lastName');
+
+  state.user = {
+    uid:       fbUser.uid,
+    email:     fbUser.email,
+    firstName: firstName,
+    lastName:  lastName,
+    name:      `${firstName} ${lastName}`.trim(),
+    photoURL:  fbUser.photoURL || null,
+    verified:  fbUser.emailVerified,
+  };
+
+  // Persist uid for storage key
+  localStorage.setItem('ba_v3_last_uid', fbUser.uid);
+  loadState();
+
+  document.getElementById('authScreen').classList.add('hidden');
+
+  const hasOnboarded = state.progress.achievements.includes('onboarded');
+  if (!hasOnboarded) {
+    unlockAchievement('first_login');
+    startOnboarding();
+  } else {
+    launchApp();
+  }
+}
+
+// ── LOGOUT ─────────────────────────────────────────────────────────────────
+function handleLogout() {
+  if (!confirm('Sign out of BA Academy?')) return;
+  fbAuth.signOut().then(() => {
+    state.user = null;
+    document.getElementById('app').style.display = 'none';
+    document.getElementById('authScreen').classList.remove('hidden');
+    switchAuthTab('login');
   });
 }
 
-function startResendTimer(seconds = 60) {
-  let remaining = seconds;
-  const cdEl   = document.getElementById('resendCountdown');
-  const timerEl = document.getElementById('resendTimer');
-  const linkEl  = document.getElementById('resendLink');
-
-  timerEl.classList.remove('hidden');
-  linkEl.classList.add('hidden');
-  cdEl.textContent = remaining;
-
-  clearInterval(state.resendTimer);
-  state.resendTimer = setInterval(() => {
-    remaining--;
-    cdEl.textContent = remaining;
-    if (remaining <= 0) {
-      clearInterval(state.resendTimer);
-      timerEl.classList.add('hidden');
-      linkEl.classList.remove('hidden');
-    }
-  }, 1000);
-}
-
-async function resendOTP() {
-  if (!state.pendingUser) return;
-  document.getElementById('resendLink').classList.add('hidden');
-  try {
-    await sendOTP(state.pendingUser.email, state.pendingUser.firstName);
-    startResendTimer();
-    // Clear digits
-    document.querySelectorAll('.otp-digit').forEach(d => {
-      d.value = ''; d.classList.remove('filled');
-    });
-    document.querySelectorAll('.otp-digit')[0].focus();
-    clearAuthErrors();
-    toast('success', 'Code resent!', `Check ${state.pendingUser.email}`);
-  } catch(e) {
-    toast('error', 'Failed to resend', 'Please try again.');
-  }
-}
-
-function verifyOTP() {
-  const digits = document.querySelectorAll('.otp-digit');
-  const entered = [...digits].map(d => d.value).join('');
-
-  clearAuthErrors();
-
-  if (entered.length < 6) {
-    showError('verifyError','verifyErrorMsg','Please enter all 6 digits.');
-    return;
-  }
-
-  if (Date.now() > state.otpExpiry) {
-    showError('verifyError','verifyErrorMsg','This code has expired. Please request a new one.');
-    return;
-  }
-
-  setButtonLoading('verifyBtn', true);
-
-  setTimeout(() => {
-    if (entered === state.pendingOTP) {
-      // ✅ Verified!
-      const user = { ...state.pendingUser, verified: true };
-      localStorage.setItem('ba_v3_user_' + user.email, JSON.stringify(user));
-
-      state.user = user;
-      state.pendingUser = null;
-      state.pendingOTP  = null;
-
-      loadState();
-
-      document.getElementById('verifySuccess').classList.remove('hidden');
-      document.getElementById('verifySuccessMsg').textContent =
-        'Email verified! Starting your onboarding...';
-
-      setButtonLoading('verifyBtn', false);
-
-      setTimeout(() => startOnboarding(), 1200);
-    } else {
-      setButtonLoading('verifyBtn', false);
-      showError('verifyError','verifyErrorMsg','Incorrect code. Please check and try again.');
-      // Shake the inputs
-      const container = document.getElementById('otpContainer');
-      container.style.animation = 'none';
-      container.style.transform = 'translateX(-8px)';
-      setTimeout(() => {
-        container.style.transform = '';
-        container.style.transition = 'transform 0.4s cubic-bezier(0.36, 0.07, 0.19, 0.97)';
-      }, 10);
-      setTimeout(() => container.style.transition = '', 400);
-      digits.forEach(d => { d.value = ''; d.classList.remove('filled'); });
-      digits[0].focus();
-    }
-  }, 600);
+// ── FIREBASE ERROR MESSAGES ────────────────────────────────────────────────
+function firebaseErrorMsg(code) {
+  const msgs = {
+    'auth/user-not-found':       'No account found with this email. Please sign up.',
+    'auth/wrong-password':       'Incorrect password. Please try again.',
+    'auth/email-already-in-use': 'An account with this email already exists. Sign in instead.',
+    'auth/invalid-email':        'Please enter a valid email address.',
+    'auth/weak-password':        'Password must be at least 8 characters.',
+    'auth/too-many-requests':    'Too many attempts. Please wait a moment and try again.',
+    'auth/network-request-failed': 'Network error. Check your connection.',
+    'auth/invalid-credential':   'Incorrect email or password. Please try again.',
+    'auth/popup-blocked':        'Popup was blocked. Please allow popups for this site.',
+  };
+  return msgs[code] || 'Something went wrong. Please try again.';
 }
 
 // ============================================================
@@ -2874,33 +2773,1299 @@ function dashboard() {
 }
 
 // ============================================================
-// PLACEHOLDER PAGE RENDERS (to be replaced in Phase 2+)
+// PHASE 2 — LEARNING PATHS
 // ============================================================
-function comingSoon(title, icon, desc) {
+const LEARNING_PATHS = [
+  { id:'sql-foundations', name:'SQL Foundations', icon:'💾', color:'#5b6cf8', duration:'4 weeks', lessons:18, xp:600, level:'Beginner', desc:'Go from zero to confident with SQL. Write real queries, understand joins, and master aggregations.', topics:['SELECT basics','WHERE & filtering','Aggregate functions','GROUP BY & HAVING','JOINs','Subqueries','CTEs','Window functions'] },
+  { id:'ba-foundations', name:'BA Foundations', icon:'📊', color:'#06b6d4', duration:'3 weeks', lessons:14, xp:450, level:'Beginner', desc:'Understand what business analysts actually do — requirements, stakeholder management, process mapping, and KPIs.', topics:['Role of a BA','Requirements gathering','Stakeholder mapping','Process analysis','KPIs & metrics','Data storytelling','BA documentation'] },
+  { id:'stats-for-ba', name:'Stats for BA', icon:'📈', color:'#22c55e', duration:'3 weeks', lessons:12, xp:400, level:'Intermediate', desc:'The statistics you actually need as a BA — distributions, hypothesis testing, A/B testing, and regression basics.', topics:['Descriptive stats','Distributions','Hypothesis testing','A/B testing','Correlation','Regression basics','Statistical significance'] },
+  { id:'bi-tools', name:'BI & Visualization', icon:'🎯', color:'#f59e0b', duration:'2 weeks', lessons:10, xp:350, level:'Intermediate', desc:'Design dashboards that drive decisions. Chart selection, visual hierarchy, and storytelling with data.', topics:['Chart types','Dashboard design','KPI selection','Power BI concepts','Tableau concepts','Data storytelling','Executive reporting'] },
+  { id:'interview-ready', name:'Interview Ready', icon:'🚀', color:'#8b5cf6', duration:'2 weeks', lessons:10, xp:400, level:'All Levels', desc:'Land the job. Practice SQL questions, behavioral answers, case studies, and portfolio review.', topics:['Common SQL questions','STAR method','BA case studies','Salary negotiation','Portfolio review','LinkedIn optimization'] },
+];
+
+function paths() {
   document.getElementById('content').innerHTML = `
-  <div class="page-enter empty-state" style="padding:var(--sp-20)">
-    <div class="empty-state-icon" style="font-size:4rem">${icon}</div>
-    <div class="empty-state-title" style="font-size:1.3rem">${title}</div>
-    <div class="empty-state-desc">${desc}</div>
-    <button class="btn btn-primary mt-6" onclick="navigate('dashboard')">Back to Dashboard</button>
+  <div class="page-enter">
+    <div style="margin-bottom:var(--sp-8)">
+      <h1 style="font-size:1.6rem;font-weight:800;letter-spacing:-0.5px">Learning Paths</h1>
+      <p style="color:var(--text-secondary);margin-top:var(--sp-2)">Structured tracks to take you from beginner to job-ready.</p>
+    </div>
+    <div style="display:grid;gap:var(--sp-5)">
+      ${LEARNING_PATHS.map(p => {
+        const prog = state.progress.pathProgress[p.id] || 0;
+        return `<div class="card card-interactive" style="border-left:3px solid ${p.color}" onclick="navigate('sql')">
+          <div style="display:flex;align-items:flex-start;gap:var(--sp-5)">
+            <div style="width:52px;height:52px;border-radius:var(--r-lg);background:${p.color}22;display:flex;align-items:center;justify-content:center;font-size:1.5rem;flex-shrink:0">${p.icon}</div>
+            <div style="flex:1;min-width:0">
+              <div style="display:flex;align-items:center;gap:var(--sp-3);flex-wrap:wrap;margin-bottom:var(--sp-2)">
+                <h3 style="font-size:1.1rem;font-weight:700">${p.name}</h3>
+                <span class="badge badge-neutral">${p.level}</span>
+                ${prog > 0 ? `<span class="badge badge-success">${prog}% done</span>` : ''}
+              </div>
+              <p style="color:var(--text-secondary);font-size:.875rem;line-height:1.6;margin-bottom:var(--sp-4)">${p.desc}</p>
+              <div style="display:flex;gap:var(--sp-5);margin-bottom:var(--sp-4)">
+                <span style="font-size:.78rem;color:var(--text-tertiary)">⏱ ${p.duration}</span>
+                <span style="font-size:.78rem;color:var(--text-tertiary)">📚 ${p.lessons} lessons</span>
+                <span style="font-size:.78rem;color:var(--text-tertiary)">⚡ ${p.xp} XP</span>
+              </div>
+              <div style="display:flex;flex-wrap:wrap;gap:var(--sp-2)">
+                ${p.topics.map(t => `<span style="font-size:.72rem;background:var(--bg-elevated);border:1px solid var(--border);border-radius:var(--r-full);padding:2px 10px;color:var(--text-secondary)">${t}</span>`).join('')}
+              </div>
+              ${prog > 0 ? `<div class="progress-track mt-4"><div class="progress-fill" style="width:${prog}%;background:${p.color}"></div></div>` : ''}
+            </div>
+            <div style="color:var(--text-tertiary);font-size:1.2rem;flex-shrink:0">›</div>
+          </div>
+        </div>`;
+      }).join('')}
+    </div>
   </div>`;
 }
 
-function paths()       { comingSoon('Learning Paths', '🗺️', 'Structured learning paths are coming in Phase 2. SQL, BA Foundations, BI, Stats, and Interview Ready tracks.'); }
-function sql()         { comingSoon('SQL Lab', '💾', 'Real in-browser SQL execution powered by SQLite WASM. 50+ challenges across 6 datasets — coming in Phase 2.'); }
-function analytics()   { comingSoon('Analytics Lab', '📊', 'KPI simulators, A/B test calculators, and real business case studies — coming in Phase 2.'); }
-function flashcards()  { comingSoon('Flashcards', '🃏', 'Spaced repetition flashcards with the SM-2 algorithm — coming in Phase 2.'); }
-function quiz()        { comingSoon('Quiz Bank', '❓', 'Adaptive quizzes across SQL, Statistics, BI, and Career topics — coming in Phase 2.'); }
-function glossary()    { comingSoon('Glossary', '📖', '110+ BA/SQL/Stats terms with search and category filters — coming in Phase 2.'); }
-function mentor()      { comingSoon('AI Mentor', '🤖', 'Context-aware AI mentor with 5 modes: BA Tutor, SQL Coach, Interview Coach, Resume Reviewer, Study Planner.'); }
-function resume()      { comingSoon('Resume Builder', '📄', 'ATS-optimized BA resume builder with templates and AI review.'); }
-function portfolio()   { comingSoon('Portfolio', '🖼️', 'Generate a beautiful analytics portfolio page with your projects.'); }
-function interview()   { comingSoon('Interview Prep', '🎙️', 'Behavioral + technical BA interview preparation system with AI feedback.'); }
-function jobs()        { comingSoon('Job Board', '💼', 'Curated BA/BI job listings across UAE and global markets.'); }
-function tracker()     { comingSoon('Application Tracker', '📋', 'Track your job applications with status, notes, and follow-up reminders.'); }
-function notes()       { comingSoon('Notes', '📝', 'Rich notes with tags, AI summarization, and quick capture.'); }
-function pomodoro()    { comingSoon('Focus Timer', '⏱️', 'Pomodoro timer with session tracking and XP rewards.'); }
-function salary()      { comingSoon('Salary Calculator', '💰', 'BA/BI salary ranges across 6+ countries with skill multipliers.'); }
+// ============================================================
+// PHASE 2 — SQL LAB
+// ============================================================
+let sqlDb = null;
+let sqlLoading = false;
+
+const SQL_DATASETS = {
+  employees: {
+    name:'Employees', icon:'👥', desc:'HR data — employees, departments, salaries',
+    schema:`CREATE TABLE employees (id INTEGER PRIMARY KEY, name TEXT, department TEXT, salary INTEGER, hire_date TEXT, manager_id INTEGER, city TEXT);
+CREATE TABLE departments (id INTEGER PRIMARY KEY, name TEXT, budget INTEGER, head_id INTEGER);
+INSERT INTO employees VALUES (1,'Sarah Chen','Engineering',95000,'2020-03-15',NULL,'Dubai'),(2,'Marcus Johnson','Marketing',72000,'2021-06-01',1,'Abu Dhabi'),(3,'Aisha Al-Hassan','Engineering',88000,'2019-11-20',1,'Dubai'),(4,'Tom Williams','HR',65000,'2022-01-10',1,'Sharjah'),(5,'Priya Sharma','Engineering',102000,'2018-07-05',1,'Dubai'),(6,'Khalid Al-Mansouri','Finance',78000,'2020-09-14',1,'Abu Dhabi'),(7,'Elena Petrova','Marketing',69000,'2021-03-22',2,'Dubai'),(8,'James Okafor','Finance',85000,'2019-05-30',6,'Abu Dhabi'),(9,'Liu Wei','Engineering',91000,'2020-12-01',1,'Dubai'),(10,'Fatima Nasser','HR',62000,'2022-04-15',4,'Sharjah'),(11,'Ahmed Rashid','Engineering',97000,'2017-08-20',1,'Dubai'),(12,'Sofia Martinez','Marketing',74000,'2021-10-05',2,'Abu Dhabi'),(13,'Ryan Park','Finance',81000,'2020-02-28',6,'Dubai'),(14,'Nour Al-Amin','Engineering',86000,'2021-07-12',1,'Dubai'),(15,'David Osei','HR',58000,'2023-01-03',4,'Sharjah');
+INSERT INTO departments VALUES (1,'Engineering',2500000,1),(2,'Marketing',800000,2),(3,'HR',400000,4),(4,'Finance',1200000,6);`
+  },
+  orders: {
+    name:'Orders', icon:'🛒', desc:'E-commerce — customers, products, orders',
+    schema:`CREATE TABLE customers (id INTEGER PRIMARY KEY, name TEXT, email TEXT, city TEXT, joined_date TEXT);
+CREATE TABLE products (id INTEGER PRIMARY KEY, name TEXT, category TEXT, price REAL, stock INTEGER);
+CREATE TABLE orders (id INTEGER PRIMARY KEY, customer_id INTEGER, product_id INTEGER, quantity INTEGER, order_date TEXT, status TEXT);
+INSERT INTO customers VALUES (1,'Ahmad Al-Mansouri','ahmad@email.com','Dubai','2022-01-15'),(2,'Sara Johnson','sara@email.com','London','2021-06-20'),(3,'Yuki Tanaka','yuki@email.com','Tokyo','2022-03-10'),(4,'Maria Garcia','maria@email.com','Madrid','2021-11-05'),(5,'Omar Hassan','omar@email.com','Cairo','2023-01-20'),(6,'Mei Lin','mei@email.com','Shanghai','2022-07-15'),(7,'Jake Thompson','jake@email.com','New York','2021-08-30'),(8,'Amira Bello','amira@email.com','Lagos','2023-02-10');
+INSERT INTO products VALUES (1,'Analytics Dashboard Pro','Software',299.99,100),(2,'SQL Masterclass','Course',79.99,500),(3,'BI Toolkit','Software',149.99,200),(4,'Data Science Bootcamp','Course',399.99,300),(5,'Excel for Analysts','Course',49.99,1000),(6,'Power BI Training','Course',89.99,400),(7,'Python for BA','Course',69.99,600),(8,'Data Visualization Guide','Book',34.99,800);
+INSERT INTO orders VALUES (1,1,1,1,'2024-01-15','completed'),(2,1,2,2,'2024-01-20','completed'),(3,2,3,1,'2024-01-22','completed'),(4,3,4,1,'2024-02-01','pending'),(5,4,2,3,'2024-02-05','completed'),(6,5,5,2,'2024-02-10','completed'),(7,6,1,1,'2024-02-12','shipped'),(8,7,6,1,'2024-02-15','completed'),(9,8,7,2,'2024-02-20','pending'),(10,1,8,1,'2024-03-01','completed'),(11,2,4,1,'2024-03-05','completed'),(12,3,5,4,'2024-03-10','completed');`
+  },
+  sales: {
+    name:'Sales', icon:'💰', desc:'Monthly sales by region and product',
+    schema:`CREATE TABLE sales (id INTEGER PRIMARY KEY, month TEXT, region TEXT, product TEXT, revenue REAL, units INTEGER, target REAL);
+CREATE TABLE regions (id INTEGER PRIMARY KEY, name TEXT, manager TEXT, country TEXT);
+INSERT INTO sales VALUES (1,'2024-01','MENA','Analytics Pro',45000,150,40000),(2,'2024-01','Europe','Analytics Pro',72000,240,70000),(3,'2024-01','APAC','Analytics Pro',38000,127,35000),(4,'2024-01','Americas','Analytics Pro',95000,317,90000),(5,'2024-02','MENA','Analytics Pro',52000,173,50000),(6,'2024-02','Europe','Analytics Pro',68000,227,75000),(7,'2024-02','APAC','Analytics Pro',41000,137,38000),(8,'2024-02','Americas','Analytics Pro',98000,327,95000),(9,'2024-03','MENA','BI Toolkit',28000,187,25000),(10,'2024-03','Europe','BI Toolkit',55000,367,50000),(11,'2024-03','APAC','BI Toolkit',32000,213,30000),(12,'2024-03','Americas','BI Toolkit',71000,473,70000),(13,'2024-01','MENA','SQL Course',12000,150,10000),(14,'2024-02','MENA','SQL Course',15000,188,13000),(15,'2024-03','MENA','SQL Course',18000,225,15000);
+INSERT INTO regions VALUES (1,'MENA','Khalid Al-Rashid','UAE'),(2,'Europe','Emma Schmidt','Germany'),(3,'APAC','Yuki Nakamura','Japan'),(4,'Americas','John Davis','USA');`
+  },
+};
+
+const SQL_CHALLENGES = [
+  {id:'sql_e1',diff:'Easy',topic:'SELECT',title:'List All Employees',xp:20,desc:'List the name and department of every employee.',hint:'Use SELECT with two columns.',solution:'SELECT name, department FROM employees;',dataset:'employees',check:r=>r.length===15},
+  {id:'sql_e2',diff:'Easy',topic:'SELECT',title:'Dubai Employees',xp:20,desc:'Find all employees who work in Dubai.',hint:"Use WHERE city = 'Dubai'.",solution:"SELECT name, salary FROM employees WHERE city = 'Dubai';",dataset:'employees',check:r=>r.length===7},
+  {id:'sql_e3',diff:'Easy',topic:'SELECT',title:'High Earners',xp:20,desc:'List employees earning more than 90,000.',hint:'Use WHERE with a numeric comparison.',solution:'SELECT name, salary FROM employees WHERE salary > 90000 ORDER BY salary DESC;',dataset:'employees',check:r=>r.length===5},
+  {id:'sql_e4',diff:'Easy',topic:'SELECT',title:'Completed Orders',xp:20,desc:"Find all completed orders.",hint:"Filter by status = 'completed'.",solution:"SELECT * FROM orders WHERE status = 'completed';",dataset:'orders',check:r=>r.length===8},
+  {id:'sql_e5',diff:'Easy',topic:'SELECT',title:'Products by Price',xp:20,desc:'List all products and their prices, sorted by price descending.',hint:'Use ORDER BY ... DESC.',solution:'SELECT name, price FROM products ORDER BY price DESC;',dataset:'orders',check:r=>r.length===8&&r[0].price>=r[1].price},
+  {id:'sql_e6',diff:'Easy',topic:'Aggregates',title:'Average Salary',xp:25,desc:'What is the average salary across all employees?',hint:'Use AVG().',solution:'SELECT AVG(salary) as avg_salary FROM employees;',dataset:'employees',check:r=>r.length===1&&r[0].avg_salary!==undefined},
+  {id:'sql_e7',diff:'Easy',topic:'Aggregates',title:'Count by Department',xp:25,desc:'How many employees are in each department?',hint:'Use COUNT(*) with GROUP BY.',solution:'SELECT department, COUNT(*) as count FROM employees GROUP BY department;',dataset:'employees',check:r=>r.length===4},
+  {id:'sql_e8',diff:'Easy',topic:'Aggregates',title:'Revenue by Region',xp:25,desc:'Calculate total revenue for each region.',hint:'Use SUM() with GROUP BY region.',solution:'SELECT region, SUM(revenue) as total_revenue FROM sales GROUP BY region;',dataset:'sales',check:r=>r.length===4},
+  {id:'sql_m1',diff:'Medium',topic:'JOINs',title:'Orders with Names',xp:40,desc:'Show each order with the customer name and product name.',hint:'JOIN orders to both customers and products.',solution:'SELECT c.name as customer, p.name as product, o.quantity, o.status FROM orders o JOIN customers c ON o.customer_id=c.id JOIN products p ON o.product_id=p.id;',dataset:'orders',check:r=>r.length===12&&r[0].hasOwnProperty('customer')},
+  {id:'sql_m2',diff:'Medium',topic:'JOINs',title:'Department Salary Cost',xp:40,desc:'Show each department name with total salary cost and headcount.',hint:'JOIN employees to departments, GROUP BY.',solution:'SELECT d.name, COUNT(e.id) as headcount, SUM(e.salary) as salary_cost FROM departments d LEFT JOIN employees e ON e.department=d.name GROUP BY d.name;',dataset:'employees',check:r=>r.length===4},
+  {id:'sql_m3',diff:'Medium',topic:'JOINs',title:'Customer Spending',xp:40,desc:'For each customer, show their total spending.',hint:'JOIN orders and products, SUM(price * quantity).',solution:'SELECT c.name, SUM(p.price*o.quantity) as total_spent FROM customers c JOIN orders o ON c.id=o.customer_id JOIN products p ON o.product_id=p.id GROUP BY c.name ORDER BY total_spent DESC;',dataset:'orders',check:r=>r.length>0&&r[0].total_spent!==undefined},
+  {id:'sql_m4',diff:'Medium',topic:'GROUP BY',title:'Departments Over 300K',xp:40,desc:'Find departments where total salary exceeds 300,000.',hint:'Use HAVING after GROUP BY.',solution:'SELECT department, SUM(salary) as total FROM employees GROUP BY department HAVING SUM(salary)>300000;',dataset:'employees',check:r=>r.length>=1},
+  {id:'sql_m5',diff:'Medium',topic:'GROUP BY',title:'Top Products',xp:40,desc:'Find products ordered more than once.',hint:'GROUP BY product_id, HAVING COUNT > 1.',solution:'SELECT p.name, COUNT(o.id) as order_count FROM products p JOIN orders o ON p.id=o.product_id GROUP BY p.name HAVING COUNT(o.id)>1 ORDER BY order_count DESC;',dataset:'orders',check:r=>r.length>=1},
+  {id:'sql_m6',diff:'Medium',topic:'Subqueries',title:'Above Average Salary',xp:45,desc:'List employees earning above the company average salary.',hint:'Use a subquery with AVG() in the WHERE clause.',solution:'SELECT name, salary FROM employees WHERE salary>(SELECT AVG(salary) FROM employees) ORDER BY salary DESC;',dataset:'employees',check:r=>r.length>=1},
+  {id:'sql_m7',diff:'Medium',topic:'Subqueries',title:'MENA Revenue > 40K Months',xp:45,desc:'Show MENA revenue per month, only for months exceeding 40,000.',hint:"Filter region='MENA', GROUP BY month, HAVING SUM>40000.",solution:"SELECT month, SUM(revenue) as revenue FROM sales WHERE region='MENA' GROUP BY month HAVING SUM(revenue)>40000;",dataset:'sales',check:r=>r.length>=1},
+  {id:'sql_h1',diff:'Hard',topic:'Window Functions',title:'Salary Rank by Dept',xp:70,desc:'Rank employees by salary within their department (highest = 1).',hint:'Use RANK() OVER (PARTITION BY department ORDER BY salary DESC).',solution:'SELECT name, department, salary, RANK() OVER (PARTITION BY department ORDER BY salary DESC) as dept_rank FROM employees;',dataset:'employees',check:r=>r.length===15&&r[0].hasOwnProperty('dept_rank')},
+  {id:'sql_h2',diff:'Hard',topic:'Window Functions',title:'Running Revenue Total',xp:70,desc:'Calculate a running total of MENA revenue ordered by month.',hint:'Use SUM() OVER (ORDER BY month) with WHERE region=MENA.',solution:"SELECT month, revenue, SUM(revenue) OVER (ORDER BY month) as running_total FROM sales WHERE region='MENA' ORDER BY month;",dataset:'sales',check:r=>r.length>=1&&r[0].hasOwnProperty('running_total')},
+  {id:'sql_h3',diff:'Hard',topic:'Window Functions',title:'Top Earner Per Dept',xp:70,desc:'Show only the highest-paid employee in each department.',hint:'Use ROW_NUMBER() OVER (PARTITION BY department ORDER BY salary DESC), filter rn=1.',solution:'SELECT name, department, salary FROM (SELECT name, department, salary, ROW_NUMBER() OVER (PARTITION BY department ORDER BY salary DESC) as rn FROM employees) WHERE rn=1;',dataset:'employees',check:r=>r.length===4},
+  {id:'sql_h4',diff:'Hard',topic:'CTEs',title:'High-Salary Departments',xp:75,desc:'Using a CTE, find departments where avg salary > overall avg salary.',hint:'Write a CTE for dept averages, compare to overall avg subquery.',solution:`WITH dept_avg AS (SELECT department, AVG(salary) as avg_sal FROM employees GROUP BY department) SELECT department, ROUND(avg_sal,0) as avg_salary FROM dept_avg WHERE avg_sal>(SELECT AVG(salary) FROM employees);`,dataset:'employees',check:r=>r.length>=1},
+  {id:'sql_h5',diff:'Hard',topic:'CTEs',title:'Region vs Target',xp:75,desc:"Using a CTE, show each region's total revenue vs target and whether they hit it.",hint:'SUM revenue and target in CTE, then CASE WHEN total_rev >= total_target.',solution:`WITH region_perf AS (SELECT region, SUM(revenue) as total_rev, SUM(target) as total_target FROM sales GROUP BY region) SELECT region, total_rev, total_target, CASE WHEN total_rev>=total_target THEN 'Hit' ELSE 'Missed' END as status FROM region_perf ORDER BY total_rev DESC;`,dataset:'sales',check:r=>r.length===4&&r[0].hasOwnProperty('status')},
+];
+
+let sqlState = { dataset:'employees', challengeIdx:null, tab:'free', diffFilter:'All', topicFilter:'All' };
+
+async function initSQLjs() {
+  if (sqlDb) return sqlDb;
+  if (sqlLoading) return null;
+  sqlLoading = true;
+  try {
+    const SQL = await window.initSqlJs({ locateFile: f => `https://cdnjs.cloudflare.com/ajax/libs/sql.js/1.10.2/${f}` });
+    sqlDb = new SQL.Database();
+    loadSQLDataset(sqlState.dataset);
+    return sqlDb;
+  } catch(e) { console.error('SQL.js error:', e); return null; }
+  finally { sqlLoading = false; }
+}
+
+function loadSQLDataset(name) {
+  if (!sqlDb) return;
+  const ds = SQL_DATASETS[name];
+  if (!ds) return;
+  ['employees','departments','customers','products','orders','sales','regions'].forEach(t => {
+    try { sqlDb.run(`DROP TABLE IF EXISTS ${t}`); } catch(e) {}
+  });
+  ds.schema.split(';').forEach(stmt => { const s = stmt.trim(); if (s) try { sqlDb.run(s+';'); } catch(e){} });
+}
+
+function runSQLQueryFull(query) {
+  if (!sqlDb) return { error:'Database not ready. Please wait a moment.' };
+  try {
+    const stmt = sqlDb.prepare(query);
+    const cols = stmt.getColumnNames();
+    const rows = [];
+    while (stmt.step()) rows.push(stmt.getAsObject());
+    stmt.free();
+    return { cols, rows };
+  } catch(e) {
+    try { sqlDb.run(query); return { cols:[], rows:[], message:'Query executed.' }; }
+    catch(e2) { return { error: e2.message }; }
+  }
+}
+
+function sql() {
+  document.getElementById('content').innerHTML = `
+  <div class="page-enter">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:var(--sp-6);flex-wrap:wrap;gap:var(--sp-3)">
+      <div>
+        <h1 style="font-size:1.5rem;font-weight:800;letter-spacing:-0.5px">SQL Lab</h1>
+        <p style="color:var(--text-secondary);margin-top:2px;font-size:.875rem">Real SQL against live in-browser SQLite databases</p>
+      </div>
+      <div style="display:flex;gap:var(--sp-2)">
+        <button class="btn ${sqlState.tab==='free'?'btn-primary':'btn-secondary'}" onclick="sqlSwitchTab('free')">Free Query</button>
+        <button class="btn ${sqlState.tab==='challenges'?'btn-primary':'btn-secondary'}" onclick="sqlSwitchTab('challenges')">Challenges <span class="nav-badge" style="margin-left:4px">${SQL_CHALLENGES.length}</span></button>
+      </div>
+    </div>
+    <div id="sqlTabContent"></div>
+  </div>`;
+  sqlSwitchTab(sqlState.tab);
+  if (!sqlDb && !document.getElementById('sqljs-script')) {
+    const s = document.createElement('script');
+    s.id = 'sqljs-script';
+    s.src = 'https://cdnjs.cloudflare.com/ajax/libs/sql.js/1.10.2/sql-wasm.js';
+    s.onload = () => initSQLjs().then(() => { toast('success','SQL Engine Ready','In-browser SQLite loaded.'); if(sqlState.tab==='free') renderSQLFreeQuery(); });
+    document.head.appendChild(s);
+  } else if (!sqlDb) { initSQLjs(); }
+}
+
+function sqlSwitchTab(tab) { sqlState.tab=tab; if(tab==='free') renderSQLFreeQuery(); else renderSQLChallenges(); }
+
+function renderSQLFreeQuery() {
+  const tc = document.getElementById('sqlTabContent');
+  if (!tc) return;
+  tc.innerHTML = `
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:var(--sp-5)" id="sqlFreeGrid">
+    <div>
+      <div class="card" style="margin-bottom:var(--sp-4)">
+        <div style="font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--text-tertiary);margin-bottom:var(--sp-3)">Dataset</div>
+        <div style="display:flex;gap:var(--sp-2);flex-wrap:wrap">
+          ${Object.entries(SQL_DATASETS).map(([k,v])=>`<button class="btn btn-${sqlState.dataset===k?'primary':'secondary'} btn-sm" onclick="sqlSelectDataset('${k}')">${v.icon} ${v.name}</button>`).join('')}
+        </div>
+        <p style="font-size:.78rem;color:var(--text-secondary);margin-top:var(--sp-3)">${SQL_DATASETS[sqlState.dataset].desc}</p>
+      </div>
+      <div class="card" style="padding:0;overflow:hidden;margin-bottom:var(--sp-4)">
+        <div style="padding:var(--sp-3) var(--sp-4);border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between">
+          <span style="font-size:.78rem;font-weight:600;color:var(--text-secondary)">SQL Editor</span>
+          <div style="display:flex;gap:var(--sp-2)">
+            <button class="btn btn-ghost btn-sm" onclick="document.getElementById('sqlEditor').value=''">Clear</button>
+            <button class="btn btn-primary btn-sm" onclick="sqlRunFree()">▶ Run</button>
+          </div>
+        </div>
+        <textarea id="sqlEditor" style="width:100%;min-height:220px;background:var(--bg-elevated);border:none;outline:none;padding:var(--sp-4);font-family:var(--font-mono);font-size:.875rem;color:var(--text-primary);resize:vertical;line-height:1.6" placeholder="SELECT * FROM employees LIMIT 5;" spellcheck="false"></textarea>
+      </div>
+      <div class="card">
+        <div style="font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--text-tertiary);margin-bottom:var(--sp-3)">Schema Reference</div>
+        <div id="sqlSchema" style="font-family:var(--font-mono);font-size:.78rem;color:var(--text-secondary);line-height:1.8"></div>
+      </div>
+    </div>
+    <div>
+      <div class="card" style="padding:0;overflow:hidden;min-height:400px">
+        <div style="padding:var(--sp-3) var(--sp-4);border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between">
+          <span style="font-size:.78rem;font-weight:600;color:var(--text-secondary)">Results</span>
+          <span id="sqlRowCount" style="font-size:.72rem;color:var(--text-tertiary)"></span>
+        </div>
+        <div id="sqlResults" style="overflow:auto;max-height:600px;padding:var(--sp-4)">
+          <div style="color:var(--text-tertiary);font-size:.875rem;text-align:center;padding:var(--sp-10)">Run a query to see results</div>
+        </div>
+      </div>
+    </div>
+  </div>`;
+  sqlRenderSchema();
+  if (window.innerWidth < 900) document.getElementById('sqlFreeGrid').style.gridTemplateColumns='1fr';
+}
+
+function sqlRenderSchema() {
+  const el = document.getElementById('sqlSchema');
+  if (!el) return;
+  const ds = SQL_DATASETS[sqlState.dataset];
+  const tables = [...ds.schema.matchAll(/CREATE TABLE (\w+) \(([^)]+)\)/g)];
+  el.innerHTML = tables.map(m => {
+    const cols = m[2].split(',').map(c=>c.trim().split(' ').slice(0,2).join(' '));
+    return `<div style="margin-bottom:var(--sp-3)"><span style="color:var(--accent);font-weight:600">${m[1]}</span><br>${cols.map(c=>`&nbsp;&nbsp;<span style="color:var(--text-tertiary)">·</span> ${c}`).join('<br>')}</div>`;
+  }).join('');
+}
+
+function sqlSelectDataset(name) { sqlState.dataset=name; if(sqlDb)loadSQLDataset(name); renderSQLFreeQuery(); }
+
+function sqlRunFree() {
+  const query = document.getElementById('sqlEditor')?.value?.trim();
+  if (!query) return;
+  if (!sqlDb) { toast('warning','Loading...','SQL engine is still loading.'); return; }
+  loadSQLDataset(sqlState.dataset);
+  renderSQLResultsTo('sqlResults','sqlRowCount', runSQLQueryFull(query));
+}
+
+function renderSQLResultsTo(resId, countId, res) {
+  const el = document.getElementById(resId);
+  const cEl = document.getElementById(countId);
+  if (!el) return;
+  if (res.error) { el.innerHTML=`<div style="background:var(--danger-dim);border:1px solid rgba(239,68,68,.2);border-radius:var(--r-md);padding:var(--sp-4);font-family:var(--font-mono);font-size:.82rem;color:var(--danger)">${res.error}</div>`; if(cEl)cEl.textContent=''; return; }
+  if (res.message) { el.innerHTML=`<div style="color:var(--success);font-size:.875rem">${res.message}</div>`; return; }
+  if (!res.rows||!res.rows.length) { el.innerHTML=`<div style="color:var(--text-tertiary);font-size:.875rem;text-align:center;padding:var(--sp-8)">No rows returned.</div>`; if(cEl)cEl.textContent='0 rows'; return; }
+  const cols = res.cols||Object.keys(res.rows[0]);
+  if (cEl) cEl.textContent=`${res.rows.length} row${res.rows.length!==1?'s':''}`;
+  el.innerHTML=`<table style="width:100%;border-collapse:collapse;font-size:.82rem"><thead><tr style="border-bottom:2px solid var(--border-strong)">${cols.map(c=>`<th style="text-align:left;padding:var(--sp-2) var(--sp-3);font-family:var(--font-display);font-size:.72rem;font-weight:700;color:var(--text-tertiary);text-transform:uppercase;letter-spacing:.5px;white-space:nowrap">${c}</th>`).join('')}</tr></thead><tbody>${res.rows.map((row,i)=>`<tr style="border-bottom:1px solid var(--border);background:${i%2===0?'transparent':'var(--bg-hover)'}">${cols.map(c=>`<td style="padding:var(--sp-2) var(--sp-3);font-family:var(--font-mono);color:${typeof row[c]==='number'?'var(--accent)':'var(--text-primary)'}">${row[c]===null?'<span style="color:var(--text-tertiary)">NULL</span>':row[c]}</td>`).join('')}</tr>`).join('')}</tbody></table>`;
+}
+
+function renderSQLChallenges() {
+  const tc = document.getElementById('sqlTabContent');
+  if (!tc) return;
+  const diffs=['All','Easy','Medium','Hard'];
+  const topics=['All',...new Set(SQL_CHALLENGES.map(c=>c.topic))];
+  const filtered = SQL_CHALLENGES.filter(ch=>(sqlState.diffFilter==='All'||ch.diff===sqlState.diffFilter)&&(sqlState.topicFilter==='All'||ch.topic===sqlState.topicFilter));
+  tc.innerHTML=`
+  <div>
+    <div style="display:flex;gap:var(--sp-3);margin-bottom:var(--sp-5);flex-wrap:wrap;align-items:center">
+      <div class="tabs" style="margin-bottom:0">${diffs.map(d=>`<button class="tab ${sqlState.diffFilter===d?'active':''}" onclick="sqlSetDiff('${d}')">${d}</button>`).join('')}</div>
+      <select style="background:var(--bg-elevated);border:1px solid var(--border-strong);border-radius:var(--r-md);padding:var(--sp-2) var(--sp-3);color:var(--text-primary);font-size:.82rem;font-family:var(--font-body)" onchange="sqlSetTopic(this.value)">${topics.map(t=>`<option value="${t}" ${sqlState.topicFilter===t?'selected':''}>${t}</option>`).join('')}</select>
+      <span style="font-size:.78rem;color:var(--text-tertiary);margin-left:auto">${state.progress.sqlSolved.length}/${SQL_CHALLENGES.length} solved</span>
+    </div>
+    <div style="display:grid;gap:var(--sp-3)">
+      ${filtered.map(ch=>{
+        const solved=state.progress.sqlSolved.includes(ch.id);
+        const dc={Easy:'var(--success)',Medium:'var(--warning)',Hard:'var(--danger)'}[ch.diff];
+        return `<div class="card card-interactive" style="padding:var(--sp-5);${solved?'border-color:rgba(34,197,94,.25)':''}" onclick="sqlOpenChallenge('${ch.id}')">
+          <div style="display:flex;align-items:center;gap:var(--sp-4)">
+            <div style="width:36px;height:36px;border-radius:var(--r-md);background:${solved?'var(--success-dim)':'var(--bg-elevated)'};display:flex;align-items:center;justify-content:center;font-size:1rem;flex-shrink:0">${solved?'✅':'💾'}</div>
+            <div style="flex:1;min-width:0">
+              <div style="display:flex;align-items:center;gap:var(--sp-2);flex-wrap:wrap">
+                <span style="font-weight:700;font-size:.9rem">${ch.title}</span>
+                <span style="font-size:.68rem;font-weight:700;color:${dc};background:${dc}18;border:1px solid ${dc}30;border-radius:var(--r-full);padding:2px 8px">${ch.diff}</span>
+                <span class="badge badge-neutral">${ch.topic}</span>
+              </div>
+              <p style="font-size:.8rem;color:var(--text-secondary);margin-top:4px">${ch.desc}</p>
+            </div>
+            <span style="font-size:.78rem;font-weight:700;color:var(--accent);flex-shrink:0">+${ch.xp} XP</span>
+          </div>
+        </div>`;
+      }).join('')}
+    </div>
+  </div>`;
+}
+
+function sqlSetDiff(d) { sqlState.diffFilter=d; renderSQLChallenges(); }
+function sqlSetTopic(t) { sqlState.topicFilter=t; renderSQLChallenges(); }
+
+function sqlOpenChallenge(id) {
+  const ch=SQL_CHALLENGES.find(c=>c.id===id);
+  if (!ch) return;
+  sqlState.dataset=ch.dataset;
+  if (sqlDb) loadSQLDataset(ch.dataset);
+  const solved=state.progress.sqlSolved.includes(ch.id);
+  const dc={Easy:'var(--success)',Medium:'var(--warning)',Hard:'var(--danger)'}[ch.diff];
+  document.getElementById('content').innerHTML=`
+  <div class="page-enter">
+    <div style="display:flex;align-items:center;gap:var(--sp-3);margin-bottom:var(--sp-5)">
+      <button class="btn btn-ghost btn-sm" onclick="navigate('sql');sqlState.tab='challenges';setTimeout(()=>sqlSwitchTab('challenges'),50)">← Back</button>
+      <span style="color:var(--text-tertiary)">›</span><span style="font-size:.875rem;font-weight:600">${ch.title}</span>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:var(--sp-5)" id="challengeGrid">
+      <div>
+        <div class="card" style="margin-bottom:var(--sp-4)">
+          <div style="display:flex;align-items:center;gap:var(--sp-2);margin-bottom:var(--sp-4)">
+            <span style="font-size:.72rem;font-weight:700;color:${dc};background:${dc}18;border:1px solid ${dc}30;border-radius:var(--r-full);padding:2px 10px">${ch.diff}</span>
+            <span class="badge badge-neutral">${ch.topic}</span>
+            <span style="margin-left:auto;font-size:.82rem;font-weight:700;color:var(--accent)">+${ch.xp} XP</span>
+          </div>
+          <h2 style="font-size:1.2rem;font-weight:800;margin-bottom:var(--sp-3)">${ch.title}</h2>
+          <p style="color:var(--text-secondary);line-height:1.7;margin-bottom:var(--sp-4)">${ch.desc}</p>
+          <div style="background:var(--bg-elevated);border-radius:var(--r-md);padding:var(--sp-3) var(--sp-4);font-size:.8rem;color:var(--text-secondary)"><strong>Dataset:</strong> ${SQL_DATASETS[ch.dataset].icon} ${SQL_DATASETS[ch.dataset].name}</div>
+        </div>
+        <div class="card" style="margin-bottom:var(--sp-4)">
+          <div style="display:flex;align-items:center;justify-content:space-between">
+            <span style="font-size:.78rem;font-weight:700;color:var(--text-tertiary)">HINT</span>
+            <button class="btn btn-ghost btn-sm" onclick="this.nextElementSibling.classList.toggle('hidden')">Show</button>
+          </div>
+          <div class="hidden" style="margin-top:var(--sp-3);font-size:.875rem;color:var(--text-secondary)">${ch.hint}</div>
+        </div>
+        ${solved?`<div style="background:var(--success-dim);border:1px solid rgba(34,197,94,.25);border-radius:var(--r-md);padding:var(--sp-3) var(--sp-4);font-size:.875rem;color:var(--success);font-weight:600">✅ Already solved!</div>`:''}
+      </div>
+      <div>
+        <div class="card" style="padding:0;overflow:hidden;margin-bottom:var(--sp-4)">
+          <div style="padding:var(--sp-3) var(--sp-4);border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center">
+            <span style="font-size:.78rem;font-weight:600;color:var(--text-secondary)">Your Query</span>
+            <div style="display:flex;gap:var(--sp-2)">
+              <button class="btn btn-ghost btn-sm" onclick="sqlShowSolution('${ch.id}')">Solution</button>
+              <button class="btn btn-primary btn-sm" onclick="sqlRunChallenge('${ch.id}')">▶ Run & Check</button>
+            </div>
+          </div>
+          <textarea id="challengeEditor" style="width:100%;min-height:240px;background:var(--bg-elevated);border:none;outline:none;padding:var(--sp-4);font-family:var(--font-mono);font-size:.875rem;color:var(--text-primary);resize:vertical;line-height:1.6" placeholder="Write your SQL here..." spellcheck="false"></textarea>
+        </div>
+        <div class="card" style="padding:0;overflow:hidden">
+          <div style="padding:var(--sp-3) var(--sp-4);border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between">
+            <span style="font-size:.78rem;font-weight:600;color:var(--text-secondary)">Results</span>
+            <span id="challengeRowCount" style="font-size:.72rem;color:var(--text-tertiary)"></span>
+          </div>
+          <div id="challengeResults" style="overflow:auto;max-height:300px;padding:var(--sp-4)">
+            <div style="color:var(--text-tertiary);font-size:.875rem;text-align:center;padding:var(--sp-6)">Run your query to see results</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>`;
+  if (window.innerWidth < 900) { const g=document.getElementById('challengeGrid'); if(g)g.style.gridTemplateColumns='1fr'; }
+}
+
+function sqlRunChallenge(id) {
+  const ch=SQL_CHALLENGES.find(c=>c.id===id);
+  if (!ch) return;
+  const query=document.getElementById('challengeEditor')?.value?.trim();
+  if (!query) return;
+  if (!sqlDb) { toast('warning','Loading...','SQL engine is still loading.'); return; }
+  loadSQLDataset(ch.dataset);
+  const res=runSQLQueryFull(query);
+  renderSQLResultsTo('challengeResults','challengeRowCount',res);
+  if (!res.error && res.rows) {
+    if (ch.check(res.rows)) {
+      if (!state.progress.sqlSolved.includes(ch.id)) {
+        state.progress.sqlSolved.push(ch.id);
+        addXP(ch.xp,`${ch.title} solved!`);
+        checkAchievements(); saveState();
+        toast('success','✅ Correct!',`+${ch.xp} XP earned`);
+      } else { toast('info','✅ Correct again!','Already counted this one.'); }
+    } else { toast('error','Not quite','Your results do not match. Check the row count or columns.'); }
+  }
+}
+
+function sqlShowSolution(id) {
+  const ch=SQL_CHALLENGES.find(c=>c.id===id);
+  if (!ch) return;
+  const ed=document.getElementById('challengeEditor');
+  if (ed) ed.value=ch.solution;
+}
+
+// ============================================================
+// PHASE 2 — GLOSSARY (90+ terms)
+// ============================================================
+const GLOSSARY_TERMS = [
+  {term:'SELECT',cat:'SQL',def:'The SQL command used to retrieve data from one or more tables. It specifies which columns to return.'},
+  {term:'WHERE',cat:'SQL',def:'Filters rows in a SQL query based on a condition. Applied before grouping.'},
+  {term:'GROUP BY',cat:'SQL',def:'Groups rows that share a value in specified columns, enabling aggregate functions like COUNT, SUM, AVG.'},
+  {term:'HAVING',cat:'SQL',def:'Filters groups created by GROUP BY. Works like WHERE but operates on aggregated values.'},
+  {term:'JOIN',cat:'SQL',def:'Combines rows from two or more tables based on a related column. Types include INNER, LEFT, RIGHT, and FULL OUTER.'},
+  {term:'INNER JOIN',cat:'SQL',def:'Returns only rows where the join condition is met in both tables.'},
+  {term:'LEFT JOIN',cat:'SQL',def:'Returns all rows from the left table, plus matched rows from the right. Unmatched right rows show NULL.'},
+  {term:'SUBQUERY',cat:'SQL',def:'A query nested inside another query. Can appear in SELECT, FROM, or WHERE clauses.'},
+  {term:'CTE',cat:'SQL',def:'Common Table Expression. A named temporary result set using WITH clause, making complex queries more readable.'},
+  {term:'WINDOW FUNCTION',cat:'SQL',def:'Performs calculations across a set of rows without collapsing them. Examples: ROW_NUMBER, RANK, LAG, LEAD.'},
+  {term:'ROW_NUMBER()',cat:'SQL',def:'Assigns a unique sequential integer to each row within a partition, starting from 1.'},
+  {term:'RANK()',cat:'SQL',def:'Assigns a rank to each row, with gaps for ties. e.g. 1, 2, 2, 4.'},
+  {term:'DENSE_RANK()',cat:'SQL',def:'Like RANK() but without gaps. e.g. 1, 2, 2, 3.'},
+  {term:'LAG()',cat:'SQL',def:'Accesses data from a previous row in the same result set, useful for period-over-period comparisons.'},
+  {term:'LEAD()',cat:'SQL',def:'Accesses data from a following row in the same result set.'},
+  {term:'PARTITION BY',cat:'SQL',def:'Divides the result set into partitions for window functions, similar to GROUP BY but without collapsing rows.'},
+  {term:'COALESCE()',cat:'SQL',def:'Returns the first non-NULL value from a list of expressions.'},
+  {term:'CASE WHEN',cat:'SQL',def:'A conditional expression that returns different values based on conditions, like an if-else statement.'},
+  {term:'NULL',cat:'SQL',def:'Represents missing or unknown data. NULL is not equal to anything. Use IS NULL to test for it.'},
+  {term:'INDEX',cat:'SQL',def:'A database structure that improves query performance by allowing faster data retrieval.'},
+  {term:'PRIMARY KEY',cat:'SQL',def:'A column or combination of columns that uniquely identifies each row. Cannot be NULL.'},
+  {term:'FOREIGN KEY',cat:'SQL',def:'A column that references the primary key of another table, enforcing referential integrity.'},
+  {term:'DISTINCT',cat:'SQL',def:'Eliminates duplicate rows from the result set.'},
+  {term:'ORDER BY',cat:'SQL',def:'Sorts the result set by one or more columns, ascending (ASC) or descending (DESC).'},
+  {term:'CAST()',cat:'SQL',def:'Converts a value from one data type to another. e.g. CAST(price AS INTEGER).'},
+  {term:'Mean',cat:'Statistics',def:'The arithmetic average of a set of values. Sum divided by count. Sensitive to outliers.'},
+  {term:'Median',cat:'Statistics',def:'The middle value when data is sorted. More robust to outliers than the mean.'},
+  {term:'Mode',cat:'Statistics',def:'The value that appears most frequently in a dataset.'},
+  {term:'Standard Deviation',cat:'Statistics',def:'Measures the spread of data around the mean. Low SD = data close to the mean.'},
+  {term:'Variance',cat:'Statistics',def:'The average of squared differences from the mean. The square of standard deviation.'},
+  {term:'Normal Distribution',cat:'Statistics',def:'A symmetric bell-shaped distribution where mean=median=mode. ~68% of data falls within 1 SD of the mean.'},
+  {term:'Skewness',cat:'Statistics',def:'Measures asymmetry of a distribution. Positive skew = tail on right. Negative skew = tail on left.'},
+  {term:'Outlier',cat:'Statistics',def:'A data point that differs significantly from others. Can distort the mean and standard deviation.'},
+  {term:'Correlation',cat:'Statistics',def:'Measures the strength and direction of the linear relationship between two variables. Ranges from -1 to +1.'},
+  {term:'Regression',cat:'Statistics',def:'A statistical method to model the relationship between a dependent variable and one or more independent variables.'},
+  {term:'R-squared',cat:'Statistics',def:'Measures how well a regression model fits the data. Ranges from 0 to 1, where 1 = perfect fit.'},
+  {term:'P-value',cat:'Statistics',def:'The probability of observing results at least this extreme if the null hypothesis is true. p < 0.05 is typically significant.'},
+  {term:'Hypothesis Testing',cat:'Statistics',def:'A formal procedure to decide whether to reject a null hypothesis based on sample data.'},
+  {term:'Null Hypothesis',cat:'Statistics',def:'The default assumption that there is no effect or no difference. Denoted H₀.'},
+  {term:'Confidence Interval',cat:'Statistics',def:'A range of values that likely contains the true population parameter. A 95% CI captures the true value 95% of the time.'},
+  {term:'A/B Testing',cat:'Statistics',def:'A controlled experiment comparing two versions (A=control, B=variant) to determine which performs better.'},
+  {term:'Type I Error',cat:'Statistics',def:'False positive. Rejecting a true null hypothesis. Also called alpha error.'},
+  {term:'Type II Error',cat:'Statistics',def:'False negative. Failing to reject a false null hypothesis. Also called beta error.'},
+  {term:'Central Limit Theorem',cat:'Statistics',def:'As sample size increases, the sampling distribution of the mean approaches normal regardless of population distribution.'},
+  {term:'KPI',cat:'Business',def:'Key Performance Indicator. A measurable value that demonstrates how effectively an organization achieves key objectives.'},
+  {term:'OKR',cat:'Business',def:'Objectives and Key Results. A goal-setting framework: objectives describe the goal, key results measure progress.'},
+  {term:'ROI',cat:'Business',def:'Return on Investment. (Gain - Cost) / Cost × 100. Measures the profitability of an investment.'},
+  {term:'CAC',cat:'Business',def:'Customer Acquisition Cost. Total sales and marketing spend divided by the number of new customers acquired.'},
+  {term:'LTV / CLV',cat:'Business',def:'Customer Lifetime Value. Total revenue expected from a customer over the entire relationship.'},
+  {term:'Churn Rate',cat:'Business',def:'The percentage of customers who stop using a product in a given period. Formula: (Lost / Start) × 100.'},
+  {term:'Retention Rate',cat:'Business',def:'Percentage of customers who continue using a product over a period. Inverse of churn.'},
+  {term:'MRR',cat:'Business',def:'Monthly Recurring Revenue. Predictable monthly revenue from subscriptions.'},
+  {term:'ARR',cat:'Business',def:'Annual Recurring Revenue. MRR × 12. Key SaaS metric.'},
+  {term:'NPS',cat:'Business',def:'Net Promoter Score. Measures loyalty by asking how likely customers are to recommend (0-10 scale).'},
+  {term:'Conversion Rate',cat:'Business',def:'Percentage of users who take a desired action. e.g. 5 purchases / 100 visitors = 5%.'},
+  {term:'DAU / MAU',cat:'Business',def:'Daily/Monthly Active Users. DAU/MAU ratio indicates product stickiness.'},
+  {term:'Funnel Analysis',cat:'Business',def:'Analyzing user progression through steps toward a goal: visit → signup → purchase.'},
+  {term:'Cohort Analysis',cat:'Business',def:'Analyzing groups of users who share a common characteristic (e.g. signup month) over time.'},
+  {term:'Unit Economics',cat:'Business',def:'Direct revenues and costs associated with a business model expressed on a per-unit basis.'},
+  {term:'Gross Margin',cat:'Business',def:'Revenue minus cost of goods sold, expressed as a percentage of revenue.'},
+  {term:'Burn Rate',cat:'Business',def:'The rate at which a company spends cash. Monthly burn tells you runway length.'},
+  {term:'Dashboard',cat:'BI',def:'A visual display of key metrics and KPIs providing a quick overview of business performance.'},
+  {term:'ETL',cat:'BI',def:'Extract, Transform, Load. The process of extracting data from sources, transforming it, and loading it into a data warehouse.'},
+  {term:'Data Warehouse',cat:'BI',def:'A centralized repository for integrated data from multiple sources, optimized for analytical queries.'},
+  {term:'Data Lake',cat:'BI',def:'A storage repository holding raw data in native format until needed. Schema-on-read vs. warehouse schema-on-write.'},
+  {term:'Star Schema',cat:'BI',def:'A data modeling approach with a central fact table connected to multiple dimension tables.'},
+  {term:'Fact Table',cat:'BI',def:'In a star schema, the central table containing measurable business facts (e.g. sales transactions).'},
+  {term:'Dimension',cat:'BI',def:'A category used to label, filter, or group data. e.g. Region, Product Category, Date.'},
+  {term:'Granularity',cat:'BI',def:'The level of detail in a dataset. Higher granularity = more detailed data (e.g. daily vs monthly).'},
+  {term:'Cardinality',cat:'BI',def:'The number of unique values in a column. High cardinality = many unique values (e.g. email addresses).'},
+  {term:'Power BI',cat:'BI',def:"Microsoft's business analytics tool for interactive visualizations and BI capabilities."},
+  {term:'Tableau',cat:'BI',def:'A data visualization tool widely used for creating interactive dashboards and reports.'},
+  {term:'DAX',cat:'BI',def:'Data Analysis Expressions. A formula language used in Power BI and SSAS for custom calculations.'},
+  {term:'OLAP',cat:'BI',def:'Online Analytical Processing. Technology for organizing large databases and supporting complex analysis.'},
+  {term:'Data Governance',cat:'BI',def:'The management of data availability, usability, integrity, and security across an organization.'},
+  {term:'Business Analyst',cat:'Career',def:'A professional who analyzes business processes, identifies improvements, and translates needs into requirements.'},
+  {term:'Data Analyst',cat:'Career',def:'A professional who collects, processes, and analyzes data to help organizations make informed decisions.'},
+  {term:'Stakeholder',cat:'Career',def:'Any individual or group with an interest in a project or business outcome.'},
+  {term:'Requirements Gathering',cat:'Career',def:'The process of collecting, documenting, and validating stakeholder needs for a system or project.'},
+  {term:'User Story',cat:'Career',def:'A feature description from the user perspective: "As a [user], I want [goal] so that [reason]."'},
+  {term:'Agile',cat:'Career',def:'An iterative project management methodology emphasizing flexibility, collaboration, and rapid delivery.'},
+  {term:'STAR Method',cat:'Career',def:'Situation, Task, Action, Result. A structured approach to answering behavioral interview questions.'},
+  {term:'Sprint',cat:'Career',def:'A fixed time period (usually 1-4 weeks) during which a Scrum team completes a set amount of work.'},
+  {term:'Backlog',cat:'Career',def:'A prioritized list of work items to be completed, maintained by the product owner in Agile.'},
+  {term:'Portfolio',cat:'Career',def:'A collection of work samples demonstrating skills and experience, crucial for data analytics job applications.'},
+];
+
+let glossarySearch = '';
+let glossaryCat = 'All';
+
+function glossary() {
+  const cats = ['All',...new Set(GLOSSARY_TERMS.map(t=>t.cat))];
+  document.getElementById('content').innerHTML = `
+  <div class="page-enter">
+    <div style="margin-bottom:var(--sp-6)">
+      <h1 style="font-size:1.5rem;font-weight:800;letter-spacing:-0.5px">Glossary</h1>
+      <p style="color:var(--text-secondary);margin-top:2px">${GLOSSARY_TERMS.length} terms across SQL, Statistics, Business, BI, and Career</p>
+    </div>
+    <div style="display:flex;gap:var(--sp-3);margin-bottom:var(--sp-5);flex-wrap:wrap">
+      <input id="glossarySearch" class="form-input" style="flex:1;min-width:200px;max-width:360px" placeholder="Search terms..." value="${glossarySearch}" oninput="glossaryFilter(this.value,'${glossaryCat}')">
+      <div class="tabs" style="margin-bottom:0;flex-wrap:wrap">${cats.map(c=>`<button class="tab ${glossaryCat===c?'active':''}" onclick="glossaryFilter('${glossarySearch}','${c}')">${c}</button>`).join('')}</div>
+    </div>
+    <div id="glossaryList"></div>
+  </div>`;
+  glossaryRender();
+}
+
+function glossaryFilter(search, cat) {
+  glossarySearch=search; glossaryCat=cat;
+  document.querySelectorAll('#glossaryList ~ * .tab, .tabs .tab').forEach(t=>{});
+  glossaryRender();
+}
+
+function glossaryRender() {
+  const catColors={SQL:'var(--accent)',Statistics:'var(--success)',Business:'var(--info)',BI:'var(--warning)',Career:'#8b5cf6'};
+  const filtered = GLOSSARY_TERMS.filter(t=>{
+    const ms=!glossarySearch||t.term.toLowerCase().includes(glossarySearch.toLowerCase())||t.def.toLowerCase().includes(glossarySearch.toLowerCase());
+    return ms&&(glossaryCat==='All'||t.cat===glossaryCat);
+  }).sort((a,b)=>a.term.localeCompare(b.term));
+  const el=document.getElementById('glossaryList');
+  if (!el) return;
+  if (!filtered.length){el.innerHTML=`<div class="empty-state"><div class="empty-state-icon">🔍</div><div class="empty-state-title">No terms found</div></div>`;return;}
+  const grouped={};
+  filtered.forEach(t=>{const l=t.term[0].toUpperCase();if(!grouped[l])grouped[l]=[];grouped[l].push(t);});
+  el.innerHTML=Object.entries(grouped).map(([letter,terms])=>`
+    <div style="margin-bottom:var(--sp-6)">
+      <div style="font-family:var(--font-display);font-size:1.2rem;font-weight:800;color:var(--accent);margin-bottom:var(--sp-3);padding-bottom:var(--sp-2);border-bottom:1px solid var(--border)">${letter}</div>
+      <div style="display:grid;gap:var(--sp-3)">${terms.map(t=>`
+        <div class="card card-sm" style="border-left:2px solid ${catColors[t.cat]||'var(--border-strong)'}">
+          <div style="display:flex;align-items:flex-start;gap:var(--sp-3)">
+            <div style="flex:1">
+              <div style="display:flex;align-items:center;gap:var(--sp-2);margin-bottom:4px">
+                <span style="font-family:var(--font-mono);font-weight:700;font-size:.95rem">${t.term}</span>
+                <span style="font-size:.65rem;font-weight:700;color:${catColors[t.cat]||'var(--text-tertiary)'};background:${catColors[t.cat]||'var(--bg-elevated)'}18;border:1px solid ${catColors[t.cat]||'var(--border)'}30;border-radius:var(--r-full);padding:1px 8px">${t.cat}</span>
+              </div>
+              <p style="font-size:.875rem;color:var(--text-secondary);line-height:1.6">${t.def}</p>
+            </div>
+          </div>
+        </div>`).join('')}</div>
+    </div>`).join('');
+}
+
+// ============================================================
+// PHASE 2 — FLASHCARDS (SM-2 Spaced Repetition)
+// ============================================================
+const FLASHCARD_DECK = [
+  {id:'fc1',cat:'SQL',q:'What does GROUP BY do in SQL?',a:'Groups rows with the same value in specified columns together. Required when using aggregate functions to return a single value per group.'},
+  {id:'fc2',cat:'SQL',q:'What is the difference between WHERE and HAVING?',a:'WHERE filters individual rows before grouping. HAVING filters groups after GROUP BY has been applied. HAVING can use aggregate functions, WHERE cannot.'},
+  {id:'fc3',cat:'SQL',q:'What is a LEFT JOIN?',a:'Returns all rows from the left table, and matched rows from the right table. If no match exists, NULL values appear for right table columns.'},
+  {id:'fc4',cat:'SQL',q:'What is a CTE (Common Table Expression)?',a:'A named temporary result set defined with the WITH keyword. Makes complex queries more readable and reusable within the same query.'},
+  {id:'fc5',cat:'SQL',q:'What does PARTITION BY do in window functions?',a:'Divides the result set into groups for the window function to operate on. Like GROUP BY but rows are not collapsed — all rows remain in the output.'},
+  {id:'fc6',cat:'SQL',q:'Explain the difference between RANK() and DENSE_RANK().',a:'RANK() leaves gaps after ties (1, 2, 2, 4). DENSE_RANK() does not leave gaps (1, 2, 2, 3). Both assign 1 to the highest value in each partition.'},
+  {id:'fc7',cat:'SQL',q:'What does COALESCE() do?',a:'Returns the first non-NULL value in a list of expressions. Useful for replacing NULLs with defaults: COALESCE(salary, 0) returns 0 if salary is NULL.'},
+  {id:'fc8',cat:'SQL',q:'What is the order of SQL clause execution?',a:'FROM → JOIN → WHERE → GROUP BY → HAVING → SELECT → DISTINCT → ORDER BY → LIMIT. This is why WHERE cannot use SELECT aliases.'},
+  {id:'fc9',cat:'Statistics',q:'What is the Central Limit Theorem?',a:'As sample size increases, the sampling distribution of the mean approaches a normal distribution, regardless of the population distribution. Generally applies at n ≥ 30.'},
+  {id:'fc10',cat:'Statistics',q:'What does a p-value of 0.03 mean?',a:'There is a 3% probability of observing results at least as extreme as these, assuming the null hypothesis is true. Since 0.03 < 0.05, we typically reject the null hypothesis.'},
+  {id:'fc11',cat:'Statistics',q:'What is the difference between correlation and causation?',a:'Correlation measures the statistical relationship between two variables. Causation means one directly causes the other. Correlation does not imply causation — lurking variables may explain both.'},
+  {id:'fc12',cat:'Statistics',q:'What is Type I vs Type II error?',a:'Type I (α): False positive — rejecting a true null hypothesis. Type II (β): False negative — failing to reject a false null hypothesis. Reducing one typically increases the other.'},
+  {id:'fc13',cat:'Statistics',q:'What is a 95% confidence interval?',a:'A range constructed so that 95% of such intervals would contain the true population parameter. It does NOT mean there is a 95% chance the true value is in this specific interval.'},
+  {id:'fc14',cat:'Statistics',q:'What is standard deviation?',a:'The average distance of data points from the mean. In a normal distribution: ~68% within 1 SD, ~95% within 2 SDs, ~99.7% within 3 SDs.'},
+  {id:'fc15',cat:'Business',q:'What is Customer Lifetime Value (CLV/LTV)?',a:'The total revenue expected from a customer over the entire relationship. Formula: Average Order Value × Purchase Frequency × Customer Lifespan. Used to decide how much to spend on acquisition.'},
+  {id:'fc16',cat:'Business',q:'What is churn rate?',a:'The percentage of customers who stop using a product in a given period. Formula: (Lost Customers / Start Customers) × 100. High churn cancels out acquisition gains.'},
+  {id:'fc17',cat:'Business',q:'What is the difference between a KPI and a metric?',a:'A metric is any measurable value. A KPI is a metric specifically chosen to measure progress toward a key business objective. All KPIs are metrics, but not all metrics are KPIs.'},
+  {id:'fc18',cat:'Business',q:'What is A/B testing?',a:'A controlled experiment comparing two versions (A=control, B=variant) to determine which performs better on a target metric. Requires statistical significance before declaring a winner.'},
+  {id:'fc19',cat:'Business',q:'What does CAC stand for and how is it calculated?',a:'Customer Acquisition Cost = Total sales + marketing spend / New customers acquired. A healthy CLV:CAC ratio is 3:1 or higher.'},
+  {id:'fc20',cat:'Business',q:'What is a cohort analysis?',a:'Analyzing groups of users who share a common characteristic (e.g. sign-up month) over time. Reveals patterns like retention decay that are invisible in aggregate data.'},
+  {id:'fc21',cat:'BI',q:'What is ETL?',a:'Extract, Transform, Load. Extract data from sources, Transform it (clean, join, reshape), then Load it into a data warehouse or reporting layer.'},
+  {id:'fc22',cat:'BI',q:'What is a star schema?',a:'A data modeling pattern with a central fact table surrounded by dimension tables. Optimized for analytical queries. Simpler than snowflake but may have some redundancy.'},
+  {id:'fc23',cat:'BI',q:'What is the difference between a data warehouse and a data lake?',a:'Warehouse: structured, processed, optimized for SQL queries. Lake: raw data in any format, stored cheaply, processed on demand. Warehouses use schema-on-write, lakes use schema-on-read.'},
+  {id:'fc24',cat:'BI',q:'What is DAX?',a:'Data Analysis Expressions. A formula language used in Power BI and Excel Power Pivot for defining custom calculations on columnar data models.'},
+  {id:'fc25',cat:'Career',q:'What is the STAR method?',a:'Situation, Task, Action, Result. A structured approach for behavioral interview answers. Describe the context, your responsibility, what you did, and the measurable outcome.'},
+];
+
+function sm2(card, quality) {
+  let { interval=1, ef=2.5, reps=0 } = card;
+  if (quality>=3) { if(reps===0)interval=1; else if(reps===1)interval=6; else interval=Math.round(interval*ef); reps++; }
+  else { reps=0; interval=1; }
+  ef=Math.max(1.3,ef+0.1-(5-quality)*(0.08+(5-quality)*0.02));
+  const nr=new Date(); nr.setDate(nr.getDate()+interval);
+  return {interval,ef,reps,nextReview:nr.toISOString()};
+}
+
+let flashState = { deck:[], current:0, flipped:false, session:{reviewed:0,again:0,good:0,easy:0}, catFilter:'All' };
+
+function flashcards() {
+  const cats=['All',...new Set(FLASHCARD_DECK.map(c=>c.cat))];
+  const cardData=state.progress.flashcardData||{};
+  const due=FLASHCARD_DECK.filter(c=>!cardData[c.id]||new Date(cardData[c.id].nextReview)<=new Date());
+  document.getElementById('content').innerHTML=`
+  <div class="page-enter">
+    <div style="max-width:680px;margin:0 auto">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:var(--sp-6)">
+        <div><h1 style="font-size:1.5rem;font-weight:800;letter-spacing:-0.5px">Flashcards</h1><p style="color:var(--text-secondary);margin-top:2px">SM-2 spaced repetition</p></div>
+        <div style="text-align:right"><div style="font-size:1.4rem;font-weight:800;color:var(--accent)">${due.length}</div><div style="font-size:.75rem;color:var(--text-secondary)">cards due</div></div>
+      </div>
+      <div class="tabs" style="margin-bottom:var(--sp-6)">${cats.map(c=>`<button class="tab ${flashState.catFilter===c?'active':''}" onclick="flashSetCat('${c}')">${c}</button>`).join('')}</div>
+      <div id="flashMain"></div>
+    </div>
+  </div>`;
+  flashSetCat(flashState.catFilter,false);
+}
+
+function flashSetCat(cat, rerender=true) {
+  flashState.catFilter=cat;
+  const cardData=state.progress.flashcardData||{};
+  flashState.deck=FLASHCARD_DECK.filter(c=>{
+    const catOk=cat==='All'||c.cat===cat;
+    const due=!cardData[c.id]||new Date(cardData[c.id].nextReview)<=new Date();
+    return catOk&&due;
+  });
+  flashState.current=0; flashState.flipped=false;
+  flashState.session={reviewed:0,again:0,good:0,easy:0};
+  if (rerender) document.querySelectorAll('#flashMain ~ * .tab,.tabs .tab').forEach(t=>{});
+  renderFlashCard();
+}
+
+function renderFlashCard() {
+  const el=document.getElementById('flashMain');
+  if (!el) return;
+  const deck=flashState.deck;
+  if (!deck.length) {
+    el.innerHTML=`<div style="text-align:center;padding:var(--sp-16)"><div style="font-size:3rem;margin-bottom:var(--sp-4)">🎉</div><h3 style="font-family:var(--font-display);font-size:1.2rem;font-weight:800;margin-bottom:var(--sp-2)">All caught up!</h3><p style="color:var(--text-secondary);margin-bottom:var(--sp-6)">No cards due right now. Come back tomorrow for your next review session.</p><button class="btn btn-secondary" onclick="flashReviewAll()">Review all ${FLASHCARD_DECK.length} cards anyway</button></div>`;
+    return;
+  }
+  if (flashState.current>=deck.length) {
+    const {reviewed,again,good,easy}=flashState.session;
+    el.innerHTML=`<div style="text-align:center;padding:var(--sp-12)"><div style="font-size:3rem;margin-bottom:var(--sp-4)">✅</div><h3 style="font-family:var(--font-display);font-size:1.3rem;font-weight:800;margin-bottom:var(--sp-2)">Session Complete!</h3><p style="color:var(--text-secondary);margin-bottom:var(--sp-6)">You reviewed ${reviewed} cards.</p><div style="display:flex;justify-content:center;gap:var(--sp-6);margin-bottom:var(--sp-8)"><div style="text-align:center"><div style="font-size:1.5rem;font-weight:800;color:var(--danger)">${again}</div><div style="font-size:.75rem;color:var(--text-secondary)">Again</div></div><div style="text-align:center"><div style="font-size:1.5rem;font-weight:800;color:var(--warning)">${good}</div><div style="font-size:.75rem;color:var(--text-secondary)">Good</div></div><div style="text-align:center"><div style="font-size:1.5rem;font-weight:800;color:var(--success)">${easy}</div><div style="font-size:.75rem;color:var(--text-secondary)">Easy</div></div></div><button class="btn btn-primary" onclick="flashcards()">New Session</button></div>`;
+    return;
+  }
+  const card=deck[flashState.current];
+  const progress=Math.round((flashState.current/deck.length)*100);
+  el.innerHTML=`
+    <div>
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:var(--sp-4)">
+        <span style="font-size:.78rem;color:var(--text-tertiary)">${flashState.current+1} / ${deck.length}</span>
+        <span class="badge badge-neutral">${card.cat}</span>
+      </div>
+      <div class="progress-track" style="margin-bottom:var(--sp-6)"><div class="progress-fill" style="width:${progress}%"></div></div>
+      <div style="background:var(--bg-surface);border:1.5px solid var(--border-strong);border-radius:var(--r-xl);min-height:280px;padding:var(--sp-10);cursor:pointer;transition:all var(--t-base);display:flex;align-items:center;justify-content:center;text-align:center;margin-bottom:var(--sp-5);box-shadow:var(--shadow-md)" onclick="flashFlip()">
+        <div>
+          ${!flashState.flipped?`<div style="font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:var(--accent);margin-bottom:var(--sp-4)">Question</div><p style="font-size:1.1rem;font-weight:600;line-height:1.6">${card.q}</p><p style="font-size:.78rem;color:var(--text-tertiary);margin-top:var(--sp-6)">Tap to reveal answer</p>`:`<div style="font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:var(--success);margin-bottom:var(--sp-4)">Answer</div><p style="font-size:.95rem;line-height:1.7;color:var(--text-primary)">${card.a}</p>`}
+        </div>
+      </div>
+      ${flashState.flipped?`<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:var(--sp-3)"><button class="btn btn-danger" style="flex-direction:column;padding:var(--sp-4)" onclick="flashRate(0)"><span style="font-size:1.2rem">😕</span><span style="font-size:.78rem;margin-top:2px">Again</span></button><button class="btn btn-secondary" style="flex-direction:column;padding:var(--sp-4)" onclick="flashRate(3)"><span style="font-size:1.2rem">🤔</span><span style="font-size:.78rem;margin-top:2px">Good</span></button><button class="btn btn-secondary" style="flex-direction:column;padding:var(--sp-4);border-color:rgba(34,197,94,.3)" onclick="flashRate(5)"><span style="font-size:1.2rem">😊</span><span style="font-size:.78rem;margin-top:2px;color:var(--success)">Easy</span></button></div>`:`<button class="btn btn-primary btn-block" onclick="flashFlip()">Reveal Answer</button>`}
+    </div>`;
+}
+
+function flashFlip() { flashState.flipped=!flashState.flipped; renderFlashCard(); }
+
+function flashRate(quality) {
+  const card=flashState.deck[flashState.current];
+  if (!card) return;
+  const cardData=state.progress.flashcardData||{};
+  cardData[card.id]=sm2(cardData[card.id]||{},quality);
+  state.progress.flashcardData=cardData;
+  state.progress.flashcardsDone=(state.progress.flashcardsDone||0)+1;
+  flashState.session.reviewed++;
+  if(quality===0)flashState.session.again++;
+  else if(quality===3)flashState.session.good++;
+  else flashState.session.easy++;
+  flashState.current++; flashState.flipped=false;
+  addXP(3,'Flashcard reviewed'); checkAchievements(); saveState();
+  renderFlashCard();
+}
+
+function flashReviewAll() {
+  flashState.deck=[...FLASHCARD_DECK]; flashState.current=0; flashState.flipped=false;
+  flashState.session={reviewed:0,again:0,good:0,easy:0}; renderFlashCard();
+}
+
+// ============================================================
+// PHASE 2 — QUIZ BANK
+// ============================================================
+const QUIZ_QUESTIONS = [
+  {id:'q1',cat:'SQL',diff:'Easy',q:'Which SQL clause filters rows AFTER grouping?',opts:['WHERE','HAVING','ORDER BY','GROUP BY'],ans:1,exp:'HAVING filters groups created by GROUP BY. WHERE filters individual rows before grouping.'},
+  {id:'q2',cat:'SQL',diff:'Easy',q:'What does COUNT(*) return?',opts:['Sum of all values','Number of non-null values in a column','Total number of rows including NULLs','Number of distinct values'],ans:2,exp:'COUNT(*) counts all rows including those with NULL values. COUNT(column) counts non-null values only.'},
+  {id:'q3',cat:'SQL',diff:'Easy',q:'Which JOIN returns only rows matching in BOTH tables?',opts:['LEFT JOIN','RIGHT JOIN','FULL OUTER JOIN','INNER JOIN'],ans:3,exp:'INNER JOIN only returns rows where the join condition is met in both tables.'},
+  {id:'q4',cat:'SQL',diff:'Medium',q:'What is the correct order to write SQL clauses?',opts:['SELECT → FROM → WHERE → GROUP BY → HAVING → ORDER BY','FROM → WHERE → GROUP BY → HAVING → SELECT','SELECT → WHERE → FROM → HAVING','WHERE → FROM → SELECT → ORDER BY'],ans:0,exp:'You write: SELECT → FROM → WHERE → GROUP BY → HAVING → ORDER BY. But the engine processes FROM first, then WHERE, GROUP BY, HAVING, SELECT, ORDER BY.'},
+  {id:'q5',cat:'SQL',diff:'Medium',q:'Which window function assigns unique sequential numbers with no ties?',opts:['RANK()','DENSE_RANK()','ROW_NUMBER()','NTILE()'],ans:2,exp:'ROW_NUMBER() always assigns unique sequential numbers. RANK() and DENSE_RANK() may give the same number to tied rows.'},
+  {id:'q6',cat:'SQL',diff:'Hard',q:'What does SELECT COALESCE(NULL, NULL, 3, 4) return?',opts:['NULL','3','4','Error'],ans:1,exp:'COALESCE returns the first non-NULL value. NULL, NULL are skipped, so it returns 3.'},
+  {id:'q7',cat:'Statistics',diff:'Easy',q:'Which measure is most resistant to outliers?',opts:['Mean','Mode','Median','Range'],ans:2,exp:'The median is the middle value and is not affected by extreme values. The mean can be significantly pulled by outliers.'},
+  {id:'q8',cat:'Statistics',diff:'Easy',q:'A p-value of 0.01 means:',opts:['The effect size is large','There is a 1% chance H₀ is true','There is a 1% chance of observing these results if H₀ is true','The result is practically significant'],ans:2,exp:'P-value is the probability of observing results at least this extreme, assuming H₀ is true. It does not tell us the probability H₀ is true.'},
+  {id:'q9',cat:'Statistics',diff:'Medium',q:'In a normal distribution, ~what % of data falls within 2 standard deviations?',opts:['68%','90%','95%','99.7%'],ans:2,exp:'The empirical rule (68-95-99.7): ~68% within 1 SD, ~95% within 2 SDs, ~99.7% within 3 SDs.'},
+  {id:'q10',cat:'Statistics',diff:'Hard',q:'You run an A/B test for 2 weeks and get p=0.04. What should you conclude?',opts:['Version B is significantly better, ship it immediately','Statistically significant at α=0.05, but also consider practical significance and effect size','The test failed — p must be lower','You need more data regardless of p-value'],ans:1,exp:'Statistical significance (p<0.05) is necessary but not sufficient. Also consider effect size, practical significance, and whether the test was properly powered.'},
+  {id:'q11',cat:'Business',diff:'Easy',q:'CAC stands for:',opts:['Customer Acquisition Cost','Customer Annual Contribution','Cost of Acquiring Customers','Customer Activity Count'],ans:0,exp:'Customer Acquisition Cost = Total sales & marketing spend / Number of new customers acquired.'},
+  {id:'q12',cat:'Business',diff:'Easy',q:'A healthy CLV:CAC ratio is generally:',opts:['1:1','2:1 or higher','3:1 or higher','10:1 or higher'],ans:2,exp:'A CLV:CAC of at least 3:1 is considered healthy — the customer generates at least 3x what it cost to acquire them.'},
+  {id:'q13',cat:'Business',diff:'Medium',q:'Which metric best measures how "sticky" a product is?',opts:['MRR','DAU/MAU ratio','NPS','Conversion rate'],ans:1,exp:'DAU/MAU ratio measures what fraction of monthly users come back daily. A high ratio (e.g. >50%) indicates high stickiness.'},
+  {id:'q14',cat:'Business',diff:'Medium',q:'1000 customers at month start, 950 at end. Churn rate is:',opts:['5%','4.75%','50%','9.5%'],ans:0,exp:'Churn rate = (1000 - 950) / 1000 = 50/1000 = 5%.'},
+  {id:'q15',cat:'BI',diff:'Easy',q:'In a star schema, what is at the center?',opts:['Dimension table','Fact table','Lookup table','Bridge table'],ans:1,exp:'A star schema has a central fact table containing measurable business events surrounded by dimension tables.'},
+  {id:'q16',cat:'BI',diff:'Easy',q:'ETL stands for:',opts:['Extract, Transfer, Load','Extract, Transform, Load','Export, Transform, Link','Evaluate, Test, Launch'],ans:1,exp:'ETL: Extract data from sources, Transform it (clean, join, reshape), Load it into the target (data warehouse).'},
+  {id:'q17',cat:'BI',diff:'Medium',q:'Which chart type is best for showing composition (parts of a whole)?',opts:['Line chart','Scatter plot','Pie or stacked bar chart','Histogram'],ans:2,exp:'Pie and stacked bar charts show how a total is composed of parts. Limit pies to <6 slices. Stacked bars work better for comparisons.'},
+  {id:'q18',cat:'Career',diff:'Easy',q:'The STAR method stands for:',opts:['Situation, Task, Action, Result','Strength, Team, Ability, Role','Strategy, Tactics, Analysis, Report','Situation, Technical, Analytical, Result'],ans:0,exp:'STAR = Situation, Task, Action, Result. Use it to structure behavioral interview answers with concrete examples.'},
+  {id:'q19',cat:'Career',diff:'Medium',q:'A BA interviewer asks "Tell me about a time you influenced a decision with data." Best approach:',opts:['Describe the data tools you know','Give a vague overview of a project','Use STAR with specific situation, your analysis, how you presented it, and business outcome','Explain your technical SQL skills'],ans:2,exp:'Behavioral questions require specific, structured examples. Use STAR and quantify the impact: "My analysis led to X% improvement in Y."'},
+];
+
+let quizState = { questions:[], current:0, selected:null, answered:false, score:0, catFilter:'All', diffFilter:'All', active:false };
+
+function quiz() {
+  document.getElementById('content').innerHTML = `<div class="page-enter"><div id="quizMain"></div></div>`;
+  if (quizState.active) renderQuizQuestion();
+  else renderQuizLobby();
+}
+
+function renderQuizLobby() {
+  const cats=['All',...new Set(QUIZ_QUESTIONS.map(q=>q.cat))];
+  const diffs=['All','Easy','Medium','Hard'];
+  const el=document.getElementById('quizMain');
+  if (!el) return;
+  el.innerHTML=`
+    <div style="max-width:640px">
+      <div style="margin-bottom:var(--sp-8)"><h1 style="font-size:1.5rem;font-weight:800;letter-spacing:-0.5px">Quiz Bank</h1><p style="color:var(--text-secondary);margin-top:2px">${QUIZ_QUESTIONS.length} questions across SQL, Statistics, Business, BI, and Career</p></div>
+      <div class="card" style="margin-bottom:var(--sp-5)">
+        <div class="card-title" style="margin-bottom:var(--sp-5)">Configure your quiz</div>
+        <div class="form-group"><label class="form-label">Category</label><div class="tabs" style="margin-bottom:0">${cats.map(c=>`<button class="tab ${quizState.catFilter===c?'active':''}" onclick="quizState.catFilter='${c}';renderQuizLobby()">${c}</button>`).join('')}</div></div>
+        <div class="form-group"><label class="form-label">Difficulty</label><div class="tabs" style="margin-bottom:0">${diffs.map(d=>`<button class="tab ${quizState.diffFilter===d?'active':''}" onclick="quizState.diffFilter='${d}';renderQuizLobby()">${d}</button>`).join('')}</div></div>
+        <div style="font-size:.875rem;color:var(--text-secondary);margin-bottom:var(--sp-5)">${QUIZ_QUESTIONS.filter(q=>(quizState.catFilter==='All'||q.cat===quizState.catFilter)&&(quizState.diffFilter==='All'||q.diff===quizState.diffFilter)).length} questions available</div>
+        <button class="btn btn-primary btn-lg" onclick="startQuiz()">Start Quiz →</button>
+      </div>
+      ${state.progress.quizHistory.length?`<div class="card"><div class="card-title" style="margin-bottom:var(--sp-4)">Recent Sessions</div>${state.progress.quizHistory.slice(-3).reverse().map(h=>`<div style="display:flex;justify-content:space-between;padding:var(--sp-3) 0;border-bottom:1px solid var(--border)"><span style="font-size:.875rem">${h.cat} · ${h.diff}</span><span style="font-weight:700;color:${h.pct>=80?'var(--success)':h.pct>=60?'var(--warning)':'var(--danger)'}">${h.score}/${h.total} (${h.pct}%)</span></div>`).join('')}</div>`:''}
+    </div>`;
+}
+
+function startQuiz() {
+  const filtered=QUIZ_QUESTIONS.filter(q=>(quizState.catFilter==='All'||q.cat===quizState.catFilter)&&(quizState.diffFilter==='All'||q.diff===quizState.diffFilter));
+  if (!filtered.length){toast('warning','No questions','Try different filters.');return;}
+  quizState.questions=[...filtered].sort(()=>Math.random()-0.5).slice(0,Math.min(10,filtered.length));
+  quizState.current=0;quizState.score=0;quizState.selected=null;quizState.answered=false;quizState.active=true;
+  renderQuizQuestion();
+}
+
+function renderQuizQuestion() {
+  const el=document.getElementById('quizMain');
+  if (!el) return;
+  if (quizState.current>=quizState.questions.length){renderQuizResults();return;}
+  const q=quizState.questions[quizState.current];
+  const progress=Math.round((quizState.current/quizState.questions.length)*100);
+  const dc={Easy:'var(--success)',Medium:'var(--warning)',Hard:'var(--danger)'}[q.diff];
+  el.innerHTML=`
+    <div style="max-width:640px">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:var(--sp-4)">
+        <span style="font-size:.78rem;color:var(--text-tertiary)">${quizState.current+1} / ${quizState.questions.length}</span>
+        <div style="display:flex;gap:var(--sp-2)"><span class="badge badge-neutral">${q.cat}</span><span style="font-size:.68rem;font-weight:700;color:${dc};background:${dc}18;border-radius:var(--r-full);padding:2px 8px">${q.diff}</span></div>
+      </div>
+      <div class="progress-track" style="margin-bottom:var(--sp-6)"><div class="progress-fill" style="width:${progress}%"></div></div>
+      <div class="card" style="margin-bottom:var(--sp-4)"><p style="font-size:1.05rem;font-weight:600;line-height:1.6">${q.q}</p></div>
+      <div style="display:flex;flex-direction:column;gap:var(--sp-3);margin-bottom:var(--sp-5)">
+        ${q.opts.map((o,i)=>{
+          let style='background:var(--bg-surface);border:1.5px solid var(--border-strong);';
+          if(quizState.answered){if(i===q.ans)style='background:var(--success-dim);border-color:var(--success);';else if(i===quizState.selected&&i!==q.ans)style='background:var(--danger-dim);border-color:var(--danger);';}
+          else if(i===quizState.selected)style='background:var(--accent-dim);border-color:var(--accent);';
+          return `<button onclick="quizSelect(${i})" style="${style}border-radius:var(--r-md);padding:var(--sp-4);text-align:left;cursor:pointer;font-size:.9rem;font-family:var(--font-body);color:var(--text-primary);transition:all var(--t-fast);display:flex;align-items:center;gap:var(--sp-3)"><span style="width:24px;height:24px;border-radius:50%;background:var(--bg-elevated);display:flex;align-items:center;justify-content:center;font-size:.72rem;font-weight:700;flex-shrink:0">${'ABCD'[i]}</span>${o}</button>`;
+        }).join('')}
+      </div>
+      ${quizState.answered?`<div style="background:var(--bg-elevated);border-radius:var(--r-md);padding:var(--sp-4);margin-bottom:var(--sp-5)"><div style="font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--text-tertiary);margin-bottom:var(--sp-2)">Explanation</div><p style="font-size:.875rem;color:var(--text-secondary);line-height:1.6">${q.exp}</p></div><button class="btn btn-primary" onclick="quizNext()">${quizState.current+1<quizState.questions.length?'Next Question →':'See Results'}</button>`:`<button class="btn btn-primary" onclick="quizSubmit()" ${quizState.selected===null?'disabled':''}>Check Answer</button>`}
+    </div>`;
+}
+
+function quizSelect(i){if(quizState.answered)return;quizState.selected=i;renderQuizQuestion();}
+function quizSubmit(){if(quizState.selected===null)return;quizState.answered=true;const q=quizState.questions[quizState.current];if(quizState.selected===q.ans){quizState.score++;addXP(10,'Correct quiz answer!');}quizState.session&&quizState.session.push({correct:quizState.selected===q.ans});renderQuizQuestion();}
+function quizNext(){quizState.current++;quizState.selected=null;quizState.answered=false;renderQuizQuestion();}
+
+function renderQuizResults() {
+  quizState.active=false;
+  const total=quizState.questions.length,score=quizState.score,pct=Math.round(score/total*100);
+  const grade=pct>=90?'Outstanding!':pct>=80?'Great work!':pct>=60?'Good effort':'Keep practicing';
+  state.progress.quizHistory.push({cat:quizState.catFilter,diff:quizState.diffFilter,score,total,pct,date:new Date().toISOString()});
+  checkAchievements();saveState();
+  const el=document.getElementById('quizMain');
+  if (!el) return;
+  el.innerHTML=`<div style="max-width:500px;text-align:center"><div style="font-size:4rem;margin-bottom:var(--sp-4)">${pct>=80?'🎉':pct>=60?'👍':'📚'}</div><h2 style="font-size:1.6rem;font-weight:800;margin-bottom:var(--sp-2)">${grade}</h2><div style="font-size:3rem;font-weight:800;color:${pct>=80?'var(--success)':pct>=60?'var(--warning)':'var(--danger)'};margin:var(--sp-4) 0">${score}/${total}</div><p style="color:var(--text-secondary);margin-bottom:var(--sp-8)">${pct}% correct</p><div style="display:flex;gap:var(--sp-3);justify-content:center"><button class="btn btn-primary" onclick="startQuiz()">Try Again</button><button class="btn btn-secondary" onclick="renderQuizLobby()">Change Settings</button></div></div>`;
+}
+
+// ============================================================
+// PHASE 2 — AI MENTOR
+// ============================================================
+let mentorState = { mode:'tutor', messages:[], loading:false };
+
+const MENTOR_MODES = {
+  tutor:{ label:'BA Tutor', icon:'📊', color:'var(--accent)', system:(ctx)=>`You are a Business Analytics tutor helping ${ctx.name}, a ${ctx.level} analyst. They have solved ${ctx.sqlSolved} SQL challenges, ${ctx.streak}-day streak, goal: ${ctx.goal}. Explain BA concepts clearly with real examples. Keep responses concise (2-4 paragraphs). Use markdown for structure.` },
+  sql:{ label:'SQL Coach', icon:'💾', color:'#5b6cf8', system:(ctx)=>`You are an expert SQL coach for ${ctx.name}. They have solved ${ctx.sqlSolved} challenges, SQL skill: ${ctx.skills?.sql||0}%. Help with SQL problems: explain queries step by step, debug errors, suggest optimizations. Always show working SQL examples.` },
+  interview:{ label:'Interview Coach', icon:'🎙️', color:'#8b5cf6', system:(ctx)=>`You are a BA interview coach for ${ctx.name}, preparing for ${ctx.goal==='job'?'job interviews':'career advancement'}. Give realistic interview questions, evaluate STAR-method answers, provide specific actionable feedback. Focus on BA-specific questions: SQL, data interpretation, stakeholder management, case studies.` },
+  resume:{ label:'Resume Reviewer', icon:'📄', color:'var(--success)', system:(ctx)=>`You are an expert resume reviewer specializing in Business Analytics. Help ${ctx.name} improve their CV. Give specific feedback on: impact quantification, ATS optimization, bullet strength, and BA keywords. Be direct and practical.` },
+  planner:{ label:'Study Planner', icon:'📅', color:'var(--info)', system:(ctx)=>`You are a learning coach for ${ctx.name}. XP: ${ctx.xp}, level: ${ctx.level}, streak: ${ctx.streak} days, goal: ${ctx.goal}. Skills: SQL ${ctx.skills?.sql||0}%, Stats ${ctx.skills?.stats||0}%, BI ${ctx.skills?.bi||0}%. Create realistic, structured study schedules suggesting specific activities.` },
+};
+
+async function callAnthropicAPI(messages, systemPrompt) {
+  const apiKey=state.settings.apiKey;
+  if (!apiKey) throw new Error('No API key. Go to Settings → AI Settings to add your Anthropic API key.');
+  const resp=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json','x-api-key':apiKey,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:1024,system:systemPrompt,messages})});
+  if (!resp.ok){const err=await resp.json();throw new Error(err.error?.message||'API error');}
+  const data=await resp.json();
+  return data.content[0].text;
+}
+
+function mentor() {
+  const c=document.getElementById('content');
+  c.innerHTML=`
+  <div class="page-enter" style="display:flex;flex-direction:column;height:calc(100vh - var(--topbar-h) - var(--sp-8)*2)">
+    <div style="display:flex;gap:var(--sp-2);margin-bottom:var(--sp-5);flex-wrap:wrap">
+      ${Object.entries(MENTOR_MODES).map(([k,v])=>`<button class="btn ${mentorState.mode===k?'btn-primary':'btn-secondary'} btn-sm" onclick="mentorSetMode('${k}')" style="${mentorState.mode===k?`background:${v.color};border-color:${v.color}`:''}"> ${v.icon} ${v.label}</button>`).join('')}
+    </div>
+    ${!state.settings.apiKey?`<div style="background:var(--warning-dim);border:1px solid rgba(245,158,11,.3);border-radius:var(--r-md);padding:var(--sp-4);margin-bottom:var(--sp-4);font-size:.875rem">⚠️ <strong>API key required.</strong> Go to <a onclick="navigate('settings')" style="cursor:pointer">Settings → AI Settings</a> to add your Anthropic API key.</div>`:''}
+    <div id="mentorMessages" style="flex:1;overflow-y:auto;margin-bottom:var(--sp-4);display:flex;flex-direction:column;gap:var(--sp-4)"></div>
+    <div style="display:flex;gap:var(--sp-3)">
+      <textarea id="mentorInput" class="form-input" style="flex:1;resize:none;height:80px;font-family:var(--font-body)" placeholder="Ask anything... (Ctrl+Enter to send)" onkeydown="mentorKeydown(event)"></textarea>
+      <button class="btn btn-primary" onclick="mentorSend()" style="align-self:flex-end;height:44px">Send</button>
+    </div>
+  </div>`;
+  renderMentorMessages();
+}
+
+function mentorSetMode(mode){mentorState.mode=mode;mentorState.messages=[];mentor();}
+
+function renderMentorMessages() {
+  const el=document.getElementById('mentorMessages');
+  if (!el) return;
+  if (!mentorState.messages.length) {
+    const m=MENTOR_MODES[mentorState.mode];
+    el.innerHTML=`<div style="text-align:center;padding:var(--sp-10)"><div style="font-size:3rem;margin-bottom:var(--sp-4)">${m.icon}</div><h3 style="font-family:var(--font-display);font-size:1.1rem;font-weight:700;margin-bottom:var(--sp-2)">${m.label}</h3><p style="color:var(--text-secondary);font-size:.875rem;max-width:400px;margin:0 auto">Ask me anything. I have context about your progress and goals.</p></div>`;
+    return;
+  }
+  el.innerHTML=mentorState.messages.map(msg=>`
+    <div style="display:flex;gap:var(--sp-3);${msg.role==='user'?'flex-direction:row-reverse':''}">
+      <div style="width:32px;height:32px;border-radius:50%;background:${msg.role==='user'?'var(--accent)':'var(--bg-elevated)'};display:flex;align-items:center;justify-content:center;font-size:.9rem;flex-shrink:0">${msg.role==='user'?'👤':MENTOR_MODES[mentorState.mode].icon}</div>
+      <div style="max-width:80%;background:${msg.role==='user'?'var(--accent)':'var(--bg-surface)'};border:1px solid ${msg.role==='user'?'transparent':'var(--border)'};border-radius:var(--r-lg);padding:var(--sp-4);font-size:.875rem;line-height:1.7;white-space:pre-wrap">${msg.content}</div>
+    </div>`).join('');
+  if (mentorState.loading) {
+    el.innerHTML+=`<div style="display:flex;gap:var(--sp-3)"><div style="width:32px;height:32px;border-radius:50%;background:var(--bg-elevated);display:flex;align-items:center;justify-content:center">${MENTOR_MODES[mentorState.mode].icon}</div><div style="background:var(--bg-surface);border:1px solid var(--border);border-radius:var(--r-lg);padding:var(--sp-4)"><div style="display:flex;gap:4px"><div style="width:6px;height:6px;border-radius:50%;background:var(--text-tertiary);animation:pulse 1.2s ease infinite"></div><div style="width:6px;height:6px;border-radius:50%;background:var(--text-tertiary);animation:pulse 1.2s ease .2s infinite"></div><div style="width:6px;height:6px;border-radius:50%;background:var(--text-tertiary);animation:pulse 1.2s ease .4s infinite"></div></div></div></div>`;
+  }
+  el.scrollTop=el.scrollHeight;
+}
+
+function mentorKeydown(e){if((e.metaKey||e.ctrlKey)&&e.key==='Enter')mentorSend();}
+
+async function mentorSend() {
+  const input=document.getElementById('mentorInput');
+  const text=input?.value?.trim();
+  if (!text||mentorState.loading) return;
+  mentorState.messages.push({role:'user',content:text});
+  input.value=''; mentorState.loading=true; renderMentorMessages();
+  const ctx={name:state.user?.firstName||'Analyst',level:getLevel().title,xp:state.progress.xp,streak:state.progress.streak,sqlSolved:state.progress.sqlSolved.length,goal:state.onboard?.goal||'learn',skills:state.progress.skills};
+  const mode=MENTOR_MODES[mentorState.mode];
+  try {
+    const reply=await callAnthropicAPI(mentorState.messages.map(m=>({role:m.role,content:m.content})),mode.system(ctx));
+    mentorState.messages.push({role:'assistant',content:reply});
+    addXP(5,'AI Mentor session');
+  } catch(e) {
+    mentorState.messages.push({role:'assistant',content:`Error: ${e.message}`});
+  } finally { mentorState.loading=false; renderMentorMessages(); }
+}
+
+// ============================================================
+// PHASE 2 — NOTES
+// ============================================================
+let notesFilter='', noteEditing=null;
+
+function notes() {
+  document.getElementById('content').innerHTML=`
+  <div class="page-enter">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:var(--sp-6)">
+      <h1 style="font-size:1.5rem;font-weight:800;letter-spacing:-0.5px">Notes</h1>
+      <button class="btn btn-primary" onclick="noteNew()">+ New Note</button>
+    </div>
+    <input class="form-input" placeholder="Search notes..." style="margin-bottom:var(--sp-5);max-width:360px" value="${notesFilter}" oninput="notesFilter=this.value;notesRender()">
+    <div id="notesList"></div>
+    <div id="noteEditor" class="hidden"></div>
+  </div>`;
+  notesRender();
+}
+
+function notesRender() {
+  const el=document.getElementById('notesList');
+  if (!el) return;
+  const filtered=state.notes.filter(n=>!notesFilter||n.title.toLowerCase().includes(notesFilter.toLowerCase())||n.body.toLowerCase().includes(notesFilter.toLowerCase()));
+  if (!filtered.length){el.innerHTML=`<div class="empty-state"><div class="empty-state-icon">📝</div><div class="empty-state-title">No notes yet</div><div class="empty-state-desc">Click "+ New Note" to get started</div></div>`;return;}
+  el.innerHTML=`<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:var(--sp-4)">${filtered.map(n=>`<div class="card card-interactive" onclick="noteEdit('${n.id}')"><div style="display:flex;justify-content:space-between;margin-bottom:var(--sp-2)"><h3 style="font-weight:700;font-size:.95rem;flex:1;margin-right:var(--sp-2)">${n.title||'Untitled'}</h3><button onclick="event.stopPropagation();noteDelete('${n.id}')" style="background:none;border:none;color:var(--text-tertiary);cursor:pointer;font-size:1rem">×</button></div><p style="font-size:.8rem;color:var(--text-secondary);line-height:1.5;margin-bottom:var(--sp-3)">${(n.body||'').slice(0,120)}${n.body?.length>120?'...':''}</p><div style="font-size:.72rem;color:var(--text-tertiary)">${new Date(n.updatedAt).toLocaleDateString()}</div></div>`).join('')}</div>`;
+}
+
+function noteNew(){const id='note_'+Date.now();state.notes.unshift({id,title:'',body:'',createdAt:new Date().toISOString(),updatedAt:new Date().toISOString()});saveState();noteEdit(id);}
+
+function noteEdit(id) {
+  const note=state.notes.find(n=>n.id===id);
+  if (!note) return;
+  noteEditing=id;
+  document.getElementById('notesList').classList.add('hidden');
+  document.getElementById('noteEditor').classList.remove('hidden');
+  document.getElementById('noteEditor').innerHTML=`
+    <div style="max-width:720px">
+      <div style="display:flex;align-items:center;gap:var(--sp-3);margin-bottom:var(--sp-5)">
+        <button class="btn btn-ghost btn-sm" onclick="noteSave();notes()">← Back</button>
+        <button class="btn btn-primary btn-sm" onclick="noteSave()">Save</button>
+        ${state.settings.apiKey?`<button class="btn btn-secondary btn-sm" onclick="noteSummarize('${id}')">✨ AI Summarize</button>`:''}
+      </div>
+      <input id="noteTitle" class="form-input" style="font-size:1.2rem;font-weight:700;margin-bottom:var(--sp-4)" placeholder="Note title..." value="${note.title}" oninput="noteAutoSave()">
+      <textarea id="noteBody" class="form-input" style="min-height:400px;font-family:var(--font-body);font-size:.9rem;resize:vertical;line-height:1.7" placeholder="Start writing..." oninput="noteAutoSave()">${note.body}</textarea>
+      <div id="noteSummary" class="hidden" style="margin-top:var(--sp-4);background:var(--bg-elevated);border-radius:var(--r-md);padding:var(--sp-4);font-size:.875rem;line-height:1.7"></div>
+    </div>`;
+}
+
+let _noteTimer=null;
+function noteAutoSave(){clearTimeout(_noteTimer);_noteTimer=setTimeout(noteSave,800);}
+function noteSave(){if(!noteEditing)return;const note=state.notes.find(n=>n.id===noteEditing);if(!note)return;note.title=document.getElementById('noteTitle')?.value||'';note.body=document.getElementById('noteBody')?.value||'';note.updatedAt=new Date().toISOString();saveState();}
+function noteDelete(id){if(!confirm('Delete this note?'))return;state.notes=state.notes.filter(n=>n.id!==id);saveState();notesRender();}
+
+async function noteSummarize(id) {
+  const note=state.notes.find(n=>n.id===id);
+  if (!note?.body){toast('warning','Empty note','Add some content to summarize.');return;}
+  const el=document.getElementById('noteSummary');
+  el.classList.remove('hidden');el.textContent='Summarizing...';
+  try {
+    const summary=await callAnthropicAPI([{role:'user',content:`Summarize this note in 3-5 bullet points:\n\n${note.body}`}],'You are a helpful assistant. Summarize notes concisely in bullet points.');
+    el.innerHTML=`<div style="font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--accent);margin-bottom:var(--sp-2)">AI Summary</div>${summary}`;
+  } catch(e){el.textContent='Error: '+e.message;}
+}
+
+// ============================================================
+// PHASE 2 — FOCUS TIMER (Pomodoro)
+// ============================================================
+let pomState={mode:'work',running:false,timeLeft:25*60,total:25*60,sessions:0,timer:null};
+
+function pomodoro() {
+  document.getElementById('content').innerHTML=`
+  <div class="page-enter" style="max-width:480px;margin:0 auto">
+    <div style="text-align:center;margin-bottom:var(--sp-8)"><h1 style="font-size:1.5rem;font-weight:800;letter-spacing:-0.5px">Focus Timer</h1><p style="color:var(--text-secondary);margin-top:2px">Pomodoro with XP rewards</p></div>
+    <div class="tabs" style="margin-bottom:var(--sp-8)">
+      <button class="tab ${pomState.mode==='work'?'active':''}" onclick="pomSetMode('work')">Work (25m)</button>
+      <button class="tab ${pomState.mode==='short'?'active':''}" onclick="pomSetMode('short')">Short Break (5m)</button>
+      <button class="tab ${pomState.mode==='long'?'active':''}" onclick="pomSetMode('long')">Long Break (15m)</button>
+    </div>
+    <div style="display:flex;flex-direction:column;align-items:center;margin-bottom:var(--sp-8)">
+      <div style="position:relative;width:220px;height:220px;margin-bottom:var(--sp-6)">
+        <svg width="220" height="220" style="transform:rotate(-90deg)">
+          <circle cx="110" cy="110" r="96" fill="none" stroke="var(--bg-overlay)" stroke-width="8"/>
+          <circle id="pomRing" cx="110" cy="110" r="96" fill="none" stroke="var(--accent)" stroke-width="8"
+            stroke-dasharray="${2*Math.PI*96}" stroke-dashoffset="${2*Math.PI*96*(1-pomState.timeLeft/pomState.total)}"
+            stroke-linecap="round" style="transition:stroke-dashoffset 1s linear"/>
+        </svg>
+        <div style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center">
+          <div id="pomTime" style="font-family:var(--font-mono);font-size:3rem;font-weight:700;letter-spacing:2px">${pomFmt(pomState.timeLeft)}</div>
+          <div style="font-size:.78rem;color:var(--text-secondary);margin-top:4px">${pomState.mode==='work'?'Focus':'Break'}</div>
+        </div>
+      </div>
+      <div style="display:flex;gap:var(--sp-3)">
+        <button class="btn ${pomState.running?'btn-secondary':'btn-primary'} btn-lg" onclick="pomToggle()" id="pomBtn">${pomState.running?'⏸ Pause':'▶ Start'}</button>
+        <button class="btn btn-ghost" onclick="pomReset()">↺ Reset</button>
+      </div>
+    </div>
+    <div style="display:flex;justify-content:center;gap:var(--sp-8)">
+      <div style="text-align:center"><div style="font-size:1.8rem;font-weight:800;color:var(--accent)">${pomState.sessions}</div><div style="font-size:.75rem;color:var(--text-secondary)">Today</div></div>
+      <div style="text-align:center"><div style="font-size:1.8rem;font-weight:800;color:var(--accent)">${state.progress.totalSessions||0}</div><div style="font-size:.75rem;color:var(--text-secondary)">Total sessions</div></div>
+      <div style="text-align:center"><div style="font-size:1.8rem;font-weight:800;color:var(--accent)">${state.progress.totalMinutes||0}</div><div style="font-size:.75rem;color:var(--text-secondary)">Minutes focused</div></div>
+    </div>
+  </div>`;
+}
+
+function pomFmt(s){return `${String(Math.floor(s/60)).padStart(2,'0')}:${String(s%60).padStart(2,'0')}`;}
+function pomSetMode(mode){clearInterval(pomState.timer);pomState.running=false;pomState.mode=mode;pomState.timeLeft=pomState.total={work:25,short:5,long:15}[mode]*60;pomodoro();}
+function pomToggle(){if(pomState.running){clearInterval(pomState.timer);pomState.running=false;}else{pomState.running=true;pomState.timer=setInterval(pomTick,1000);}const btn=document.getElementById('pomBtn');if(btn)btn.textContent=pomState.running?'⏸ Pause':'▶ Start';}
+function pomTick(){pomState.timeLeft--;const t=document.getElementById('pomTime');const ring=document.getElementById('pomRing');if(t)t.textContent=pomFmt(pomState.timeLeft);if(ring){const c=2*Math.PI*96;ring.style.strokeDashoffset=c*(1-pomState.timeLeft/pomState.total);}if(pomState.timeLeft<=0){clearInterval(pomState.timer);pomState.running=false;if(pomState.mode==='work'){pomState.sessions++;state.progress.totalSessions=(state.progress.totalSessions||0)+1;state.progress.totalMinutes=(state.progress.totalMinutes||0)+25;addXP(25,'Pomodoro session!');saveState();toast('success','🍅 Session complete!','+25 XP earned. Take a break!');}pomSetMode(pomState.mode==='work'?'short':'work');}}
+function pomReset(){clearInterval(pomState.timer);pomState.running=false;pomState.timeLeft=pomState.total;pomodoro();}
+
+// ============================================================
+// PHASE 2 — SALARY CALCULATOR
+// ============================================================
+const SALARY_DATA={
+  UAE:{flag:'🇦🇪',currency:'AED',roles:{'Business Analyst':{entry:[14000,20000],mid:[20000,32000],senior:[32000,48000],lead:[48000,75000]},'Data Analyst':{entry:[12000,18000],mid:[18000,28000],senior:[28000,40000],lead:[40000,65000]},'BI Developer':{entry:[15000,22000],mid:[22000,35000],senior:[35000,52000],lead:[52000,80000]},'Data Engineer':{entry:[18000,26000],mid:[26000,40000],senior:[40000,60000],lead:[60000,90000]}}},
+  UK:{flag:'🇬🇧',currency:'GBP',roles:{'Business Analyst':{entry:[30000,42000],mid:[42000,60000],senior:[60000,80000],lead:[80000,120000]},'Data Analyst':{entry:[28000,38000],mid:[38000,55000],senior:[55000,75000],lead:[75000,110000]},'BI Developer':{entry:[32000,45000],mid:[45000,65000],senior:[65000,85000],lead:[85000,125000]},'Data Engineer':{entry:[38000,52000],mid:[52000,75000],senior:[75000,100000],lead:[100000,145000]}}},
+  US:{flag:'🇺🇸',currency:'USD',roles:{'Business Analyst':{entry:[60000,80000],mid:[80000,115000],senior:[115000,150000],lead:[150000,210000]},'Data Analyst':{entry:[55000,75000],mid:[75000,110000],senior:[110000,145000],lead:[145000,200000]},'BI Developer':{entry:[65000,88000],mid:[88000,125000],senior:[125000,160000],lead:[160000,220000]},'Data Engineer':{entry:[80000,105000],mid:[105000,145000],senior:[145000,190000],lead:[190000,260000]}}},
+  Germany:{flag:'🇩🇪',currency:'EUR',roles:{'Business Analyst':{entry:[42000,58000],mid:[58000,78000],senior:[78000,100000],lead:[100000,140000]},'Data Analyst':{entry:[38000,52000],mid:[52000,70000],senior:[70000,90000],lead:[90000,125000]},'BI Developer':{entry:[45000,62000],mid:[62000,82000],senior:[82000,105000],lead:[105000,145000]},'Data Engineer':{entry:[52000,70000],mid:[70000,95000],senior:[95000,125000],lead:[125000,170000]}}},
+  India:{flag:'🇮🇳',currency:'INR',roles:{'Business Analyst':{entry:[600000,1000000],mid:[1000000,1800000],senior:[1800000,3200000],lead:[3200000,6000000]},'Data Analyst':{entry:[500000,900000],mid:[900000,1600000],senior:[1600000,2800000],lead:[2800000,5000000]},'BI Developer':{entry:[700000,1200000],mid:[1200000,2200000],senior:[2200000,3800000],lead:[3800000,7000000]},'Data Engineer':{entry:[900000,1500000],mid:[1500000,2800000],senior:[2800000,5000000],lead:[5000000,9000000]}}},
+  Singapore:{flag:'🇸🇬',currency:'SGD',roles:{'Business Analyst':{entry:[48000,68000],mid:[68000,100000],senior:[100000,140000],lead:[140000,200000]},'Data Analyst':{entry:[42000,62000],mid:[62000,90000],senior:[90000,130000],lead:[130000,180000]},'BI Developer':{entry:[52000,75000],mid:[75000,110000],senior:[110000,150000],lead:[150000,210000]},'Data Engineer':{entry:[60000,88000],mid:[88000,130000],senior:[130000,175000],lead:[175000,250000]}}},
+};
+const SKILL_MULTS={Python:0.08,'Power BI':0.06,Tableau:0.06,'Machine Learning':0.12,'Advanced SQL':0.07,dbt:0.05,Spark:0.09};
+const IND_MULTS={Finance:0.15,Technology:0.12,Consulting:0.10,Healthcare:0.05,'E-commerce':0.08,Government:-0.05,NGO:-0.10};
+
+let salaryInputs={country:'UAE',role:'Business Analyst',level:'mid',skills:[],industry:'Technology'};
+
+function salary() {
+  document.getElementById('content').innerHTML=`
+  <div class="page-enter">
+    <div style="max-width:720px">
+      <div style="margin-bottom:var(--sp-8)"><h1 style="font-size:1.5rem;font-weight:800;letter-spacing:-0.5px">Salary Calculator</h1><p style="color:var(--text-secondary);margin-top:2px">BA/BI salary ranges across 6 countries</p></div>
+      <div class="card" style="margin-bottom:var(--sp-6)">
+        <div class="grid-2">
+          <div class="form-group"><label class="form-label">Country</label><select class="form-input" onchange="salaryInputs.country=this.value;salaryCalc()">${Object.entries(SALARY_DATA).map(([k,v])=>`<option value="${k}" ${salaryInputs.country===k?'selected':''}>${v.flag} ${k}</option>`).join('')}</select></div>
+          <div class="form-group"><label class="form-label">Role</label><select class="form-input" onchange="salaryInputs.role=this.value;salaryCalc()">${Object.keys(SALARY_DATA.UAE.roles).map(r=>`<option value="${r}" ${salaryInputs.role===r?'selected':''}>${r}</option>`).join('')}</select></div>
+          <div class="form-group"><label class="form-label">Experience Level</label><select class="form-input" onchange="salaryInputs.level=this.value;salaryCalc()">${[['entry','Entry Level (0-2 yrs)'],['mid','Mid Level (2-5 yrs)'],['senior','Senior (5-8 yrs)'],['lead','Lead / Manager (8+ yrs)']].map(([k,v])=>`<option value="${k}" ${salaryInputs.level===k?'selected':''}>${v}</option>`).join('')}</select></div>
+          <div class="form-group"><label class="form-label">Industry</label><select class="form-input" onchange="salaryInputs.industry=this.value;salaryCalc()">${Object.keys(IND_MULTS).map(k=>`<option value="${k}" ${salaryInputs.industry===k?'selected':''}>${k}</option>`).join('')}</select></div>
+        </div>
+        <div class="form-group"><label class="form-label">Additional Skills</label><div style="display:flex;flex-wrap:wrap;gap:var(--sp-2)">${Object.keys(SKILL_MULTS).map(s=>`<button class="btn btn-${salaryInputs.skills.includes(s)?'primary':'secondary'} btn-sm" onclick="salaryToggle('${s}')">${s}</button>`).join('')}</div></div>
+      </div>
+      <div id="salaryResult"></div>
+    </div>
+  </div>`;
+  salaryCalc();
+}
+
+function salaryToggle(s){const i=salaryInputs.skills.indexOf(s);if(i>=0)salaryInputs.skills.splice(i,1);else salaryInputs.skills.push(s);salary();}
+
+function salaryCalc() {
+  const data=SALARY_DATA[salaryInputs.country];
+  if (!data) return;
+  const roleData=data.roles[salaryInputs.role];
+  if (!roleData) return;
+  const [lo0,hi0]=roleData[salaryInputs.level];
+  let mult=1;
+  salaryInputs.skills.forEach(s=>{if(SKILL_MULTS[s])mult+=SKILL_MULTS[s];});
+  if(IND_MULTS[salaryInputs.industry])mult+=IND_MULTS[salaryInputs.industry];
+  const lo=Math.round(lo0*mult),hi=Math.round(hi0*mult),mid=Math.round((lo+hi)/2);
+  const fmt=n=>n>=1000000?(n/1000000).toFixed(1)+'M':n>=1000?(n/1000).toFixed(0)+'K':n;
+  const el=document.getElementById('salaryResult');
+  if (!el) return;
+  el.innerHTML=`
+    <div class="card" style="text-align:center;margin-bottom:var(--sp-4)">
+      <div style="font-size:.78rem;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--text-tertiary);margin-bottom:var(--sp-4)">${data.flag} ${salaryInputs.country} · ${salaryInputs.role} · ${{entry:'Entry',mid:'Mid',senior:'Senior',lead:'Lead'}[salaryInputs.level]}</div>
+      <div style="font-size:.875rem;color:var(--text-secondary);margin-bottom:var(--sp-2)">Typical Range</div>
+      <div style="font-size:2.4rem;font-weight:800;color:var(--accent);letter-spacing:-1px">${data.currency} ${fmt(lo)} – ${fmt(hi)}</div>
+      <div style="font-size:.875rem;color:var(--text-secondary);margin-top:var(--sp-2)">Midpoint: <strong>${data.currency} ${fmt(mid)}</strong></div>
+      <div style="display:flex;justify-content:center;gap:var(--sp-6);margin-top:var(--sp-5)">
+        <div style="text-align:center"><div style="font-size:1.1rem;font-weight:700;color:var(--success)">${data.currency} ${fmt(lo)}</div><div style="font-size:.72rem;color:var(--text-tertiary)">Low</div></div>
+        <div style="text-align:center"><div style="font-size:1.1rem;font-weight:700;color:var(--accent)">${data.currency} ${fmt(mid)}</div><div style="font-size:.72rem;color:var(--text-tertiary)">Median</div></div>
+        <div style="text-align:center"><div style="font-size:1.1rem;font-weight:700;color:var(--warning)">${data.currency} ${fmt(hi)}</div><div style="font-size:.72rem;color:var(--text-tertiary)">High</div></div>
+      </div>
+      ${mult!==1?`<div style="margin-top:var(--sp-4);font-size:.78rem;color:var(--text-secondary)">Premium applied: <strong style="color:var(--success)">+${Math.round((mult-1)*100)}%</strong>${IND_MULTS[salaryInputs.industry]<0?` <span style="color:var(--danger)">(${salaryInputs.industry} discount)</span>`:''}</div>`:''}
+    </div>
+    <p style="font-size:.75rem;color:var(--text-tertiary);text-align:center">Estimates based on 2024-2025 market data. Actual salaries vary by company and negotiation.</p>`;
+}
+
+// ============================================================
+// PHASE 2 — JOB BOARD
+// ============================================================
+const JOB_LISTINGS=[
+  {id:1,title:'Business Analyst',company:'Emirates Group',location:'Dubai, UAE',type:'Full-time',level:'Mid',salary:'AED 22,000–32,000/mo',posted:'2 days ago',logo:'✈️',skills:['SQL','Excel','Stakeholder Mgmt'],url:'https://www.emiratesgroupcareers.com',desc:'Analyze operational data and translate insights into actionable recommendations for aviation business units.'},
+  {id:2,title:'Data Analyst',company:'Careem',location:'Dubai, UAE',type:'Full-time',level:'Junior',salary:'AED 15,000–22,000/mo',posted:'3 days ago',logo:'🚗',skills:['SQL','Python','Looker'],url:'https://www.careem.com/en-ae/careers/',desc:'Drive data-driven decisions across mobility and delivery platforms.'},
+  {id:3,title:'BI Developer',company:'ADNOC',location:'Abu Dhabi, UAE',type:'Full-time',level:'Senior',salary:'AED 35,000–52,000/mo',posted:'1 week ago',logo:'⛽',skills:['Power BI','SQL','DAX'],url:'https://careers.adnoc.ae',desc:'Build and maintain enterprise-level BI solutions for the energy sector.'},
+  {id:4,title:'Analytics Manager',company:'Noon',location:'Dubai, UAE',type:'Full-time',level:'Lead',salary:'AED 45,000–65,000/mo',posted:'4 days ago',logo:'🛍️',skills:['Python','SQL','A/B Testing'],url:'https://www.noon.com/uae-en/careers/',desc:'Lead a team of analysts driving e-commerce growth through data.'},
+  {id:5,title:'Product Analyst',company:'Property Finder',location:'Dubai, UAE',type:'Full-time',level:'Mid',salary:'AED 20,000–28,000/mo',posted:'5 days ago',logo:'🏠',skills:['SQL','Amplitude','Python'],url:'https://careers.propertyfinder.ae',desc:"Analyze product metrics and user behavior for MENA's leading property platform."},
+  {id:6,title:'Business Analyst',company:'First Abu Dhabi Bank',location:'Abu Dhabi, UAE',type:'Full-time',level:'Mid',salary:'AED 25,000–36,000/mo',posted:'1 week ago',logo:'🏦',skills:['SQL','Excel','Reporting'],url:'https://jobs.bankfab.com',desc:'Support financial analysis and reporting for retail banking operations.'},
+  {id:7,title:'Data Analyst',company:'Chalhoub Group',location:'Dubai, UAE',type:'Full-time',level:'Junior',salary:'AED 14,000–20,000/mo',posted:'3 days ago',logo:'💎',skills:['Excel','SQL','Tableau'],url:'https://careers.chalhoubgroup.com',desc:'Analyze retail and luxury market data to support business decisions.'},
+  {id:8,title:'Analytics Engineer',company:'Kitopi',location:'Dubai, UAE',type:'Full-time',level:'Mid',salary:'AED 22,000–32,000/mo',posted:'6 days ago',logo:'🍳',skills:['dbt','SQL','Python'],url:'https://kitopi.com/careers/',desc:'Build and maintain analytics infrastructure for the cloud kitchen ecosystem.'},
+  {id:9,title:'Data Analyst (Remote)',company:'Deel',location:'Remote (MENA)',type:'Remote',level:'Mid',salary:'USD 60,000–90,000/yr',posted:'4 days ago',logo:'🌍',skills:['SQL','dbt','Looker'],url:'https://www.deel.com/careers',desc:'Analyze global payroll and HR data for one of the fastest-growing HR platforms.'},
+  {id:10,title:'Business Analyst',company:'McKinsey & Company',location:'Dubai, UAE',type:'Full-time',level:'Mid',salary:'AED 40,000–65,000/mo',posted:'2 weeks ago',logo:'📊',skills:['Excel','Problem Solving','PowerPoint'],url:'https://www.mckinsey.com/careers',desc:'Support strategy consulting engagements with rigorous data analysis.'},
+];
+
+let jobFilter={level:'All',type:'All',search:''};
+
+function jobs() {
+  document.getElementById('content').innerHTML=`
+  <div class="page-enter">
+    <div style="margin-bottom:var(--sp-6)"><h1 style="font-size:1.5rem;font-weight:800;letter-spacing:-0.5px">Job Board</h1><p style="color:var(--text-secondary);margin-top:2px">Curated BA/BI roles across UAE and global markets</p></div>
+    <div style="display:flex;gap:var(--sp-3);margin-bottom:var(--sp-5);flex-wrap:wrap">
+      <input class="form-input" placeholder="Search roles..." style="flex:1;min-width:200px;max-width:320px" oninput="jobFilter.search=this.value;jobsRender()">
+      <div class="tabs" style="margin-bottom:0">${['All','Junior','Mid','Senior','Lead'].map(l=>`<button class="tab ${jobFilter.level===l?'active':''}" onclick="jobFilter.level='${l}';jobsRender()">${l}</button>`).join('')}</div>
+      <div class="tabs" style="margin-bottom:0">${['All','Full-time','Remote','Hybrid'].map(t=>`<button class="tab ${jobFilter.type===t?'active':''}" onclick="jobFilter.type='${t}';jobsRender()">${t}</button>`).join('')}</div>
+    </div>
+    <div id="jobsList"></div>
+    <div style="margin-top:var(--sp-8);text-align:center">
+      <p style="color:var(--text-secondary);font-size:.875rem;margin-bottom:var(--sp-4)">More opportunities:</p>
+      <div style="display:flex;flex-wrap:wrap;gap:var(--sp-3);justify-content:center">${[['LinkedIn','https://linkedin.com/jobs'],['Bayt','https://bayt.com'],['GulfTalent','https://gulftalent.com'],['Indeed','https://indeed.com']].map(([n,u])=>`<a href="${u}" target="_blank" class="btn btn-secondary btn-sm">${n} ↗</a>`).join('')}</div>
+    </div>
+  </div>`;
+  jobsRender();
+}
+
+function jobsRender() {
+  const filtered=JOB_LISTINGS.filter(j=>(jobFilter.level==='All'||j.level===jobFilter.level)&&(jobFilter.type==='All'||j.type===jobFilter.type)&&(!jobFilter.search||j.title.toLowerCase().includes(jobFilter.search.toLowerCase())||j.company.toLowerCase().includes(jobFilter.search.toLowerCase())));
+  const el=document.getElementById('jobsList');
+  if (!el) return;
+  if (!filtered.length){el.innerHTML=`<div class="empty-state"><div class="empty-state-icon">💼</div><div class="empty-state-title">No jobs match</div><div class="empty-state-desc">Try different filters</div></div>`;return;}
+  el.innerHTML=`<div style="display:grid;gap:var(--sp-4)">${filtered.map(j=>`<div class="card card-interactive" onclick="window.open('${j.url}','_blank')"><div style="display:flex;align-items:flex-start;gap:var(--sp-4)"><div style="width:48px;height:48px;border-radius:var(--r-md);background:var(--bg-elevated);display:flex;align-items:center;justify-content:center;font-size:1.5rem;flex-shrink:0">${j.logo}</div><div style="flex:1;min-width:0"><div style="display:flex;align-items:flex-start;justify-content:space-between;flex-wrap:wrap;gap:var(--sp-2)"><div><h3 style="font-weight:700;font-size:.95rem">${j.title}</h3><div style="font-size:.82rem;color:var(--text-secondary);margin-top:2px">${j.company} · ${j.location}</div></div><span style="font-size:.78rem;font-weight:700;color:var(--accent)">${j.salary}</span></div><p style="font-size:.8rem;color:var(--text-secondary);margin:var(--sp-2) 0;line-height:1.5">${j.desc}</p><div style="display:flex;flex-wrap:wrap;gap:var(--sp-2);align-items:center"><span class="badge badge-${j.type==='Remote'?'success':j.type==='Hybrid'?'info':'neutral'}">${j.type}</span><span class="badge badge-accent">${j.level}</span>${j.skills.map(s=>`<span style="font-size:.68rem;background:var(--bg-elevated);border:1px solid var(--border);border-radius:var(--r-full);padding:2px 8px;color:var(--text-secondary)">${s}</span>`).join('')}<span style="font-size:.72rem;color:var(--text-tertiary);margin-left:auto">${j.posted}</span></div></div><span style="color:var(--text-tertiary);flex-shrink:0">↗</span></div></div>`).join('')}</div>`;
+}
+
+// ============================================================
+// PHASE 2 — APPLICATION TRACKER
+// ============================================================
+function tracker() {
+  document.getElementById('content').innerHTML=`
+  <div class="page-enter">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:var(--sp-6)">
+      <div><h1 style="font-size:1.5rem;font-weight:800;letter-spacing:-0.5px">Application Tracker</h1><p style="color:var(--text-secondary);margin-top:2px">Track your job applications</p></div>
+      <button class="btn btn-primary" onclick="trackerNew()">+ Add Application</button>
+    </div>
+    <div id="trackerList"></div>
+  </div>`;
+  trackerRender();
+}
+
+function trackerRender() {
+  const el=document.getElementById('trackerList');
+  if (!el) return;
+  const apps=state.applications||[];
+  if (!apps.length){el.innerHTML=`<div class="empty-state"><div class="empty-state-icon">📋</div><div class="empty-state-title">No applications yet</div><div class="empty-state-desc">Start tracking your job applications</div></div>`;return;}
+  const sc={applied:'badge-neutral',interview:'badge-info',offer:'badge-success',rejected:'badge-danger',saved:'badge-warning'};
+  el.innerHTML=`<div style="display:grid;gap:var(--sp-3)">${apps.map(a=>`<div class="card" style="padding:var(--sp-4)"><div style="display:flex;align-items:center;gap:var(--sp-4);flex-wrap:wrap"><div style="flex:1;min-width:200px"><div style="font-weight:700">${a.role}</div><div style="font-size:.82rem;color:var(--text-secondary)">${a.company}</div></div><span class="badge ${sc[a.status]||'badge-neutral'}">${a.status}</span><div style="font-size:.78rem;color:var(--text-tertiary)">${a.date}</div><div style="display:flex;gap:var(--sp-2)"><select class="form-input" style="padding:4px 8px;font-size:.78rem;width:auto" onchange="trackerUpdate('${a.id}',this.value)">${['saved','applied','interview','offer','rejected'].map(s=>`<option value="${s}" ${a.status===s?'selected':''}>${s}</option>`).join('')}</select><button onclick="trackerDel('${a.id}')" style="background:none;border:none;color:var(--text-tertiary);cursor:pointer;font-size:1rem">×</button></div></div></div>`).join('')}</div>`;
+}
+
+function trackerNew(){const role=prompt('Job title?');if(!role)return;const company=prompt('Company?');if(!company)return;state.applications.unshift({id:'app_'+Date.now(),role,company,status:'applied',date:new Date().toLocaleDateString(),notes:''});saveState();trackerRender();toast('success','Application added!',`${role} at ${company}`);}
+function trackerUpdate(id,status){const a=state.applications.find(a=>a.id===id);if(a){a.status=status;saveState();}}
+function trackerDel(id){state.applications=state.applications.filter(a=>a.id!==id);saveState();trackerRender();}
+
+// ============================================================
+// PHASE 2 — RESUME BUILDER
+// ============================================================
+function resume() {
+  const r=state.resumeData||{name:state.user?.name||'',email:state.user?.email||'',phone:'',location:'',linkedin:'',github:'',summary:'',experience:'',education:'',skills:'',projects:''};
+  document.getElementById('content').innerHTML=`
+  <div class="page-enter">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:var(--sp-6)">
+      <div><h1 style="font-size:1.5rem;font-weight:800;letter-spacing:-0.5px">Resume Builder</h1><p style="color:var(--text-secondary);margin-top:2px">ATS-optimized BA resume</p></div>
+      <div style="display:flex;gap:var(--sp-2)">${state.settings.apiKey?`<button class="btn btn-secondary" onclick="resumeAIReview()">✨ AI Review</button>`:''}<button class="btn btn-primary" onclick="resumeExport()">Export HTML</button></div>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:var(--sp-6)" id="resumeGrid">
+      <div>
+        <div class="card" style="margin-bottom:var(--sp-4)">
+          <div class="card-title" style="margin-bottom:var(--sp-4)">Contact Info</div>
+          ${[['name','Full Name',r.name],['email','Email',r.email],['phone','Phone',r.phone],['location','Location',r.location],['linkedin','LinkedIn URL',r.linkedin],['github','GitHub / Portfolio',r.github]].map(([id,label,val])=>`<div class="form-group"><label class="form-label">${label}</label><input class="form-input" id="r_${id}" value="${val||''}" oninput="resumeSave()"></div>`).join('')}
+        </div>
+        ${[['summary','Professional Summary','2-3 sentences. Highlight experience, key skills, and career goal.'],['experience','Work Experience','Job Title | Company | Date\n• Achievement with metric\n• Another impact bullet'],['education','Education','Degree | University | Year'],['skills','Technical Skills','SQL, Python, Power BI, Tableau, Excel, Statistics'],['projects','Projects','Project Name | GitHub\n• What you built and the business impact']].map(([id,label,ph])=>`<div class="card" style="margin-bottom:var(--sp-4)"><div class="card-title" style="margin-bottom:var(--sp-4)">${label}</div><textarea class="form-input" id="r_${id}" style="min-height:${id==='experience'?180:110}px;font-family:var(--font-body);font-size:.875rem;resize:vertical;line-height:1.6" placeholder="${ph}" oninput="resumeSave()">${r[id]||''}</textarea></div>`).join('')}
+      </div>
+      <div>
+        <div class="card" id="resumePreview" style="font-family:Georgia,serif"><div style="font-size:.82rem;color:var(--text-tertiary);text-align:center;padding:var(--sp-8)">Fill in the form to preview →</div></div>
+        <div id="resumeAIFeedback" class="hidden" style="margin-top:var(--sp-4)"></div>
+      </div>
+    </div>
+  </div>`;
+  if(window.innerWidth<900)document.getElementById('resumeGrid').style.gridTemplateColumns='1fr';
+  resumePreview();
+}
+
+let _rTimer=null;
+function resumeSave(){clearTimeout(_rTimer);_rTimer=setTimeout(()=>{state.resumeData={name:document.getElementById('r_name')?.value||'',email:document.getElementById('r_email')?.value||'',phone:document.getElementById('r_phone')?.value||'',location:document.getElementById('r_location')?.value||'',linkedin:document.getElementById('r_linkedin')?.value||'',github:document.getElementById('r_github')?.value||'',summary:document.getElementById('r_summary')?.value||'',experience:document.getElementById('r_experience')?.value||'',education:document.getElementById('r_education')?.value||'',skills:document.getElementById('r_skills')?.value||'',projects:document.getElementById('r_projects')?.value||''};saveState();resumePreview();},500);}
+
+function resumePreview(){
+  const r=state.resumeData;if(!r||!r.name)return;
+  const el=document.getElementById('resumePreview');if(!el)return;
+  const sec=(title,content)=>content?`<div style="margin-bottom:20px"><h3 style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:#555;border-bottom:1.5px solid #333;padding-bottom:3px;margin-bottom:8px">${title}</h3><div style="font-size:12px;line-height:1.6;white-space:pre-line">${content}</div></div>`:'';
+  el.innerHTML=`<div style="max-width:600px;color:#1a1a1a"><div style="text-align:center;margin-bottom:20px"><h1 style="font-size:22px;font-weight:700;margin-bottom:4px">${r.name}</h1><div style="font-size:11px;color:#555;display:flex;flex-wrap:wrap;justify-content:center;gap:12px">${[r.email,r.phone,r.location,r.linkedin&&`<a href="${r.linkedin}">LinkedIn</a>`,r.github&&`<a href="${r.github}">Portfolio</a>`].filter(Boolean).join(' · ')}</div></div>${sec('Professional Summary',r.summary)}${sec('Work Experience',r.experience)}${sec('Education',r.education)}${sec('Technical Skills',r.skills)}${sec('Projects',r.projects)}</div>`;
+}
+
+function resumeExport(){
+  const el=document.getElementById('resumePreview');if(!el)return;
+  const html=`<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Resume - ${state.resumeData?.name||''}</title><style>body{font-family:Georgia,serif;max-width:720px;margin:40px auto;padding:40px;color:#1a1a1a;line-height:1.6}h1{font-size:24px}h3{font-size:11px;text-transform:uppercase;letter-spacing:1px;color:#555;border-bottom:1.5px solid #333;padding-bottom:3px}a{color:#1a1a1a}</style></head><body>${el.innerHTML}</body></html>`;
+  const blob=new Blob([html],{type:'text/html'});const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download='resume.html';document.body.appendChild(a);a.click();URL.revokeObjectURL(url);
+  toast('success','Resume exported!','Saved as resume.html');
+}
+
+async function resumeAIReview(){
+  const r=state.resumeData;if(!r?.summary&&!r?.experience){toast('warning','Add content first','Fill in summary and experience.');return;}
+  const el=document.getElementById('resumeAIFeedback');el.classList.remove('hidden');el.innerHTML='<div class="card"><div style="color:var(--text-secondary)">Analyzing...</div></div>';
+  try{const fb=await callAnthropicAPI([{role:'user',content:`Review this BA resume in 5 specific bullet points. Focus on impact quantification, ATS keywords, and bullet strength.\n\nSummary: ${r.summary}\nExperience: ${r.experience}\nSkills: ${r.skills}`}],'You are an expert BA resume reviewer. Be direct, specific, and constructive.');el.innerHTML=`<div class="card"><div style="font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--accent);margin-bottom:var(--sp-3)">✨ AI Feedback</div><div style="font-size:.875rem;line-height:1.7;white-space:pre-wrap">${fb}</div></div>`;}
+  catch(e){el.innerHTML=`<div class="card"><div style="color:var(--danger)">Error: ${e.message}</div></div>`;}
+}
+
+// ============================================================
+// PHASE 2 — PORTFOLIO GENERATOR
+// ============================================================
+function portfolio(){
+  const p=state.portfolioData||{name:state.user?.name||'',title:'',bio:'',email:state.user?.email||'',linkedin:'',github:'',projects:'',skills:''};
+  document.getElementById('content').innerHTML=`
+  <div class="page-enter">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:var(--sp-6)">
+      <div><h1 style="font-size:1.5rem;font-weight:800;letter-spacing:-0.5px">Portfolio Generator</h1><p style="color:var(--text-secondary);margin-top:2px">Generate a professional analytics portfolio page</p></div>
+      <button class="btn btn-primary" onclick="portfolioExport()">Export Portfolio</button>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:var(--sp-6)" id="portfolioGrid">
+      <div>
+        <div class="card" style="margin-bottom:var(--sp-4)">
+          <div class="card-title" style="margin-bottom:var(--sp-4)">Profile</div>
+          ${[['name','Full Name',p.name],['title','Title (e.g. Business Analyst)',p.title],['email','Email',p.email],['linkedin','LinkedIn',p.linkedin],['github','GitHub',p.github]].map(([id,label,val])=>`<div class="form-group"><label class="form-label">${label}</label><input class="form-input" id="p_${id}" value="${val||''}" oninput="portfolioSave()"></div>`).join('')}
+          <div class="form-group"><label class="form-label">Bio (2-3 sentences)</label><textarea class="form-input" id="p_bio" style="min-height:100px;font-family:var(--font-body);resize:vertical" oninput="portfolioSave()">${p.bio||''}</textarea></div>
+        </div>
+        <div class="card" style="margin-bottom:var(--sp-4)">
+          <div class="card-title" style="margin-bottom:var(--sp-4)">Projects</div>
+          <textarea class="form-input" id="p_projects" style="min-height:180px;font-family:var(--font-body);font-size:.875rem;resize:vertical;line-height:1.6" placeholder="Project Name | GitHub&#10;Description and business impact.&#10;&#10;Project 2 | Link&#10;Description..." oninput="portfolioSave()">${p.projects||''}</textarea>
+        </div>
+        <div class="card"><div class="card-title" style="margin-bottom:var(--sp-4)">Skills</div><input class="form-input" id="p_skills" placeholder="SQL, Python, Power BI, Tableau, Excel" value="${p.skills||''}" oninput="portfolioSave()"></div>
+      </div>
+      <div><div class="card" style="padding:0;overflow:hidden" id="portfolioPreview"><div style="font-size:.82rem;color:var(--text-tertiary);text-align:center;padding:var(--sp-8)">Fill in the form to preview →</div></div></div>
+    </div>
+  </div>`;
+  if(window.innerWidth<900)document.getElementById('portfolioGrid').style.gridTemplateColumns='1fr';
+  portfolioPreview();
+}
+
+let _pTimer=null;
+function portfolioSave(){clearTimeout(_pTimer);_pTimer=setTimeout(()=>{state.portfolioData={name:document.getElementById('p_name')?.value||'',title:document.getElementById('p_title')?.value||'',bio:document.getElementById('p_bio')?.value||'',email:document.getElementById('p_email')?.value||'',linkedin:document.getElementById('p_linkedin')?.value||'',github:document.getElementById('p_github')?.value||'',projects:document.getElementById('p_projects')?.value||'',skills:document.getElementById('p_skills')?.value||''};saveState();portfolioPreview();},400);}
+
+function portfolioPreview(){
+  const p=state.portfolioData;if(!p?.name)return;
+  const el=document.getElementById('portfolioPreview');if(!el)return;
+  const skills=(p.skills||'').split(',').map(s=>s.trim()).filter(Boolean);
+  const projects=(p.projects||'').split('\n\n').filter(Boolean);
+  el.innerHTML=`<div style="font-family:var(--font-body);color:var(--text-primary)"><div style="background:linear-gradient(135deg,var(--accent),#8b5cf6);padding:var(--sp-8);text-align:center;color:white"><div style="font-size:2rem;font-weight:800;margin-bottom:var(--sp-2)">${p.name}</div><div style="opacity:.85;font-size:1rem">${p.title}</div><div style="display:flex;gap:var(--sp-4);justify-content:center;margin-top:var(--sp-4);font-size:.82rem;opacity:.8;flex-wrap:wrap">${[p.email&&`<span>${p.email}</span>`,p.linkedin&&`<span>LinkedIn</span>`,p.github&&`<span>GitHub</span>`].filter(Boolean).join('')}</div></div><div style="padding:var(--sp-6)">${p.bio?`<div style="margin-bottom:var(--sp-5)"><h3 style="font-size:.78rem;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--text-tertiary);margin-bottom:var(--sp-3)">About</h3><p style="line-height:1.7;font-size:.9rem;color:var(--text-secondary)">${p.bio}</p></div>`:''} ${skills.length?`<div style="margin-bottom:var(--sp-5)"><h3 style="font-size:.78rem;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--text-tertiary);margin-bottom:var(--sp-3)">Skills</h3><div style="display:flex;flex-wrap:wrap;gap:var(--sp-2)">${skills.map(s=>`<span style="background:var(--accent-dim);border:1px solid var(--accent-border);border-radius:var(--r-full);padding:4px 12px;font-size:.78rem;color:var(--accent);font-weight:600">${s}</span>`).join('')}</div></div>`:''} ${projects.length?`<div><h3 style="font-size:.78rem;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--text-tertiary);margin-bottom:var(--sp-3)">Projects</h3>${projects.map(prj=>{const lines=prj.trim().split('\n');return`<div style="background:var(--bg-elevated);border-radius:var(--r-md);padding:var(--sp-4);margin-bottom:var(--sp-3)"><div style="font-weight:700;margin-bottom:4px;font-size:.875rem">${lines[0]}</div>${lines.slice(1).join(' ')?`<div style="font-size:.8rem;color:var(--text-secondary);line-height:1.5">${lines.slice(1).join(' ')}</div>`:''}</div>`;}).join('')}</div>`:''}</div></div>`;
+}
+
+function portfolioExport(){
+  const p=state.portfolioData;if(!p?.name){toast('warning','Add your info','Fill in at least your name.');return;}
+  const skills=(p.skills||'').split(',').map(s=>s.trim()).filter(Boolean);
+  const projects=(p.projects||'').split('\n\n').filter(Boolean);
+  const html=`<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>${p.name} — Analytics Portfolio</title><link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&family=Inter:wght@400;500&display=swap" rel="stylesheet"><style>*{box-sizing:border-box;margin:0;padding:0}body{font-family:Inter,sans-serif;background:#08080f;color:#f0f0f8;min-height:100vh}.hero{background:linear-gradient(135deg,#5b6cf8,#8b5cf6);padding:80px 40px;text-align:center;color:white}.hero h1{font-family:'Plus Jakarta Sans',sans-serif;font-size:2.5rem;font-weight:800;margin-bottom:12px}.links{display:flex;gap:16px;justify-content:center;flex-wrap:wrap}.links a{color:white;opacity:.8;font-size:.875rem}.content{max-width:720px;margin:0 auto;padding:60px 24px}.section{margin-bottom:48px}h2{font-family:'Plus Jakarta Sans',sans-serif;font-size:.75rem;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:#5b6cf8;margin-bottom:20px}.bio{color:#8b8ba8;line-height:1.8;font-size:.95rem}.skills-wrap{display:flex;flex-wrap:wrap;gap:8px}.skill{background:rgba(91,108,248,.1);border:1px solid rgba(91,108,248,.25);border-radius:100px;padding:4px 14px;font-size:.78rem;color:#5b6cf8;font-weight:600}.project{background:#0f0f1a;border:1px solid rgba(255,255,255,.06);border-radius:12px;padding:24px;margin-bottom:16px}.project-title{font-family:'Plus Jakarta Sans',sans-serif;font-weight:700;margin-bottom:6px}.project-desc{color:#8b8ba8;font-size:.875rem;line-height:1.6}footer{text-align:center;padding:40px;color:#4a4a65;font-size:.78rem}</style></head><body><div class="hero"><h1>${p.name}</h1><p style="opacity:.85;margin-bottom:20px">${p.title}</p><div class="links">${[p.email&&`<a href="mailto:${p.email}">${p.email}</a>`,p.linkedin&&`<a href="${p.linkedin}" target="_blank">LinkedIn</a>`,p.github&&`<a href="${p.github}" target="_blank">GitHub</a>`].filter(Boolean).join('')}</div></div><div class="content">${p.bio?`<div class="section"><h2>About</h2><p class="bio">${p.bio}</p></div>`:''}${skills.length?`<div class="section"><h2>Skills</h2><div class="skills-wrap">${skills.map(s=>`<span class="skill">${s}</span>`).join('')}</div></div>`:''}${projects.length?`<div class="section"><h2>Projects</h2>${projects.map(prj=>{const lines=prj.trim().split('\n');return`<div class="project"><div class="project-title">${lines[0]}</div>${lines.slice(1).join(' ')?`<div class="project-desc">${lines.slice(1).join(' ')}</div>`:''}</div>`;}).join('')}</div>`:''}</div><footer>Built with BA Academy · ${new Date().getFullYear()}</footer></body></html>`;
+  const blob=new Blob([html],{type:'text/html'});const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download='portfolio.html';document.body.appendChild(a);a.click();URL.revokeObjectURL(url);
+  toast('success','Portfolio exported!','Saved as portfolio.html');
+}
+
+// ============================================================
+// PHASE 2 — INTERVIEW PREP
+// ============================================================
+const INTERVIEW_QS={
+  behavioral:[
+    {q:'Tell me about yourself.',tip:'Use a 60-second pitch: background → relevant experience → why this role. Keep it professional and BA-focused.'},
+    {q:'Tell me about a time you used data to influence a decision.',tip:'Use STAR. Quantify the impact: "My analysis showed X, which led to Y% improvement in Z."'},
+    {q:'Describe a challenging stakeholder situation and how you handled it.',tip:'Show empathy, communication, and data-driven persuasion. Avoid blaming the stakeholder.'},
+    {q:'How do you prioritize competing requests from multiple stakeholders?',tip:'Mention frameworks (impact vs effort, MoSCoW), data to support decisions, and transparent communication.'},
+    {q:'Tell me about a time your analysis was wrong. How did you handle it?',tip:'Be honest. Show accountability, how you corrected it, and what you learned. Interviewers value self-awareness.'},
+  ],
+  sql:[
+    {q:'Write a query to find the top 3 products by revenue in each region.',tip:'Use ROW_NUMBER() OVER (PARTITION BY region ORDER BY revenue DESC) in a CTE, then filter WHERE rn <= 3.'},
+    {q:'How would you find duplicate records in a table?',tip:'GROUP BY all columns, HAVING COUNT(*) > 1. Or use ROW_NUMBER() to identify and remove dupes.'},
+    {q:'What is the difference between INNER JOIN and LEFT JOIN?',tip:'INNER: only matching rows. LEFT: all rows from left table, NULLs for non-matching right rows.'},
+    {q:'How would you calculate a 7-day rolling average?',tip:'Use AVG(metric) OVER (ORDER BY date ROWS BETWEEN 6 PRECEDING AND CURRENT ROW).'},
+    {q:'Find customers who purchased last month but not this month.',tip:'Use EXCEPT or NOT IN with date-filtered subqueries, or a LEFT JOIN with a NULL check.'},
+  ],
+  case:[
+    {q:'Our checkout conversion rate dropped 15% last week. How would you investigate?',tip:'Segment by device/browser/region/time. Check funnel drop-off steps. Look for tech issues, A/B test changes, or external factors.'},
+    {q:'How would you measure the success of a new feature launch?',tip:'Define primary metric (adoption, engagement), guardrail metrics (churn, revenue), and baseline. Run A/B test or pre/post analysis.'},
+    {q:'We want to reduce customer churn. How would you approach this?',tip:'Segment churned vs retained. Find leading indicators. Build churn prediction model or intervention triggers.'},
+  ],
+};
+
+let intCat='behavioral',intIdx=0,intFlipped=false;
+
+function interview(){
+  document.getElementById('content').innerHTML=`
+  <div class="page-enter">
+    <div style="margin-bottom:var(--sp-6)"><h1 style="font-size:1.5rem;font-weight:800;letter-spacing:-0.5px">Interview Prep</h1><p style="color:var(--text-secondary);margin-top:2px">Behavioral, SQL, and case study questions with tips</p></div>
+    <div style="display:flex;gap:var(--sp-2);margin-bottom:var(--sp-5);flex-wrap:wrap">
+      <button class="btn ${intCat==='behavioral'?'btn-primary':'btn-secondary'} btn-sm" onclick="intSetCat('behavioral')">💬 Behavioral (${INTERVIEW_QS.behavioral.length})</button>
+      <button class="btn ${intCat==='sql'?'btn-primary':'btn-secondary'} btn-sm" onclick="intSetCat('sql')">💾 SQL (${INTERVIEW_QS.sql.length})</button>
+      <button class="btn ${intCat==='case'?'btn-primary':'btn-secondary'} btn-sm" onclick="intSetCat('case')">📊 Case Studies (${INTERVIEW_QS.case.length})</button>
+    </div>
+    <div id="intContent"></div>
+  </div>`;
+  renderIntContent();
+}
+
+function intSetCat(cat){intCat=cat;intIdx=0;intFlipped=false;interview();}
+
+function renderIntContent(){
+  const el=document.getElementById('intContent');if(!el)return;
+  const qs=INTERVIEW_QS[intCat];const q=qs[intIdx];
+  el.innerHTML=`
+  <div style="max-width:680px">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:var(--sp-4)">
+      <span style="font-size:.78rem;color:var(--text-tertiary)">Question ${intIdx+1} of ${qs.length}</span>
+      <div style="display:flex;gap:var(--sp-2)">
+        <button class="btn btn-ghost btn-sm" onclick="intNav(-1)" ${intIdx===0?'disabled':''}>← Prev</button>
+        <button class="btn btn-ghost btn-sm" onclick="intNav(1)" ${intIdx===qs.length-1?'disabled':''}>Next →</button>
+      </div>
+    </div>
+    <div class="progress-track" style="margin-bottom:var(--sp-6)"><div class="progress-fill" style="width:${((intIdx+1)/qs.length*100).toFixed(0)}%"></div></div>
+    <div class="card" style="margin-bottom:var(--sp-4);cursor:pointer;min-height:180px;display:flex;align-items:center;justify-content:center;text-align:center" onclick="intFlipped=!intFlipped;renderIntContent()">
+      <div>${!intFlipped?`<div style="font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--text-tertiary);margin-bottom:var(--sp-4)">Question</div><p style="font-size:1.1rem;font-weight:600;line-height:1.6;margin-bottom:var(--sp-4)">${q.q}</p><p style="font-size:.78rem;color:var(--text-tertiary)">Tap to reveal tip →</p>`:`<div style="font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--success);margin-bottom:var(--sp-4)">Interview Tip</div><p style="font-size:.95rem;line-height:1.7;color:var(--text-secondary)">${q.tip}</p>`}</div>
+    </div>
+    ${state.settings.apiKey?`<div class="card"><div style="font-size:.78rem;font-weight:700;color:var(--text-tertiary);margin-bottom:var(--sp-3)">PRACTICE WITH AI</div><textarea id="intAnswer" class="form-input" style="min-height:120px;font-family:var(--font-body);resize:vertical;margin-bottom:var(--sp-3)" placeholder="Type your answer here, then get AI feedback..."></textarea><button class="btn btn-primary btn-sm" onclick="intGetFeedback()">✨ Get AI Feedback</button><div id="intFeedback" class="hidden" style="margin-top:var(--sp-4);padding:var(--sp-4);background:var(--bg-elevated);border-radius:var(--r-md);font-size:.875rem;line-height:1.7;white-space:pre-wrap"></div></div>`:`<div class="card" style="text-align:center;padding:var(--sp-6)"><p style="color:var(--text-secondary);font-size:.875rem">Add your Anthropic API key in <a onclick="navigate('settings')" style="cursor:pointer">Settings</a> to practice with AI feedback.</p></div>`}
+    <div class="card" style="margin-top:var(--sp-5)"><div style="font-size:.78rem;font-weight:700;color:var(--text-tertiary);margin-bottom:var(--sp-3)">ALL QUESTIONS</div>${qs.map((q,i)=>`<div style="padding:var(--sp-3) 0;border-bottom:1px solid var(--border);cursor:pointer;font-size:.875rem;color:${i===intIdx?'var(--accent)':'var(--text-secondary)'};font-weight:${i===intIdx?700:400}" onclick="intIdx=${i};intFlipped=false;renderIntContent()">${i+1}. ${q.q}</div>`).join('')}</div>
+  </div>`;
+}
+
+function intNav(dir){const qs=INTERVIEW_QS[intCat];intIdx=Math.max(0,Math.min(qs.length-1,intIdx+dir));intFlipped=false;renderIntContent();}
+
+async function intGetFeedback(){
+  const answer=document.getElementById('intAnswer')?.value?.trim();
+  if(!answer){toast('warning','Write an answer first','Type your response before getting feedback.');return;}
+  const el=document.getElementById('intFeedback');el.classList.remove('hidden');el.textContent='Analyzing...';
+  const q=INTERVIEW_QS[intCat][intIdx];
+  try{const fb=await callAnthropicAPI([{role:'user',content:`Question: ${q.q}\n\nMy answer: ${answer}\n\nGive specific feedback on: structure/clarity, STAR method usage, strengths, and improvements. 3-4 bullet points.`}],'You are an experienced BA interview coach. Give constructive, specific feedback.');el.textContent=fb;}
+  catch(e){el.textContent='Error: '+e.message;}
+}
+
+// ============================================================
+// PHASE 2 — ANALYTICS LAB
+// ============================================================
+function analytics(){
+  document.getElementById('content').innerHTML=`
+  <div class="page-enter">
+    <div style="margin-bottom:var(--sp-8)"><h1 style="font-size:1.5rem;font-weight:800;letter-spacing:-0.5px">Analytics Lab</h1><p style="color:var(--text-secondary);margin-top:2px">Business calculators and frameworks</p></div>
+    <div class="grid-3" style="margin-bottom:var(--sp-6)">
+      ${[{icon:'🧮',title:'ROI Calculator',desc:'(Gain - Cost) / Cost × 100. Measure return on any initiative.'},{icon:'📉',title:'Churn Rate',desc:'(Lost / Start) × 100. Track monthly customer attrition.'},{icon:'💡',title:'CLV:CAC Ratio',desc:'Healthy = 3:1 or higher. Compare lifetime value to acquisition cost.'},{icon:'🔢',title:'Margin Formula',desc:'(Revenue - COGS) / Revenue × 100. Gross margin benchmark.'},{icon:'📊',title:'DAU/MAU Ratio',desc:'Daily / Monthly active users. High ratio = sticky product.'},{icon:'🎯',title:'Conversion Rate',desc:'Conversions / Visitors × 100. Funnel efficiency metric.'}].map(c=>`<div class="card"><div style="font-size:2rem;margin-bottom:var(--sp-3)">${c.icon}</div><div style="font-weight:700;margin-bottom:var(--sp-2)">${c.title}</div><div style="font-size:.82rem;color:var(--text-secondary);line-height:1.5">${c.desc}</div></div>`).join('')}
+    </div>
+    <div class="card">
+      <div class="card-title" style="margin-bottom:var(--sp-4)">A/B Test Significance Calculator</div>
+      <div class="grid-2">
+        <div>
+          <div class="grid-2" style="gap:var(--sp-3);margin-bottom:var(--sp-3)">
+            <div class="form-group"><label class="form-label">Control Visitors</label><input class="form-input" id="ab_cv" type="number" value="1000" oninput="abCalc()"></div>
+            <div class="form-group"><label class="form-label">Control Conversions</label><input class="form-input" id="ab_cc" type="number" value="50" oninput="abCalc()"></div>
+            <div class="form-group"><label class="form-label">Variant Visitors</label><input class="form-input" id="ab_vv" type="number" value="1000" oninput="abCalc()"></div>
+            <div class="form-group"><label class="form-label">Variant Conversions</label><input class="form-input" id="ab_vc" type="number" value="65" oninput="abCalc()"></div>
+          </div>
+        </div>
+        <div id="abResult" style="display:flex;align-items:center;justify-content:center;text-align:center;background:var(--bg-elevated);border-radius:var(--r-md)"><div style="color:var(--text-tertiary);font-size:.875rem">Fill in values</div></div>
+      </div>
+    </div>
+  </div>`;
+  abCalc();
+}
+
+function abCalc(){
+  const cv=parseInt(document.getElementById('ab_cv')?.value)||0,cc=parseInt(document.getElementById('ab_cc')?.value)||0,vv=parseInt(document.getElementById('ab_vv')?.value)||0,vc=parseInt(document.getElementById('ab_vc')?.value)||0;
+  if(!cv||!vv||cv<cc||vv<vc)return;
+  const p1=cc/cv,p2=vc/vv,p=(cc+vc)/(cv+vv),se=Math.sqrt(p*(1-p)*(1/cv+1/vv)),z=(p2-p1)/se,lift=((p2-p1)/p1*100).toFixed(1),sig=Math.abs(z)>1.96;
+  const el=document.getElementById('abResult');if(!el)return;
+  el.innerHTML=`<div style="padding:var(--sp-5)"><div style="font-size:.75rem;color:var(--text-tertiary);margin-bottom:var(--sp-3)">Control: ${(p1*100).toFixed(1)}% · Variant: ${(p2*100).toFixed(1)}%</div><div style="font-size:2rem;font-weight:800;color:${sig?'var(--success)':'var(--warning)'};margin-bottom:var(--sp-2)">${sig?'Significant':'Not Significant'}</div><div style="font-size:.875rem;color:var(--text-secondary)">Lift: ${lift}% · Z: ${z.toFixed(2)}</div><div style="font-size:.78rem;color:var(--text-tertiary);margin-top:var(--sp-3)">${sig?'p < 0.05 — safe to call a winner':'p > 0.05 — need more data'}</div></div>`;
+}
+
 
 function progress() {
   const skills = state.progress.skills || {};
@@ -3025,29 +4190,22 @@ function settings() {
         <button class="btn btn-primary btn-sm" onclick="saveApiKey()">Save Key</button>
       </div>
 
-      <!-- EmailJS Settings -->
+      <!-- Auth Info -->
       <div class="card mb-6">
-        <div class="card-header"><div class="card-title">✉️ Email Verification Setup</div></div>
+        <div class="card-header"><div class="card-title">🔐 Authentication</div></div>
         <p class="text-secondary text-sm mb-4">
-          Configure EmailJS to enable real email OTP verification for new signups.
-          <a href="https://www.emailjs.com" target="_blank">Create a free account at emailjs.com</a>
-          then add a Gmail service and this template:
-          <br><br>
-          <code style="background:var(--bg-elevated);padding:var(--sp-2) var(--sp-3);border-radius:var(--r-sm);font-size:.78rem;display:block;margin-top:var(--sp-2)">Subject: Your BA Academy verification code<br>Body: Hi {{to_name}}, your code is: {{otp}} (expires in {{expiry}})</code>
+          Your account is secured by Firebase Authentication. Email verification and Google Sign-In are handled automatically.
         </p>
-        <div class="form-group">
-          <label class="form-label">Public Key</label>
-          <input class="form-input" id="setEJKey" placeholder="Your EmailJS public key" value="${state.settings.emailjsKey}">
+        <div style="background:var(--bg-elevated);border-radius:var(--r-md);padding:var(--sp-3) var(--sp-4);font-size:.82rem">
+          <div style="display:flex;justify-content:space-between;padding:var(--sp-2) 0">
+            <span style="color:var(--text-secondary)">Email</span>
+            <span style="font-weight:600">${state.user?.email || '—'}</span>
+          </div>
+          <div style="display:flex;justify-content:space-between;padding:var(--sp-2) 0">
+            <span style="color:var(--text-secondary)">Verified</span>
+            <span style="color:var(--success);font-weight:600">✅ Yes</span>
+          </div>
         </div>
-        <div class="form-group">
-          <label class="form-label">Service ID</label>
-          <input class="form-input" id="setEJSvc" placeholder="e.g. service_abc123" value="${state.settings.emailjsSvc}">
-        </div>
-        <div class="form-group">
-          <label class="form-label">Template ID</label>
-          <input class="form-input" id="setEJTpl" placeholder="e.g. template_xyz456" value="${state.settings.emailjsTpl}">
-        </div>
-        <button class="btn btn-primary btn-sm" onclick="saveEmailJS()">Save EmailJS Config</button>
       </div>
 
       <!-- Preferences -->
@@ -3144,15 +4302,7 @@ function isValidEmail(email) {
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
 }
 
-function simpleHash(str) {
-  // Simple deterministic hash for demo. In production use server-side bcrypt.
-  let h = 0;
-  for (let i = 0; i < str.length; i++) {
-    h = ((h << 5) - h) + str.charCodeAt(i);
-    h |= 0;
-  }
-  return String(h);
-}
+// simpleHash removed — Firebase handles password security
 
 function setButtonLoading(btnId, loading) {
   const btn = document.getElementById(btnId);
@@ -3188,63 +4338,35 @@ document.addEventListener('keydown', e => {
 // INIT — Check for existing session
 // ============================================================
 window.addEventListener('load', () => {
-  // Check EmailJS config from localStorage
-  const ejKey = localStorage.getItem('ba_emailjs_key');
-  const ejSvc = localStorage.getItem('ba_emailjs_svc');
-  const ejTpl = localStorage.getItem('ba_emailjs_tpl');
-  if (ejKey) state.settings.emailjsKey = ejKey;
-  if (ejSvc) state.settings.emailjsSvc = ejSvc;
-  if (ejTpl) state.settings.emailjsTpl = ejTpl;
-
-  // Try to restore session from last logged-in user
-  const lastEmail = localStorage.getItem('ba_v3_last_email');
-  if (lastEmail) {
-    const stored = localStorage.getItem('ba_v3_user_' + lastEmail);
-    if (stored) {
-      state.user = JSON.parse(stored);
-      loadState();
-
-      // Check if onboarded
-      const hasOnboarded = state.progress.achievements.includes('onboarded');
-
-      document.getElementById('authScreen').classList.add('hidden');
-
-      if (!hasOnboarded && !state.progress.achievements.includes('first_login')) {
-        // Brand new user who somehow got here — start onboarding
-        unlockAchievement('first_login');
-        startOnboarding();
-      } else {
-        launchApp();
-      }
-      return;
+  // Firebase Auth state observer — handles session restore automatically
+  fbAuth.onAuthStateChanged(fbUser => {
+    if (fbUser && fbUser.emailVerified) {
+      // Returning verified user — restore session silently
+      onFirebaseSignIn(fbUser);
+    } else if (fbUser && !fbUser.emailVerified) {
+      // Signed in but not verified — show verify screen
+      document.getElementById('authScreen').classList.remove('hidden');
+      showVerifyPendingScreen(fbUser.email);
+    } else {
+      // Not signed in — show auth screen
+      document.getElementById('authScreen').classList.remove('hidden');
     }
-  }
-
-  // No session — show auth screen
-  document.getElementById('authScreen').classList.remove('hidden');
+  });
 });
 
-// Save last email on successful auth
-function persistSession() {
-  if (state.user?.email) {
-    localStorage.setItem('ba_v3_last_email', state.user.email);
-  }
-}
-
-// Patch launchApp to persist session
-const _origLaunchApp = launchApp;
-window.launchApp = function() {
-  persistSession();
-  _origLaunchApp();
-};
+// Session persistence handled by Firebase Auth onAuthStateChanged
 
 // Enter key on login form
 document.addEventListener('DOMContentLoaded', () => {
+  // Enter key shortcuts on login form
   document.getElementById('loginPassword')?.addEventListener('keydown', e => {
     if (e.key === 'Enter') handleLogin();
   });
   document.getElementById('loginEmail')?.addEventListener('keydown', e => {
     if (e.key === 'Enter') document.getElementById('loginPassword')?.focus();
+  });
+  document.getElementById('signupPassword')?.addEventListener('keydown', e => {
+    if (e.key === 'Enter') handleSignup();
   });
 });
 </script>
